@@ -1,0 +1,197 @@
+---
+alwaysApply: true
+---
+## Project Overview
+
+**Frontend application built with modern React/Next.js stack and shadcn/ui.**
+
+**Stack Requirements:**
+- **Frontend:** TypeScript + Next.js (SSG + CSR only, NO SSR) + shadcn/ui + Tailwind CSS + TanStack Query
+
+## Non-Negotiable Rules (Architecture)
+- ✅ **Frontend**: Next.js `output: 'export'` (SSG+CSR only), NO SSR, NO API routes
+- ✅ **Data fetching**: TanStack Query ONLY (no `useEffect` fetching)
+- ✅ **UI**: shadcn/ui as the primary UI system; **no competing UI frameworks**. Small MIT/Apache-2 shadcn-compatible component libs are allowed only when shadcn/ui lacks the capability and the exception is documented.
+- ✅ **Styling**: Tailwind CSS with `cn()` utility for conditional classes
+- ✅ **Feature catalogue**: review related features BEFORE changes and update docs AFTER changes (see `docs/features/`)
+
+**Repository Structure**:
+```
+docs/
+├── features/               # Features catalogue
+│   ├── features-index.json # Features index
+│   └── {feature}.md        # Feature description
+├── tickets/                # Tickets (task tracking)
+│   ├── tickets-index.json  # Tickets index
+│   └── {ticket}.md         # Ticket description
+src/
+├── app/                    # Next.js App Router pages
+├── components/
+│   ├── ui/                 # shadcn/ui components (auto-generated)
+│   ├── common/             # Custom reusable components
+│   ├── pages/              # Page-specific components
+│   └── layout/             # Layout components
+├── hooks/
+│   ├── queries/            # TanStack Query hooks
+│   └── common/             # Shared hooks
+├── lib/
+│   ├── api/                # API client configuration
+│   ├── utils.ts            # cn() utility and helpers
+│   └── validations/        # Zod schemas for forms
+├── i18n/                   # Internationalization
+└── types/                  # TypeScript type definitions
+```
+
+## Quality Checks (Run Before Completing Tasks)
+- `npm run lint` - Linting (MUST pass with zero errors)
+- `npm run typecheck` - Type checking (MUST pass with zero errors)
+- `npm run test:coverage` (Vitest) - Unit tests with >90% coverage requirement
+- `npm test` (Vitest) - Quick test run without coverage
+- `npm run test:e2e` (Playwright) - E2E/UI tests for all flows
+- `npm run validate` - Run all checks above in one command
+
+---
+## Core Principles
+
+**All code changes MUST follow these guides. No exceptions.**
+
+### 1. Use MCPs (Model Context Protocols)
+- **Discover & load relevant MCPs** (e.g., Files, Git, HTTP, Chrome DevTools, context7, Storybook, Figma). If a task needs tooling, **explicitly name** the MCPs you'll use and how.
+- Use MCPs to: store context, manage files, inspect code, run tests, preview UI, diagram.
+- When proposing a plan, include a short **"MCP Utilization"** section (e.g., "Git MCP for diff/commit; context7 for shadcn/ui docs; Storybook MCP for component previews", etc...).
+
+### 2. TypeScript
+- Use strict mode (all strict flags enabled)
+- Explicit return types for all functions/methods
+- Use `async/await`, optional chaining (`?.`), nullish coalescing (`??`)
+- Follow Clean Architecture and Next.js + shadcn/ui + Tailwind best practices and patterns
+- All errors must be propagated to UI into errors collapsible section, listing errors with their stack traces
+- Follow Naming Conventions:
+  - Files: kebab-case (`agreement-card.tsx`)
+  - Classes: PascalCase (`AgreementCard`)
+  - Interfaces: PascalCase (`IAgreementMetadata`)
+  - Constants: UPPER_SNAKE_CASE (`MAX_FILE_SIZE`)
+  - Variables/Functions: camelCase (`projectCode`, `findByCode()`)
+  - Use `readonly` for immutable properties
+  - Avoid `any` type; use specific types or generics
+  - Use `unknown` instead of `any` when type is uncertain
+  - Prefer `Record<string, unknown>` over `Record<string, any>`
+  - Prefer `Partial<T>` over `{ [K in keyof T]?: T[K] }`
+  - Prefer `Pick<T, K>` over `{ [K in K]: T[K] }`
+  - Prefer `Omit<T, K>` over `{ [K in keyof T as Exclude<K, K1>]?: T[K] }`
+  - Use `never` instead of `void`
+  - Use `unknown[]` instead of `Array<unknown>`
+- **Functions <= 50 lines.** Split large functions into helpers.
+- **One clear purpose per module/function.**
+- **Descriptive names** (e.g., `getUserInvoices`, not `handleData`).
+- Remove dead/debug code and outdated comments.
+- Refactor duplicated logic into shared utilities unless justified.
+- **HTML/Content**: sanitize user-generated input (e.g., DOMPurify).
+- Avoid dynamic code execution (`eval`, `new Function`).
+- Clear errors; no silent catches.
+- Use **MCPs** to **refactor** and **verify** code.
+- Use modern, idiomatic patterns for the chosen language/framework.
+- **Respect project `tsconfig.json`**. Do not bypass TypeScript rules. Prefer:
+  - `"strict": true`, `"noImplicitAny": true`, `"noUncheckedIndexedAccess": true`, `"noImplicitOverride": true`, `"noFallthroughCasesInSwitch": true`, `"exactOptionalPropertyTypes": true`.
+  - `"moduleResolution": "bundler"` or project standard; align with **esbuild** config.
+  - Use **path aliases** from `compilerOptions.paths`; keep imports absolute/consistent.
+  - **No** `// @ts-ignore` unless absolutely necessary; if used, explain with a short comment and link to an issue.
+  - Prefer **type narrowing**, **discriminated unions**, `satisfies`, `as const`, and **exhaustive switches** (use `never` on default).
+- If code changes affect **user-facing behavior**, update `docs/features` catalog with new features/changes.
+
+### 3. Testing
+**All code changes MUST be followed by these actions. No exceptions:**
+- Check eslint/prettier/tsc errors (`npm run lint` and `npm run typecheck`)
+- Actualize/add unit tests
+- Ensure unit tests are passing and their coverage meets requirements (`npm run test:coverage`)
+- Again check eslint/prettier/tsc errors (`npm run lint` and `npm run typecheck`)
+- Actualize/add e2e tests if related. Ensure they are passing (`npm run test:e2e`)
+- Again check eslint/prettier/tsc errors (`npm run lint` and `npm run typecheck`)
+- If the change affects UI, run FE locally and ensure it's working as expected by checking the UI via browser MCP
+
+**Tests Organization**:
+- Unit tests: `.spec.ts` next to source files
+- E2E tests: `tests/e2e/*.e2e-spec.ts`
+- Coverage: 90%+ overall (lines, functions, branches, statements)
+
+**Testing Stack**: Vitest 3.0+, Vitest mocks, Playwright
+
+**What to Test**:
+- ✅ Business logic, error handling, validation
+- ✅ Component rendering and interactions
+- ✅ Hook behavior and state management
+- ✅ Error scenarios and edge cases
+- ✅ Form validation and submissions
+- ✅ Data transformations and calculations
+- ❌ Third-party library internals
+- ❌ shadcn/ui component internals
+
+**Common Gotchas**:
+- Always import `vi` from `vitest` (not `jest`)
+- Use `vi.fn()` not `jest.fn()`
+- Use `vi.clearAllMocks()` in `beforeEach`/`afterEach`
+- Use `mockResolvedValue`/`mockRejectedValue` for async operations
+- Use `expect.any(Date)`, `expect.any(String)` for dynamic values
+- Test error cases and edge cases
+- NEVER test third-party internals
+- NEVER use Jest syntax (`jest.fn()`, `jest.spyOn()`) - use Vitest (`vi.fn()`, `vi.spyOn()`)
+- NEVER forget to import `vi` from `vitest` in test files
+
+### 4. Markdown File Editing Protocol
+- **CRITICAL**: When applying multiple changes to markdown files, ALWAYS apply changes from **bottom to top** of the file.
+- **Reason**: Prevents line number recalculation and formatter/linter interruptions between edits.
+- **Process**:
+  1. Identify all changes needed in the file
+  2. Sort changes by line number in descending order (highest line first)
+  3. Apply changes sequentially from end of file to beginning
+  4. Use tools like Python/bash scripts when multiple complex changes needed
+- **Example**: If editing lines 200, 50, and 30 → edit line 200 first, then 50, then 30
+
+### 5. Common
+- **Plan first**: requirements → context → activity plan → decision log
+- If the task can exceed a single LLM session (e.g., medium-to-large refactor, complex feature, multiple pages/components), break it into smaller sub-tasks with clear goals and deliverables. Track the progress in temporary markdown file inside this repo (`./docs/tickets` folder). Clean up the temporary file once the task is completed and the new task is started.
+- Compact the context once you have completed each sub-task.
+- Use cursor's memory or memory MCP to keep track of decisions and notes.
+- **Define architecture** of changes before writing code.
+- **Define edge cases** (happy/failure paths).
+- **Refine/refactor the plan** (keep minimal and testable).
+- Do not speculate on code or specifications you don't have.
+- If the prompt is referencing files, **always** read them before answering.
+- **Token efficiency**: Reports are LOWEST priority. Prioritize actual work over reports.
+- **Define types/interfaces first.**
+- Second, **Write unit tests** (Vitest).
+- Third, **Write e2e tests** (Playwright).
+- Fourth, **Implement in logical chunks**:
+  - Use MCPs for diffs, testing, and debugging.
+  - After each chunk, run all tests (unit → e2e).
+  - Retry fixes <=5 times; refactor <=2 iterations if still failing.
+- Fifth, **Update features catalog** accordingly.
+
+## Common Commands
+
+```bash
+# Development
+npm run dev                # Start dev server
+npm run storybook          # Start Storybook
+
+# shadcn/ui
+npx shadcn@latest add <component>  # Add a shadcn component
+npx shadcn@latest diff             # Check for component updates
+
+# Code Quality
+npm run lint               # ESLint
+npm run lint:fix           # Auto-fix lint issues
+npm run format             # Format code
+npm run typecheck          # Type check
+
+# Testing
+npm run test               # Run all unit tests (Vitest)
+npm run test:coverage      # Run unit tests with coverage (Vitest)
+npm run test:e2e           # Run e2e tests (Playwright)
+
+# Build
+npm run build              # Production build
+
+# Final validation
+npm run validate           # Run lint, typecheck, unit tests with coverage, and e2e tests
+```

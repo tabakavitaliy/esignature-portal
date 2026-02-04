@@ -1,0 +1,42 @@
+# Cursor Rules
+
+## Ticket Catalogue Protocol (MANDATORY)
+
+For ALL tasks (features, bugs, refactors):
+
+1. **CHECK FIRST**: Read `./docs/tickets/tickets-index.json` for existing/related tickets
+2. **FOUND?** → Update existing ticket → Resume work
+3. **NOT FOUND?** → Create new ticket entry → Create detailed file in `docs/tickets/`
+4. **DURING WORK**: Update progress, log issues, document plan changes
+5. **ON COMPLETION**: Update status to "completed", update statistics
+
+---
+
+## 🔴 Feature Catalogue Protocol (MANDATORY)
+
+**Before modifying ANY code (UI, scripts):**
+1. Read `docs/features/` to understand catalogue structure
+2. Identify affected features in `docs/features/features-index.json`
+3. Read existing feature docs for affected features
+
+**After modifying ANY code:**
+1. Update feature docs in `docs/features/`
+2. Update `features-index.json` if new features added
+3. Update related feature cross-references
+
+**Non-compliance will cause code review rejection.**
+
+---
+
+## Architecture Clarifications (MANDATORY)
+
+- **Frontend UI**: shadcn/ui is the primary UI system; **no competing UI frameworks**. Small MIT/Apache-2 shadcn-compatible component libs are allowed only when shadcn/ui lacks the capability and the exception is documented in `docs/features/**`.
+- **Styling**: Tailwind CSS with `cn()` utility for conditional classes.
+- **Data fetching**: TanStack Query ONLY (no `useEffect` fetching).
+- **Static export**: Next.js `output: 'export'` (SSG+CSR only), NO SSR, NO API routes.
+
+---
+
+- Follow `PLAYBOOK.md` for detailed workflow and quality rules.
+- Requirements: chunk large inputs and verify EOF.
+- Pause points: after plan, after implementation, before final deliverable.

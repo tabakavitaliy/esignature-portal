@@ -1,0 +1,15 @@
+---
+alwaysApply: true
+---
+## Architecture Clarifications (MANDATORY)
+
+- **Frontend UI**: shadcn/ui is the primary UI system; **no competing UI frameworks**. Small MIT/Apache-2 shadcn-compatible component libs are allowed only when shadcn/ui lacks the capability and the exception is documented in `docs/features/**`.
+- **Styling**: Tailwind CSS with `cn()` utility for conditional classes.
+- **Data fetching**: TanStack Query ONLY (no `useEffect` fetching).
+- **Static export**: Next.js `output: 'export'` (SSG+CSR only), NO SSR, NO API routes.
+
+---
+
+- Follow `PLAYBOOK.md` for detailed workflow and quality rules.
+- Requirements: chunk large inputs and verify EOF.
+- Pause points: after plan, after implementation, before final deliverable.

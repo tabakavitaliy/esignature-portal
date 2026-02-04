@@ -29,6 +29,9 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+    --login-gradient-start: #3A238C;
+    --login-gradient-end: #28005A;
+    --login-card-bg: rgba(0, 0, 0, 0.25);
   }
 
   .dark {

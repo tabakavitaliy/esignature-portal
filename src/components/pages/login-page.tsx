@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { ContentWrapper } from '@/components/layout/content-wrapper';
 import { MainLogo } from '@/components/common/main-logo';
 import { Input } from '@/components/common/input';
+import { Recaptcha } from '@/components/common/recaptcha';
 import translations from '@/i18n/en.json';
 
 /**
@@ -54,6 +55,8 @@ export function LoginPage(): ReactNode {
             />
           </div>
         </div>
+
+        <Recaptcha />
       </ContentWrapper>
     </main>
   );

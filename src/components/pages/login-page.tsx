@@ -5,8 +5,10 @@ import { cn } from '@/lib/utils';
 import { ContentWrapper } from '@/components/layout/content-wrapper';
 import { MainLogo } from '@/components/common/main-logo';
 import { Input } from '@/components/common/input';
+import { Button } from '@/components/common/button';
 import { Recaptcha } from '@/components/common/recaptcha';
 import translations from '@/i18n/en.json';
+import { ArrowRight } from 'lucide-react';
 
 /**
  * LoginPage component displays the eSignature credential entry page
@@ -57,6 +59,11 @@ export function LoginPage(): ReactNode {
         </div>
 
         <Recaptcha />
+
+        <Button
+          text={t.nextButton}
+          iconAfter={<ArrowRight className="h-5 w-5" />}
+        />
       </ContentWrapper>
     </main>
   );

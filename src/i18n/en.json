@@ -5,7 +5,8 @@
     "welcomeMessage": "Welcome to the Signature Portal. Please enter the 16-digit eSignature credential to view and sign (or decline) the service provider's agreement.",
     "credentialHint": "You can find the eSignature credential in the communications sent to you (e.g. email, letter, text message or drop card).",
     "credentialLabel": "eSignature credential",
-    "credentialPlaceholder": "0000-0000-0000-0000"
+    "credentialPlaceholder": "0000-0000-0000-0000",
+    "nextButton": "Next"
   },
   "recaptcha": {
     "protectedBy": "protected by reCAPTCHA",

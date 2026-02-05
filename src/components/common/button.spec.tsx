@@ -34,7 +34,6 @@ describe('Button', () => {
     expect(icon).toBeInTheDocument();
     
     const button = screen.getByRole('button');
-    const buttonText = screen.getByText('Back');
     
     // Check that icon appears before text in DOM order
     expect(button.firstChild).toContainElement(icon);
@@ -51,7 +50,6 @@ describe('Button', () => {
     expect(icon).toBeInTheDocument();
     
     const button = screen.getByRole('button');
-    const buttonText = screen.getByText('Next');
     
     // Check that icon appears after text in DOM order
     expect(button.lastChild).toContainElement(icon);

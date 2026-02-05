@@ -24,7 +24,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
  */
 export function Button({
   text,
-  kind = 'primary',
+  kind: _kind = 'primary',
   iconBefore,
   iconAfter,
   className,

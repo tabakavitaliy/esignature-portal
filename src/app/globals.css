@@ -33,6 +33,14 @@
     --login-gradient-end: #28005A;
     --login-card-bg: rgba(0, 0, 0, 0.25);
     --recaptcha-badge-bg: #1C1335;
+    --stepper-complete: 142 71% 45%;
+    --stepper-complete-foreground: 0 0% 100%;
+    --stepper-current: 0 0% 100%;
+    --stepper-upcoming: 245 55% 15%;
+    --stepper-upcoming-border: 0 0% 100%;
+    --stepper-line: 0 0% 100%;
+    --header-bg: 250 58% 37%;
+    --select-item-selected: 250 30% 93%;
   }
 
   .dark {

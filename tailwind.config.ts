@@ -50,6 +50,14 @@ const config: Config = {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
+        stepper: {
+          complete: 'hsl(var(--stepper-complete))',
+          'complete-foreground': 'hsl(var(--stepper-complete-foreground))',
+          current: 'hsl(var(--stepper-current))',
+          upcoming: 'hsl(var(--stepper-upcoming))',
+          'upcoming-border': 'hsl(var(--stepper-upcoming-border))',
+          line: 'hsl(var(--stepper-line))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

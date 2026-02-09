@@ -6,7 +6,7 @@ import { Button as BaseButton } from '@/components/ui/button';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
-  kind?: 'primary';
+  kind?: 'primary' | 'secondary';
   iconBefore?: ReactNode;
   iconAfter?: ReactNode;
   className?: string;
@@ -24,7 +24,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
  */
 export function Button({
   text,
-  kind: _kind = 'primary',
+  kind = 'primary',
   iconBefore,
   iconAfter,
   className,
@@ -38,9 +38,20 @@ export function Button({
     'disabled:opacity-50 disabled:cursor-not-allowed'
   );
 
+  const secondaryStyles = cn(
+    'w-full rounded-xl bg-transparent text-white text-lg font-semibold',
+    'h-auto px-8 py-4',
+    'border-2 border-white',
+    'hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#3A238C]',
+    'transition-all duration-200',
+    'disabled:opacity-50 disabled:cursor-not-allowed'
+  );
+
+  const styles = kind === 'secondary' ? secondaryStyles : primaryStyles;
+
   return (
     <BaseButton
-      className={cn(primaryStyles, className)}
+      className={cn(styles, className)}
       {...props}
     >
       {iconBefore && <span className="flex-shrink-0">{iconBefore}</span>}

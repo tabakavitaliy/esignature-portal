@@ -1,10 +1,23 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { useRouter } from 'next/navigation';
 import HomePage from './page';
 import translations from '@/i18n/en.json';
 
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(),
+}));
+
 describe('HomePage', () => {
   const { loginPage: t } = translations;
+  const mockPush = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
+      push: mockPush,
+    });
+  });
 
   it('renders the LoginPage component', () => {
     render(<HomePage />);

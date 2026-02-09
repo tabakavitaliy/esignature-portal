@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ContentWrapper } from '@/components/layout/content-wrapper';
 import { MainLogo } from '@/components/common/main-logo';
@@ -16,6 +17,11 @@ import { ArrowRight } from 'lucide-react';
  */
 export function LoginPage(): ReactNode {
   const { loginPage: t } = translations;
+  const router = useRouter();
+
+  const handleNextClick = (): void => {
+    router.push('/confirm-name');
+  };
 
   return (
     <main
@@ -63,6 +69,7 @@ export function LoginPage(): ReactNode {
         <Button
           text={t.nextButton}
           iconAfter={<ArrowRight className="h-5 w-5" />}
+          onClick={handleNextClick}
         />
       </ContentWrapper>
     </main>

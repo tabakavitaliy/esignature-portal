@@ -8,6 +8,13 @@
     "credentialPlaceholder": "0000-0000-0000-0000",
     "nextButton": "Next"
   },
+  "confirmNamePage": {
+    "headerText": "Confirm your details",
+    "selectLabel": "Select your name",
+    "selectPlaceholder": "Select",
+    "nextButton": "Next",
+    "backButtonLabel": "Go back"
+  },
   "recaptcha": {
     "protectedBy": "protected by reCAPTCHA",
     "privacy": "Privacy",

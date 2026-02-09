@@ -1,10 +1,24 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { useRouter } from 'next/navigation';
 import { LoginPage } from './login-page';
 import translations from '@/i18n/en.json';
 
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(),
+}));
+
 describe('LoginPage', () => {
   const { loginPage: t } = translations;
+  const mockPush = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
+      push: mockPush,
+    });
+  });
 
   it('renders without crashing', () => {
     render(<LoginPage />);
@@ -77,5 +91,21 @@ describe('LoginPage', () => {
     render(<LoginPage />);
     const heading = screen.getByRole('heading', { name: t.signaturePortal });
     expect(heading).toHaveClass('text-white');
+  });
+
+  it('navigates to /confirm-name when Next button is clicked', async () => {
+    const user = userEvent.setup();
+    render(<LoginPage />);
+    
+    const nextButton = screen.getByRole('button', { name: t.nextButton });
+    await user.click(nextButton);
+    
+    expect(mockPush).toHaveBeenCalledWith('/confirm-name');
+  });
+
+  it('Next button is clickable', () => {
+    render(<LoginPage />);
+    const nextButton = screen.getByRole('button', { name: t.nextButton });
+    expect(nextButton).toBeEnabled();
   });
 });

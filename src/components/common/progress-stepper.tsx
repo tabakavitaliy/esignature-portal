@@ -33,7 +33,7 @@ export function ProgressStepper({
   return (
     <nav
       aria-label="Progress"
-      className={cn('w-full', className)}
+      className={cn('w-full max-w-[240px]', className)}
     >
       <ol className="flex items-center justify-between">
         {steps.map((step, index) => {
@@ -46,16 +46,16 @@ export function ProgressStepper({
               className="flex items-center flex-1 last:flex-none"
               aria-current={status === 'current' ? 'step' : undefined}
             >
-              <div className="flex items-center">
+              <div className="flex w-full items-center">
                 {/* Step Circle */}
                 <div
                   className={cn(
-                    'relative flex items-center justify-center rounded-full transition-all duration-200',
-                    'w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16',
+                    'relative flex shrink-0 items-center justify-center rounded-full transition-all duration-200',
+                    'h-4 w-4',
                     {
                       'bg-stepper-complete': status === 'completed',
                       'bg-stepper-current': status === 'current',
-                      'bg-stepper-upcoming border-2 border-stepper-upcoming-border': status === 'upcoming',
+                      'bg-stepper-upcoming border border-stepper-upcoming-border': status === 'upcoming',
                     }
                   )}
                   role="img"
@@ -69,7 +69,7 @@ export function ProgressStepper({
                 >
                   {status === 'completed' && (
                     <Check
-                      className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-stepper-complete-foreground"
+                      className="h-2.5 w-2.5 text-stepper-complete-foreground"
                       aria-hidden="true"
                     />
                   )}
@@ -78,7 +78,7 @@ export function ProgressStepper({
                 {/* Connector Line */}
                 {!isLast && (
                   <div
-                    className="h-0.5 bg-stepper-line flex-1 mx-2 sm:mx-3 md:mx-4"
+                    className="h-0.5 flex-1 bg-stepper-line opacity-25"
                     aria-hidden="true"
                   />
                 )}

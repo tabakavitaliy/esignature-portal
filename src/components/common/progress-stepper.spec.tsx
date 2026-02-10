@@ -39,7 +39,7 @@ describe('ProgressStepper', () => {
     const upcomingStep3 = screen.getByLabelText('Step 3 upcoming');
     expect(upcomingStep3).toBeInTheDocument();
     expect(upcomingStep3).toHaveClass('bg-stepper-upcoming');
-    expect(upcomingStep3).toHaveClass('border-2');
+    expect(upcomingStep3).toHaveClass('border');
     expect(upcomingStep3).toHaveClass('border-stepper-upcoming-border');
     
     const upcomingStep4 = screen.getByLabelText('Step 4 upcoming');
@@ -155,5 +155,22 @@ describe('ProgressStepper', () => {
     // Upcoming step should not have a checkmark
     const checkmarks = upcomingStep.querySelectorAll('svg');
     expect(checkmarks).toHaveLength(0);
+  });
+
+  it('step circles are 16px (w-4 h-4)', () => {
+    render(<ProgressStepper stepCount={4} currentStep={2} />);
+    const steps = screen.getAllByRole('img');
+    for (const step of steps) {
+      expect(step).toHaveClass('h-4', 'w-4');
+    }
+  });
+
+  it('renders connector lines between steps', () => {
+    const { container } = render(<ProgressStepper stepCount={4} currentStep={1} />);
+    const lines = container.querySelectorAll('.bg-stepper-line');
+    expect(lines).toHaveLength(3);
+    for (const line of lines) {
+      expect(line).toHaveClass('flex-1');
+    }
   });
 });

@@ -38,16 +38,16 @@ export function ConfirmName(): ReactNode {
 
       <main
         className={cn(
-          'flex flex-1 items-center justify-center px-6 py-12',
+          'flex flex-1 flex-col px-6 py-12',
           'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
         )}
       >
-        <ContentWrapper className="flex flex-col gap-8">
-          <ProgressStepper stepCount={4} currentStep={1} />
+        <ContentWrapper className="flex flex-1 flex-col gap-8">
+          <ProgressStepper stepCount={4} currentStep={1} className="self-center" />
 
           <div
             className={cn(
-              'rounded-2xl px-8 py-10',
+              'flex-1 rounded-2xl px-8 py-10',
               'bg-[var(--login-card-bg)] backdrop-blur-sm'
             )}
           >

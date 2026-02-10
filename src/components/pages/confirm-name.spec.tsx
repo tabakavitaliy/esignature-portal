@@ -200,4 +200,18 @@ describe('ConfirmName', () => {
     expect(wrapper).toBeInTheDocument();
     expect(wrapper).toHaveClass('mx-auto');
   });
+
+  it('main content area uses column layout without vertical centering', () => {
+    render(<ConfirmName />);
+    const main = screen.getByRole('main');
+    expect(main).toHaveClass('flex-col');
+    expect(main).not.toHaveClass('items-center');
+    expect(main).not.toHaveClass('justify-center');
+  });
+
+  it('card expands to fill available vertical space', () => {
+    const { container } = render(<ConfirmName />);
+    const card = container.querySelector('.rounded-2xl');
+    expect(card).toHaveClass('flex-1');
+  });
 });

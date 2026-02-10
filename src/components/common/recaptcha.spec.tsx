@@ -11,8 +11,8 @@ describe('Recaptcha', () => {
 
   it('displays reCAPTCHA text', () => {
     render(<Recaptcha />);
-    const text = screen.getByText('reCAPTCHA');
-    expect(text).toBeInTheDocument();
+    const logo = screen.getByRole('img', { name: /recaptcha logo/i });
+    expect(logo).toHaveAttribute('alt', 'reCAPTCHA');
   });
 
   it('displays "protected by reCAPTCHA" text', () => {
@@ -68,10 +68,10 @@ describe('Recaptcha', () => {
     expect(logo).toHaveAttribute('aria-label', 'reCAPTCHA logo');
   });
 
-  it('renders SVG logo element', () => {
+  it('renders image logo element', () => {
     render(<Recaptcha />);
     const logo = screen.getByRole('img', { name: /recaptcha logo/i });
-    expect(logo.tagName).toBe('svg');
+    expect(logo.tagName).toBe('IMG');
   });
 
   it('has dark purple background styling', () => {

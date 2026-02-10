@@ -29,25 +29,21 @@ export function Recaptcha({ className }: RecaptchaProps): ReactNode {
       <Image
         src="/recaptcha.png"
         alt="reCAPTCHA"
-        width={24}
-        height={24}
-        className="h-6 w-auto"
+        width={48}
+        height={48}
         role="img"
         aria-label="reCAPTCHA logo"
       />
 
-      {/* Divider */}
-      <div className="h-6 w-px bg-white/20" />
-
       {/* Protected by text and links */}
       <div className="flex flex-col gap-0.5">
-        <span className="text-xs text-white/90">{t.protectedBy}</span>
+        <span className="text-xs text-white">{t.protectedBy}</span>
         <div className="flex items-center gap-1 text-xs">
           <a
             href="https://policies.google.com/privacy"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white/90 underline hover:text-white"
+            className="text-white hover:text-white/90"
           >
             {t.privacy}
           </a>
@@ -56,7 +52,7 @@ export function Recaptcha({ className }: RecaptchaProps): ReactNode {
             href="https://policies.google.com/terms"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white/90 underline hover:text-white"
+            className="text-white hover:text-white/90"
           >
             {t.terms}
           </a>

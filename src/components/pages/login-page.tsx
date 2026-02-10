@@ -26,17 +26,17 @@ export function LoginPage(): ReactNode {
   return (
     <main
       className={cn(
-        'flex min-h-screen items-center justify-center px-6 py-12',
+        'flex min-h-screen flex-col justify-between px-6 py-12',
         'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
       )}
     >
       <ContentWrapper className="flex flex-col gap-8">
         <header className="flex flex-col items-center gap-4 text-center">
           <MainLogo size="regular" />
-          <h1 className="text-4xl font-semibold text-white">
+          <h1 className="text-base font-semibold text-white">
             {t.signaturePortal}
           </h1>
-          <p className="text-xl text-white/90">{t.poweredBy}</p>
+          <p className="text-xs text-white/90">{t.poweredBy}</p>
         </header>
 
         <div
@@ -46,15 +46,15 @@ export function LoginPage(): ReactNode {
           )}
         >
           <div className="flex flex-col gap-6">
-            <p className="text-lg leading-relaxed text-white">
+            <p className="text-sm leading-relaxed text-white">
               {t.welcomeMessage}
             </p>
 
-            <p className="text-base leading-relaxed text-white/90">
+            <p className="text-sm leading-relaxed text-white/90">
               {t.credentialHint}
             </p>
 
-            <hr className="mx-auto h-px w-16 border-0 bg-white/30" />
+            <hr className="mx-auto h-px w-[24px] border-0 bg-white/30" />
 
             <Input
               label={t.credentialLabel}
@@ -65,7 +65,9 @@ export function LoginPage(): ReactNode {
         </div>
 
         <Recaptcha />
+      </ContentWrapper>
 
+      <ContentWrapper>
         <Button
           text={t.nextButton}
           iconAfter={<ArrowRight className="h-5 w-5" />}

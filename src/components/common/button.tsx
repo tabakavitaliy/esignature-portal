@@ -31,16 +31,16 @@ export function Button({
   ...props
 }: ButtonProps): ReactNode {
   const primaryStyles = cn(
-    'w-full rounded-xl bg-white text-[#3A238C] text-lg font-semibold',
-    'h-auto px-8 py-4',
+    'w-full rounded-xl bg-white text-[#3A238C] text-sm font-semibold',
+    'h-[38px] px-8 pt-[2px] pb-[2px]',
     'hover:bg-white/90 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#3A238C]',
     'transition-all duration-200',
     'disabled:opacity-50 disabled:cursor-not-allowed'
   );
 
   const secondaryStyles = cn(
-    'w-full rounded-xl bg-transparent text-white text-lg font-semibold',
-    'h-auto px-8 py-4',
+    'w-full rounded-xl bg-transparent text-white text-sm font-semibold',
+    'h-[38px] px-8 pt-[2px] pb-[2px]',
     'border-2 border-white',
     'hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#3A238C]',
     'transition-all duration-200',

@@ -38,7 +38,7 @@ export function Input({
 
   return (
     <div className={cn('flex flex-col gap-2', className)}>
-      <Label htmlFor={inputId} className="text-white">
+      <Label htmlFor={inputId} className="text-white text-xs">
         {label}
       </Label>
       <BaseInput
@@ -46,7 +46,7 @@ export function Input({
         type={type}
         placeholder={placeholder}
         className={cn(
-          'bg-white text-gray-900 placeholder:text-gray-400',
+          'bg-white text-gray-900 placeholder:text-gray-400 text-sm placeholder:text-sm',
           inputClassName
         )}
       />

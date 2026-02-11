@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import translations from '@/i18n/en.json';
+import recaptchaImg from '@/../public/recaptcha.png';
 
 interface RecaptchaProps {
   className?: string;
@@ -27,7 +28,7 @@ export function Recaptcha({ className }: RecaptchaProps): ReactNode {
     >
       {/* reCAPTCHA icon and text */}
       <Image
-        src="/recaptcha.png"
+        src={recaptchaImg}
         alt="reCAPTCHA"
         width={48}
         height={48}

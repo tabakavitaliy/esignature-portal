@@ -353,7 +353,7 @@ describe('LoginPage', () => {
 
     it('error label appears below the Next button', async () => {
       const user = userEvent.setup();
-      const { container } = render(<LoginPage />);
+      render(<LoginPage />);
       const nextButton = screen.getByRole('button', { name: t.nextButton });
 
       await user.click(nextButton);

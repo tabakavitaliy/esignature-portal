@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import translations from '@/i18n/en.json';
-import recaptchaImg from '@/../public/recaptcha.png';
+import recaptchaImg from '../../../public/recaptcha.png';
 
 interface RecaptchaProps {
   className?: string;

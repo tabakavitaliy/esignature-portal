@@ -6,7 +6,8 @@
     "credentialHint": "You can find the eSignature credential in the communications sent to you (e.g. email, letter, text message or drop card).",
     "credentialLabel": "eSignature credential",
     "credentialPlaceholder": "0000-0000-0000-0000",
-    "nextButton": "Next"
+    "nextButton": "Next",
+    "errorMessage": "You need to enter eSignature credential to proceed"
   },
   "confirmNamePage": {
     "headerText": "Confirm your details",

@@ -41,6 +41,7 @@
     --stepper-line: 0 0% 100%;
     --header-bg: 250 58% 37%;
     --select-item-selected: 250 30% 93%;
+    --button-error: 4 85% 76%;
   }
 
   .dark {

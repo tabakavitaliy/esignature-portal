@@ -294,6 +294,76 @@ describe('LoginPage', () => {
     });
   });
 
+  describe('error label display', () => {
+    it('does not show error label initially', () => {
+      render(<LoginPage />);
+      const errorLabel = screen.queryByText(t.errorMessage);
+      expect(errorLabel).not.toBeInTheDocument();
+    });
+
+    it('shows error label when invalid credential is submitted', async () => {
+      const user = userEvent.setup();
+      render(<LoginPage />);
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+
+      await user.click(nextButton);
+
+      const errorLabel = screen.getByText(t.errorMessage);
+      expect(errorLabel).toBeInTheDocument();
+    });
+
+    it('shows error label when partial credential is submitted', async () => {
+      const user = userEvent.setup();
+      render(<LoginPage />);
+      const input = screen.getByLabelText(t.credentialLabel) as HTMLInputElement;
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+
+      await user.type(input, 'ABCD-1234');
+      await user.click(nextButton);
+
+      const errorLabel = screen.getByText(t.errorMessage);
+      expect(errorLabel).toBeInTheDocument();
+    });
+
+    it('does not show error label when valid credential is submitted', async () => {
+      const user = userEvent.setup();
+      render(<LoginPage />);
+      const input = screen.getByLabelText(t.credentialLabel) as HTMLInputElement;
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+
+      await user.type(input, 'ABCD1234EFGH5678');
+      await user.click(nextButton);
+
+      const errorLabel = screen.queryByText(t.errorMessage);
+      expect(errorLabel).not.toBeInTheDocument();
+    });
+
+    it('error label has correct accessibility attributes', async () => {
+      const user = userEvent.setup();
+      render(<LoginPage />);
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+
+      await user.click(nextButton);
+
+      const errorLabel = screen.getByRole('alert');
+      expect(errorLabel).toBeInTheDocument();
+      expect(errorLabel).toHaveAttribute('aria-live', 'polite');
+      expect(errorLabel).toHaveTextContent(t.errorMessage);
+    });
+
+    it('error label appears below the Next button', async () => {
+      const user = userEvent.setup();
+      const { container } = render(<LoginPage />);
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+
+      await user.click(nextButton);
+
+      const errorLabel = screen.getByText(t.errorMessage);
+      const buttonParent = nextButton.parentElement;
+      expect(buttonParent).toContainElement(errorLabel);
+    });
+  });
+
   describe('credential input mask', () => {
     it('formats input with dashes in groups of 4', async () => {
       const user = userEvent.setup();

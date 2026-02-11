@@ -8,6 +8,7 @@ import { ContentWrapper } from '@/components/layout/content-wrapper';
 import { MainLogo } from '@/components/common/main-logo';
 import { Input } from '@/components/common/input';
 import { Button } from '@/components/common/button';
+import { ButtonErrorLabel } from '@/components/common/button-error-label';
 import { Recaptcha } from '@/components/common/recaptcha';
 import translations from '@/i18n/en.json';
 import { ArrowRight } from 'lucide-react';
@@ -20,7 +21,7 @@ export function LoginPage(): ReactNode {
   const { loginPage: t } = translations;
   const router = useRouter();
   const [credential, setCredential] = useState('');
-  const [, setIsInvalid] = useState(false);
+  const [isInvalid, setIsInvalid] = useState(false);
 
   const handleNextClick = (): void => {
     const pattern = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
@@ -79,6 +80,7 @@ export function LoginPage(): ReactNode {
       </ContentWrapper>
 
       <ContentWrapper>
+        {isInvalid && <ButtonErrorLabel message={t.errorMessage} className='mb-4'/>}
         <Button
           text={t.nextButton}
           iconAfter={<ArrowRight className="h-5 w-5" />}

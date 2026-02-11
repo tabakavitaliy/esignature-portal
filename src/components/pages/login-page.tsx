@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ContentWrapper } from '@/components/layout/content-wrapper';
@@ -18,9 +19,16 @@ import { ArrowRight } from 'lucide-react';
 export function LoginPage(): ReactNode {
   const { loginPage: t } = translations;
   const router = useRouter();
+  const [credential, setCredential] = useState('');
+  const [isInvalid, setIsInvalid] = useState(false);
 
   const handleNextClick = (): void => {
-    router.push('/confirm-name');
+    const pattern = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
+    const isValid = pattern?.test(credential);
+    setIsInvalid(!isValid);
+    if (isValid) {
+      router.push('/confirm-name');
+    }
   };
 
   return (
@@ -60,6 +68,9 @@ export function LoginPage(): ReactNode {
               label={t.credentialLabel}
               placeholder={t.credentialPlaceholder}
               type="text"
+              mask="****-****-****-****"
+              value={credential}
+              onChange={setCredential}
             />
           </div>
         </div>

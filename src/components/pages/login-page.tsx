@@ -20,7 +20,7 @@ export function LoginPage(): ReactNode {
   const { loginPage: t } = translations;
   const router = useRouter();
   const [credential, setCredential] = useState('');
-  const [isInvalid, setIsInvalid] = useState(false);
+  const [, setIsInvalid] = useState(false);
 
   const handleNextClick = (): void => {
     const pattern = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;

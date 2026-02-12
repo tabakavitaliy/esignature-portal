@@ -1,21 +1,41 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ContentWrapper } from '@/components/layout/content-wrapper';
 import { Header } from '@/components/common/header';
 import { ProgressStepper } from '@/components/common/progress-stepper';
-import { Select } from '@/components/common/select';
+import { Select, type SelectOption } from '@/components/common/select';
 import { Button } from '@/components/common/button';
 import translations from '@/i18n/en.json';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useMatterDetails } from '@/hooks/queries/use-matter-details';
 
 /**
  * ConfirmName component displays the name selection page
  * @returns ReactNode
  */
 export function ConfirmName(): ReactNode {
+  const [selectedOption, setSelectedOption] = useState<string>('');
   const { confirmNamePage: t } = translations;
+  const router = useRouter();
+  const { data, isLoading, error } = useMatterDetails();
+
+  // eslint-disable-next-line no-console
+  console.log('Matter Details - data:', data);
+  // eslint-disable-next-line no-console
+  console.log('Matter Details - isLoading:', isLoading);
+  // eslint-disable-next-line no-console
+  console.log('Matter Details - error:', error);
+
+  const options = useMemo(() => {
+    return data?.signatories?.map((signatory) => ({
+      value: signatory.signatoryId,
+      label: `${signatory.firstname} ${signatory.surname}`,
+    })) ?? [];
+  }, [data]);
 
   const handleSelectChange = (value: string): void => {
     // eslint-disable-next-line no-console
@@ -23,8 +43,7 @@ export function ConfirmName(): ReactNode {
   };
 
   const handleBackClick = (): void => {
-    // eslint-disable-next-line no-console
-    console.log('Back button clicked');
+    router.push('/');
   };
 
   const handleNextClick = (): void => {
@@ -54,8 +73,9 @@ export function ConfirmName(): ReactNode {
             <Select
               label={t.selectLabel}
               placeholder={t.selectPlaceholder}
-              options={[]}
-              onChange={handleSelectChange}
+              options={options}
+              value={selectedOption}
+              onChange={setSelectedOption}
             />
           </div>
 

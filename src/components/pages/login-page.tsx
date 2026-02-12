@@ -12,6 +12,7 @@ import { ButtonErrorLabel } from '@/components/common/button-error-label';
 import { Recaptcha } from '@/components/common/recaptcha';
 import translations from '@/i18n/en.json';
 import { ArrowRight } from 'lucide-react';
+import { useToken } from '@/hooks/queries/use-token';
 
 /**
  * LoginPage component displays the eSignature credential entry page
@@ -20,6 +21,7 @@ import { ArrowRight } from 'lucide-react';
 export function LoginPage(): ReactNode {
   const { loginPage: t } = translations;
   const router = useRouter();
+  const { setToken } = useToken();
   const [credential, setCredential] = useState('');
   const [isInvalid, setIsInvalid] = useState(false);
 
@@ -28,6 +30,7 @@ export function LoginPage(): ReactNode {
     const isValid = pattern?.test(credential);
     setIsInvalid(!isValid);
     if (isValid) {
+      setToken(credential);
       router.push('/confirm-name');
     }
   };

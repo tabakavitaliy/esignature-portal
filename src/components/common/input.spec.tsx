@@ -180,6 +180,81 @@ describe('Input', () => {
       expect(onChange).toHaveBeenCalledWith('A1B');
     });
 
+    it('handles alphanumeric mask with non-matching characters', () => {
+      const onChange = vi.fn();
+      render(<Input label="Code" mask="***" value="" onChange={onChange} />);
+      const input = screen.getByLabelText('Code') as HTMLInputElement;
+
+      // Test the else branch in alphanumeric mask (lines 72-73)
+      fireEvent.change(input, { target: { value: '@#$' } });
+      expect(onChange).toHaveBeenCalledWith('');
+    });
+
+    it('handles literal mask character matching value character', () => {
+      const onChange = vi.fn();
+      render(<Input label="Code" mask="A-B" value="" onChange={onChange} />);
+      const input = screen.getByLabelText('Code') as HTMLInputElement;
+
+      // Test line 79: when valueChar matches maskChar
+      fireEvent.change(input, { target: { value: 'A' } });
+      expect(onChange).toHaveBeenCalledWith('A');
+    });
+
+    it('handles empty mask string by passing through value', () => {
+      const onChange = vi.fn();
+      render(<Input label="Code" mask="" value="" onChange={onChange} />);
+      const input = screen.getByLabelText('Code') as HTMLInputElement;
+
+      // When mask is empty, the loop breaks immediately (line 35: when maskChar is falsy)
+      // So the value passes through without masking
+      fireEvent.change(input, { target: { value: 'ABC' } });
+      expect(onChange).toHaveBeenCalledWith('ABC');
+    });
+
+    it('handles value shorter than mask', () => {
+      const onChange = vi.fn();
+      render(<Input label="Code" mask="999-999" value="" onChange={onChange} />);
+      const input = screen.getByLabelText('Code') as HTMLInputElement;
+
+      // Test line 45: when valueChar is falsy (value runs out)
+      fireEvent.change(input, { target: { value: '12' } });
+      expect(onChange).toHaveBeenCalledWith('12');
+    });
+
+    it('handles mask with undefined maskChar (line 35)', () => {
+      const onChange = vi.fn();
+      // Create a scenario where maskChar could be undefined
+      // This tests the break condition on line 35
+      render(<Input label="Code" mask="9" value="" onChange={onChange} />);
+      const input = screen.getByLabelText('Code') as HTMLInputElement;
+
+      // When mask length is reached, loop should break
+      fireEvent.change(input, { target: { value: '123' } });
+      expect(onChange).toHaveBeenCalledWith('1');
+    });
+
+    it('handles alphanumeric mask with completely non-matching input', () => {
+      const onChange = vi.fn();
+      render(<Input label="Code" mask="***" value="" onChange={onChange} />);
+      const input = screen.getByLabelText('Code') as HTMLInputElement;
+
+      // Test lines 72-73: alphanumeric mask when character doesn't match
+      // All characters are non-alphanumeric, so valueIndex increments but nothing is added
+      fireEvent.change(input, { target: { value: '@#$%' } });
+      expect(onChange).toHaveBeenCalledWith('');
+    });
+
+    it('handles value running out during mask processing (line 45)', () => {
+      const onChange = vi.fn();
+      render(<Input label="Code" mask="999-999-999" value="" onChange={onChange} />);
+      const input = screen.getByLabelText('Code') as HTMLInputElement;
+
+      // Test line 45: when valueIndex >= value.length, valueChar is undefined
+      // Input only 2 digits but mask expects more
+      fireEvent.change(input, { target: { value: '12' } });
+      expect(onChange).toHaveBeenCalledWith('12');
+    });
+
     it('formats date mask', () => {
       const onChange = vi.fn();
       render(<Input label="Date" mask="99/99/9999" value="" onChange={onChange} />);

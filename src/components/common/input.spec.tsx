@@ -289,6 +289,80 @@ describe('Input', () => {
 
       expect(input.value).toBe('');
     });
+
+    describe('restricted characters', () => {
+      it('strips lowercase restricted characters (l, o, i) from masked input', () => {
+        const onChange = vi.fn();
+        render(<Input label="Code" mask="***-***" value="" onChange={onChange} />);
+        const input = screen.getByLabelText('Code') as HTMLInputElement;
+
+        fireEvent.change(input, { target: { value: 'alobicdef' } });
+        // 'l', 'o', 'i' should be stripped, leaving 'ABCDEF'
+        expect(onChange).toHaveBeenCalledWith('ABC-DEF');
+      });
+
+      it('strips uppercase restricted characters (L, O, I) from masked input', () => {
+        const onChange = vi.fn();
+        render(<Input label="Code" mask="***-***" value="" onChange={onChange} />);
+        const input = screen.getByLabelText('Code') as HTMLInputElement;
+
+        fireEvent.change(input, { target: { value: 'ALOBICDEF' } });
+        // 'L', 'O', 'I' should be stripped, leaving 'ABCDEF'
+        expect(onChange).toHaveBeenCalledWith('ABC-DEF');
+      });
+
+      it('keeps valid characters when mixed with restricted ones', () => {
+        const onChange = vi.fn();
+        render(<Input label="VIN" mask="*********" value="" onChange={onChange} />);
+        const input = screen.getByLabelText('VIN') as HTMLInputElement;
+
+        fireEvent.change(input, { target: { value: '1A2bLoI3c4O5' } });
+        // Should strip 'L', 'o', 'I', 'O' and keep '1A2b3c45' -> '1A2B3C45'
+        expect(onChange).toHaveBeenCalledWith('1A2B3C45');
+      });
+
+      it('strips restricted characters from programmatically set value (useEffect path)', () => {
+        const onChange = vi.fn();
+        const { rerender } = render(<Input label="Code" mask="***-***" value="" onChange={onChange} />);
+        
+        onChange.mockClear();
+        // Programmatically set value with restricted chars
+        rerender(<Input label="Code" mask="***-***" value="ALOBICDEF" onChange={onChange} />);
+        
+        // Should strip 'L', 'O', 'I' leaving 'ABCDEF' -> 'ABC-DEF'
+        expect(onChange).toHaveBeenCalledWith('ABC-DEF');
+      });
+
+      it('does not affect non-masked input (no false positives)', () => {
+        const onChange = vi.fn();
+        render(<Input label="Name" value="" onChange={onChange} />);
+        const input = screen.getByLabelText('Name') as HTMLInputElement;
+
+        fireEvent.change(input, { target: { value: 'Olivia' } });
+        // Non-masked input should keep 'o', 'i', 'l' characters
+        expect(onChange).toHaveBeenCalledWith('Olivia');
+      });
+
+      it('strips all restricted characters from alphanumeric mask', () => {
+        const onChange = vi.fn();
+        render(<Input label="Code" mask="999-***" value="" onChange={onChange} />);
+        const input = screen.getByLabelText('Code') as HTMLInputElement;
+
+        fireEvent.change(input, { target: { value: '123loiABC' } });
+        // Should strip 'l', 'o', 'i' leaving '123ABC'
+        expect(onChange).toHaveBeenCalledWith('123-ABC');
+      });
+
+      it('handles input with only restricted characters', () => {
+        const onChange = vi.fn();
+        render(<Input label="Code" mask="***" value="" onChange={onChange} />);
+        const input = screen.getByLabelText('Code') as HTMLInputElement;
+
+        fireEvent.change(input, { target: { value: 'loiLOI' } });
+        // All characters are restricted, should result in empty string
+        expect(onChange).toHaveBeenCalledWith('');
+      });
+    });
   });
 
   describe('controlled behavior', () => {

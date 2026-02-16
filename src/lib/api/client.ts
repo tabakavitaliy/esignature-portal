@@ -5,7 +5,7 @@
  * Configure the base URL and common headers here.
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net';
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string>;

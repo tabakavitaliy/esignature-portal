@@ -21,7 +21,8 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
   const { params, ...fetchOptions } = options;
 
   let url = `${API_BASE_URL}${endpoint}`;
-
+   // eslint-disable-next-line no-console
+  console.log('API_BASE_URL', API_BASE_URL, process.env);
   if (params) {
     const searchParams = new URLSearchParams(params);
     url += `?${searchParams.toString()}`;

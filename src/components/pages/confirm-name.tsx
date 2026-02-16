@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { ContentWrapper } from '@/components/layout/content-wrapper';
 import { Header } from '@/components/common/header';
 import { ProgressStepper } from '@/components/common/progress-stepper';
-import { Select, type SelectOption } from '@/components/common/select';
+import { Select } from '@/components/common/select';
 import { Button } from '@/components/common/button';
 import translations from '@/i18n/en.json';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -36,11 +36,6 @@ export function ConfirmName(): ReactNode {
       label: `${signatory.firstname} ${signatory.surname}`,
     })) ?? [];
   }, [data]);
-
-  const handleSelectChange = (value: string): void => {
-    // eslint-disable-next-line no-console
-    console.log('Select changed:', value);
-  };
 
   const handleBackClick = (): void => {
     router.push('/');

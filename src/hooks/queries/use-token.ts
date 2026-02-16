@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
 const TOKEN_KEY = 'token';
 
@@ -8,10 +8,21 @@ interface UseTokenReturn {
 }
 
 export function useToken(): UseTokenReturn {
-  const token = sessionStorage.getItem(TOKEN_KEY);
+  const [token, setTokenState] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Only access sessionStorage on the client side
+    if (typeof window !== 'undefined') {
+      const storedToken = sessionStorage.getItem(TOKEN_KEY);
+      setTokenState(storedToken);
+    }
+  }, []);
 
   const setToken = useCallback((newToken: string): void => {
-    sessionStorage.setItem(TOKEN_KEY, newToken);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(TOKEN_KEY, newToken);
+      setTokenState(newToken);
+    }
   }, []);
 
   return { token, setToken };

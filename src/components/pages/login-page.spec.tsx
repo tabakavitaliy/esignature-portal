@@ -207,8 +207,8 @@ describe('LoginPage', () => {
       const input = screen.getByLabelText(t.credentialLabel) as HTMLInputElement;
       const nextButton = screen.getByRole('button', { name: t.nextButton });
 
-      await user.type(input, '2A2E42LW8375QC3B');
-      expect(input.value).toBe('2A2E-42LW-8375-QC3B');
+      await user.type(input, '2A2E42WX8375QC3B');
+      expect(input.value).toBe('2A2E-42WX-8375-QC3B');
       await user.click(nextButton);
 
       expect(mockPush).toHaveBeenCalledWith('/confirm-name');
@@ -259,8 +259,8 @@ describe('LoginPage', () => {
       const input = screen.getByLabelText(t.credentialLabel) as HTMLInputElement;
       const nextButton = screen.getByRole('button', { name: t.nextButton });
 
-      await user.type(input, 'ABCDEFGHIJKLMNOP');
-      expect(input.value).toBe('ABCD-EFGH-IJKL-MNOP');
+      await user.type(input, 'ABCDEFGHJKMNPQRS');
+      expect(input.value).toBe('ABCD-EFGH-JKMN-PQRS');
       await user.click(nextButton);
 
       expect(mockPush).toHaveBeenCalledWith('/confirm-name');
@@ -409,8 +409,8 @@ describe('LoginPage', () => {
       render(<LoginPage />);
       const input = screen.getByLabelText(t.credentialLabel) as HTMLInputElement;
 
-      await user.type(input, '2A2E42LW8375QC3B');
-      expect(input.value).toBe('2A2E-42LW-8375-QC3B');
+      await user.type(input, '2A2E42WX8375QC3B');
+      expect(input.value).toBe('2A2E-42WX-8375-QC3B');
     });
 
     it('converts lowercase letters to uppercase', async () => {
@@ -455,8 +455,8 @@ describe('LoginPage', () => {
       render(<LoginPage />);
       const input = screen.getByLabelText(t.credentialLabel) as HTMLInputElement;
 
-      await user.type(input, '2a2e-42lw-8375-qc3b');
-      expect(input.value).toBe('2A2E-42LW-8375-QC3B');
+      await user.type(input, '2a2e-42wx-8375-qc3b');
+      expect(input.value).toBe('2A2E-42WX-8375-QC3B');
     });
   });
 });

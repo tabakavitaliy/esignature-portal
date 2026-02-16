@@ -25,10 +25,15 @@ const [selectedOption, setSelectedOption] = useState<string>('');
 
 
   const options = useMemo(() => {
-    return data?.signatories?.map((signatory) => ({
+    const names = data?.signatories?.map((signatory) => ({
       value: signatory.signatoryId,
       label: `${signatory.firstname} ${signatory.surname}`,
     })) ?? [];
+    const noNameExistsOption = {
+      value: 'no-name-exists',
+      label: t.noNameExistsLabel,
+    };
+    return [...names, noNameExistsOption]
   }, [data]);
 
   const handleBackClick = (): void => {

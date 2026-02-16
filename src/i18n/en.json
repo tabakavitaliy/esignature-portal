@@ -14,7 +14,8 @@
     "selectLabel": "Select your name",
     "selectPlaceholder": "Select",
     "nextButton": "Next",
-    "backButtonLabel": "Go back"
+    "backButtonLabel": "Go back",
+    "noNameExistsLabel": "My name is not listed"
   },
   "recaptcha": {
     "protectedBy": "protected by reCAPTCHA",

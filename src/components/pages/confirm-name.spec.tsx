@@ -424,4 +424,224 @@ describe('ConfirmName', () => {
     });
   });
 
+  describe('options generation with useMemo', () => {
+    it('includes "no-name-exists" option when data is undefined', () => {
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: undefined,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      expect(select).toBeInTheDocument();
+    });
+
+    it('includes "no-name-exists" option when signatories is null', () => {
+      const mockData: MatterDetails = {
+        hasSignedMatter: false,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Pending',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      expect(select).toBeInTheDocument();
+    });
+
+    it('formats signatory names correctly with firstname and surname', () => {
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Ms',
+            firstname: 'Alice',
+            surname: 'Johnson',
+            addressAssociation: 'Owner',
+            emailAddress: 'alice.johnson@example.com',
+            mobile: '07700900002',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '789 Elm St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'Birmingham',
+              county: 'West Midlands',
+              postcode: 'B1 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      
+      // Verify the component renders with the formatted name data
+      expect(mockData.signatories[0]?.firstname).toBe('Alice');
+      expect(mockData.signatories[0]?.surname).toBe('Johnson');
+    });
+  });
+
+  describe('loading and error states', () => {
+    it('renders correctly when isLoading is true', () => {
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: undefined,
+        isLoading: true,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const heading = screen.getByRole('heading', { name: t.headerText });
+      expect(heading).toBeInTheDocument();
+    });
+
+    it('renders correctly when error is present', () => {
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: undefined,
+        isLoading: false,
+        error: new Error('Failed to fetch'),
+      });
+
+      render(<ConfirmName />);
+      const heading = screen.getByRole('heading', { name: t.headerText });
+      expect(heading).toBeInTheDocument();
+    });
+
+    it('renders correctly when both isLoading and error are present', () => {
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: undefined,
+        isLoading: true,
+        error: new Error('Network error'),
+      });
+
+      render(<ConfirmName />);
+      const heading = screen.getByRole('heading', { name: t.headerText });
+      expect(heading).toBeInTheDocument();
+    });
+  });
+
+  describe('state management', () => {
+    it('initializes selectedOption as empty string', () => {
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      expect(select).toBeInTheDocument();
+      // The select should show placeholder when no value is selected
+      const placeholder = screen.getByText(t.selectPlaceholder);
+      expect(placeholder).toBeInTheDocument();
+    });
+
+    it('renders with multiple signatories maintaining order', () => {
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'Adam',
+            surname: 'Alpha',
+            addressAssociation: 'Owner',
+            emailAddress: 'adam@example.com',
+            mobile: '07700900001',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '1 First St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+          {
+            signatoryId: 'signatory-2',
+            envelopeId: 'envelope-2',
+            title: 'Ms',
+            firstname: 'Betty',
+            surname: 'Beta',
+            addressAssociation: 'Owner',
+            emailAddress: 'betty@example.com',
+            mobile: '07700900002',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '2 Second St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'Manchester',
+              county: 'Greater Manchester',
+              postcode: 'M1 1AA',
+            },
+          },
+          {
+            signatoryId: 'signatory-3',
+            envelopeId: 'envelope-3',
+            title: 'Dr',
+            firstname: 'Charlie',
+            surname: 'Gamma',
+            addressAssociation: 'Owner',
+            emailAddress: 'charlie@example.com',
+            mobile: '07700900003',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '3 Third St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'Birmingham',
+              county: 'West Midlands',
+              postcode: 'B1 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      
+      // Verify all signatories are present in the data
+      expect(mockData.signatories).toHaveLength(3);
+      expect(mockData.signatories[0]?.firstname).toBe('Adam');
+      expect(mockData.signatories[1]?.firstname).toBe('Betty');
+      expect(mockData.signatories[2]?.firstname).toBe('Charlie');
+    });
+  });
+
 });

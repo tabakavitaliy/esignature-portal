@@ -147,19 +147,6 @@ describe('ConfirmName', () => {
     expect(mockPush).toHaveBeenCalledTimes(1);
   });
 
-  it('logs to console when Next button is clicked', async () => {
-    const consoleSpy = vi.spyOn(console, 'log');
-    const user = userEvent.setup();
-    
-    render(<ConfirmName />);
-    const nextButton = screen.getByRole('button', { name: t.nextButton });
-    
-    await user.click(nextButton);
-    
-    expect(consoleSpy).toHaveBeenCalledWith('Next button clicked');
-    consoleSpy.mockRestore();
-  });
-
   it('Select has combobox role for accessibility', () => {
     render(<ConfirmName />);
     const select = screen.getByRole('combobox');
@@ -1121,6 +1108,253 @@ describe('ConfirmName', () => {
 
       const checkboxAfterSwitch = screen.queryByRole('checkbox');
       expect(checkboxAfterSwitch).not.toBeInTheDocument();
+    });
+  });
+
+  describe('handleNextClick', () => {
+    it('shows selectNameError when clicking Next with no selection', async () => {
+      const user = userEvent.setup();
+      
+      render(<ConfirmName />);
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+      
+      await user.click(nextButton);
+      
+      const errorMessage = screen.getByText(t.selectNameError);
+      expect(errorMessage).toBeInTheDocument();
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+
+    it('redirects to /add-new-name when no-name-exists is selected', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: false,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Pending',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const noNameOption = await screen.findByText(t.noNameExistsLabel);
+      await user.click(noNameOption);
+
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+      await user.click(nextButton);
+
+      expect(mockPush).toHaveBeenCalledWith('/add-new-name');
+      expect(mockPush).toHaveBeenCalledTimes(1);
+    });
+
+    it('shows confirmNameError when signatory is selected but checkbox is unchecked', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+      await user.click(nextButton);
+
+      const errorMessage = screen.getByText(t.confirmNameError);
+      expect(errorMessage).toBeInTheDocument();
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+
+    it('redirects to /confirm-details when signatory is selected and checkbox is checked', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      const checkbox = await screen.findByRole('checkbox');
+      await user.click(checkbox);
+
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+      await user.click(nextButton);
+
+      expect(mockPush).toHaveBeenCalledWith('/confirm-details');
+      expect(mockPush).toHaveBeenCalledTimes(1);
+    });
+
+    it('error message clears on successful navigation', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      
+      // First click Next without selection to show error
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+      await user.click(nextButton);
+      
+      const errorMessage = screen.getByText(t.selectNameError);
+      expect(errorMessage).toBeInTheDocument();
+
+      // Now select a name and check the checkbox
+      const select = screen.getByRole('combobox');
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      const checkbox = await screen.findByRole('checkbox');
+      await user.click(checkbox);
+
+      // Click Next again - should navigate and clear error
+      await user.click(nextButton);
+
+      expect(mockPush).toHaveBeenCalledWith('/confirm-details');
+      const errorAfterNavigation = screen.queryByText(t.selectNameError);
+      expect(errorAfterNavigation).not.toBeInTheDocument();
     });
   });
 

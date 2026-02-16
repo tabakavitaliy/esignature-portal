@@ -15,7 +15,8 @@
     "selectPlaceholder": "Select",
     "nextButton": "Next",
     "backButtonLabel": "Go back",
-    "noNameExistsLabel": "My name is not listed"
+    "noNameExistsLabel": "My name is not listed",
+    "confirmCheckboxLabel": "I confirm the selected person is me."
   },
   "recaptcha": {
     "protectedBy": "protected by reCAPTCHA",

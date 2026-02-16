@@ -42,6 +42,9 @@
     --header-bg: 250 58% 37%;
     --select-item-selected: 250 30% 93%;
     --button-error: 4 85% 76%;
+    --checkbox-border: 0 0% 100%;
+    --checkbox-checked-bg: 0 0% 100%;
+    --checkbox-checked-icon: 250 58% 37%;
   }
 
   .dark {

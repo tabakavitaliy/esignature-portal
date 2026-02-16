@@ -8,6 +8,7 @@ import { ContentWrapper } from '@/components/layout/content-wrapper';
 import { Header } from '@/components/common/header';
 import { ProgressStepper } from '@/components/common/progress-stepper';
 import { Select } from '@/components/common/select';
+import { Checkbox } from '@/components/common/checkbox';
 import { Button } from '@/components/common/button';
 import translations from '@/i18n/en.json';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -19,6 +20,7 @@ import { useMatterDetails } from '@/hooks/queries/use-matter-details';
  */
 export function ConfirmName(): ReactNode {
 const [selectedOption, setSelectedOption] = useState<string>('');
+  const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const { confirmNamePage: t } = translations;
   const router = useRouter();
   const { data, isLoading: _isLoading, error: _error } = useMatterDetails();
@@ -71,6 +73,16 @@ const [selectedOption, setSelectedOption] = useState<string>('');
               value={selectedOption}
               onChange={setSelectedOption}
             />
+            {
+              !!selectedOption && selectedOption !== 'no-name-exists' && (
+                <Checkbox
+                label={t.confirmCheckboxLabel}
+                value={isConfirmed}
+                onChange={setIsConfirmed}
+                className="mt-6"
+              />
+              )
+            }
           </div>
 
           <div className="flex gap-4">

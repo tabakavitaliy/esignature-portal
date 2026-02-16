@@ -58,6 +58,11 @@ const config: Config = {
           'upcoming-border': 'hsl(var(--stepper-upcoming-border))',
           line: 'hsl(var(--stepper-line))',
         },
+        checkbox: {
+          border: 'hsl(var(--checkbox-border))',
+          'checked-bg': 'hsl(var(--checkbox-checked-bg))',
+          'checked-icon': 'hsl(var(--checkbox-checked-icon))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

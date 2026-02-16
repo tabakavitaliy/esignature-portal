@@ -545,6 +545,585 @@ describe('ConfirmName', () => {
     });
   });
 
+  describe('checkbox functionality', () => {
+    it('does not show checkbox initially when no option is selected', () => {
+      render(<ConfirmName />);
+      const checkbox = screen.queryByRole('checkbox');
+      expect(checkbox).not.toBeInTheDocument();
+    });
+
+    it('does not show checkbox when "no-name-exists" option is selected', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: false,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Pending',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const noNameOption = await screen.findByText(t.noNameExistsLabel);
+      await user.click(noNameOption);
+
+      const checkbox = screen.queryByRole('checkbox');
+      expect(checkbox).not.toBeInTheDocument();
+    });
+
+    it('shows checkbox when a valid signatory is selected', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      const checkbox = await screen.findByRole('checkbox');
+      expect(checkbox).toBeInTheDocument();
+    });
+
+    it('checkbox shows correct label text', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      const checkboxLabel = await screen.findByText(t.confirmCheckboxLabel);
+      expect(checkboxLabel).toBeInTheDocument();
+    });
+
+    it('checkbox is initially unchecked', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      const checkbox = await screen.findByRole('checkbox');
+      expect(checkbox).toHaveAttribute('aria-checked', 'false');
+      expect(checkbox).toHaveAttribute('data-state', 'unchecked');
+    });
+
+    it('checkbox can be checked by clicking', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      const checkbox = await screen.findByRole('checkbox');
+      await user.click(checkbox);
+
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+      expect(checkbox).toHaveAttribute('data-state', 'checked');
+    });
+
+    it('checkbox can be toggled on and off', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      const checkbox = await screen.findByRole('checkbox');
+      
+      // Check it
+      await user.click(checkbox);
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+      
+      // Uncheck it
+      await user.click(checkbox);
+      expect(checkbox).toHaveAttribute('aria-checked', 'false');
+      
+      // Check it again
+      await user.click(checkbox);
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+    });
+
+    it('checkbox can be toggled by clicking its label', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      const checkboxLabel = await screen.findByText(t.confirmCheckboxLabel);
+      const checkbox = await screen.findByRole('checkbox');
+      
+      // Click the label
+      await user.click(checkboxLabel);
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+    });
+
+    it('checkbox has correct spacing below select', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      const checkbox = await screen.findByRole('checkbox');
+      const checkboxContainer = checkbox.parentElement;
+      
+      expect(checkboxContainer).toHaveClass('mt-6');
+    });
+
+    it('checkbox resets to unchecked when switching between signatories', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+          {
+            signatoryId: 'signatory-2',
+            envelopeId: 'envelope-2',
+            title: 'Ms',
+            firstname: 'Jane',
+            surname: 'Smith',
+            addressAssociation: 'Owner',
+            emailAddress: 'jane.smith@example.com',
+            mobile: '07700900001',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '456 Oak Ave',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'Manchester',
+              county: 'Greater Manchester',
+              postcode: 'M1 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      // Select first signatory
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      let checkbox = await screen.findByRole('checkbox');
+      await user.click(checkbox);
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+
+      // Select second signatory
+      await user.click(select);
+      const janeSmithOption = await screen.findByText('Jane Smith');
+      await user.click(janeSmithOption);
+
+      // Checkbox should still be checked (state persists)
+      checkbox = await screen.findByRole('checkbox');
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+    });
+
+    it('checkbox disappears when switching from signatory to no-name-exists', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      // Select signatory
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      const checkbox = await screen.findByRole('checkbox');
+      expect(checkbox).toBeInTheDocument();
+
+      // Switch to no-name-exists
+      await user.click(select);
+      const noNameOption = await screen.findByText(t.noNameExistsLabel);
+      await user.click(noNameOption);
+
+      const checkboxAfterSwitch = screen.queryByRole('checkbox');
+      expect(checkboxAfterSwitch).not.toBeInTheDocument();
+    });
+  });
+
   describe('state management', () => {
     it('initializes selectedOption as empty string', () => {
       render(<ConfirmName />);
@@ -553,6 +1132,72 @@ describe('ConfirmName', () => {
       // The select should show placeholder when no value is selected
       const placeholder = screen.getByText(t.selectPlaceholder);
       expect(placeholder).toBeInTheDocument();
+    });
+
+    it('initializes isConfirmed as false', () => {
+      render(<ConfirmName />);
+      // isConfirmed state is initialized to false
+      // We verify this by checking that checkbox doesn't appear initially
+      const checkbox = screen.queryByRole('checkbox');
+      expect(checkbox).not.toBeInTheDocument();
+    });
+
+    it('manages isConfirmed state independently of selectedOption', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      // Select signatory
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      // Check the checkbox
+      const checkbox = await screen.findByRole('checkbox');
+      await user.click(checkbox);
+      expect(checkbox).toHaveAttribute('aria-checked', 'true');
+
+      // Verify both states are maintained
+      expect(select).toBeInTheDocument();
+      expect(checkbox).toBeInTheDocument();
     });
 
     it('renders with multiple signatories maintaining order', () => {

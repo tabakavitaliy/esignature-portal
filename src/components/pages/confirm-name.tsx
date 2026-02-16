@@ -14,6 +14,7 @@ import { ButtonErrorLabel } from '@/components/common/button-error-label';
 import translations from '@/i18n/en.json';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useMatterDetails } from '@/hooks/queries/use-matter-details';
+import { CustomerPrivacy } from '@/components/common/customer-privacy';
 
 /**
  * ConfirmName component displays the name selection page
@@ -122,6 +123,7 @@ const [selectedOption, setSelectedOption] = useState<string>('');
           </div>
         </ContentWrapper>
       </main>
+      <CustomerPrivacy />
     </div>
   );
 }

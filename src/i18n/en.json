@@ -24,5 +24,8 @@
     "protectedBy": "protected by reCAPTCHA",
     "privacy": "Privacy",
     "terms": "Terms"
+  },
+  "customerPrivacy": {
+    "linkText": "Customer privacy notice"
   }
 }

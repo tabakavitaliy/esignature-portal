@@ -18,17 +18,11 @@ import { useMatterDetails } from '@/hooks/queries/use-matter-details';
  * @returns ReactNode
  */
 export function ConfirmName(): ReactNode {
-  const [selectedOption, setSelectedOption] = useState<string>('');
+const [selectedOption, setSelectedOption] = useState<string>('');
   const { confirmNamePage: t } = translations;
   const router = useRouter();
-  const { data, isLoading, error } = useMatterDetails();
+  const { data, isLoading: _isLoading, error: _error } = useMatterDetails();
 
-  // eslint-disable-next-line no-console
-  console.log('Matter Details - data:', data);
-  // eslint-disable-next-line no-console
-  console.log('Matter Details - isLoading:', isLoading);
-  // eslint-disable-next-line no-console
-  console.log('Matter Details - error:', error);
 
   const options = useMemo(() => {
     return data?.signatories?.map((signatory) => ({

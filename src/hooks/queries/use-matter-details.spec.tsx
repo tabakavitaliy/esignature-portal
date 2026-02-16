@@ -177,7 +177,7 @@ describe('useMatterDetails', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(mockFetch).toHaveBeenCalledWith(
-      '/api/lb/matter/matterDetails',
+      'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/api/lb/matter/matterDetails',
       expect.objectContaining({
         headers: expect.objectContaining({
           Authorization: `Bearer ${mockToken}`,

@@ -22,7 +22,7 @@ describe('apiClient', () => {
 
     const result = await apiClient<typeof mockData>('/test');
 
-    expect(mockFetch).toHaveBeenCalledWith('/test', {
+    expect(mockFetch).toHaveBeenCalledWith('https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/test', {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -41,7 +41,7 @@ describe('apiClient', () => {
       params: { q: 'test', limit: '10' },
     });
 
-    expect(mockFetch).toHaveBeenCalledWith('/search?q=test&limit=10', {
+    expect(mockFetch).toHaveBeenCalledWith('https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/search?q=test&limit=10', {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -61,7 +61,7 @@ describe('apiClient', () => {
       },
     });
 
-    expect(mockFetch).toHaveBeenCalledWith('/test', {
+    expect(mockFetch).toHaveBeenCalledWith('https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/test', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer token123',
@@ -91,7 +91,7 @@ describe('apiClient', () => {
       body: JSON.stringify({ name: 'New Item' }),
     });
 
-    expect(mockFetch).toHaveBeenCalledWith('/create', {
+    expect(mockFetch).toHaveBeenCalledWith('https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/create', {
       method: 'POST',
       body: JSON.stringify({ name: 'New Item' }),
       headers: {
@@ -109,7 +109,7 @@ describe('apiClient', () => {
 
     await apiClient('/test', { params: {} });
 
-    expect(mockFetch).toHaveBeenCalledWith('/test?', {
+    expect(mockFetch).toHaveBeenCalledWith('https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/test?', {
       headers: {
         'Content-Type': 'application/json',
       },

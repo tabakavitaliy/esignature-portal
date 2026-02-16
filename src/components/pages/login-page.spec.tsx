@@ -364,6 +364,45 @@ describe('LoginPage', () => {
     });
   });
 
+  describe('keyboard interaction', () => {
+    it('triggers handleNextClick when Enter key is pressed with valid credential', async () => {
+      const user = userEvent.setup();
+      render(<LoginPage />);
+      const input = screen.getByLabelText(t.credentialLabel) as HTMLInputElement;
+
+      await user.type(input, 'ABCD1234EFGH5678');
+      await user.keyboard('{Enter}');
+
+      expect(mockPush).toHaveBeenCalledWith('/confirm-name');
+    });
+
+    it('triggers handleNextClick when Enter key is pressed with invalid credential', async () => {
+      const user = userEvent.setup();
+      render(<LoginPage />);
+      const input = screen.getByLabelText(t.credentialLabel) as HTMLInputElement;
+
+      await user.type(input, 'ABCD');
+      await user.keyboard('{Enter}');
+
+      expect(mockPush).not.toHaveBeenCalled();
+      const errorLabel = screen.getByText(t.errorMessage);
+      expect(errorLabel).toBeInTheDocument();
+    });
+
+    it('triggers handleNextClick when Enter key is pressed with empty credential', async () => {
+      const user = userEvent.setup();
+      render(<LoginPage />);
+      const input = screen.getByLabelText(t.credentialLabel) as HTMLInputElement;
+
+      input.focus();
+      await user.keyboard('{Enter}');
+
+      expect(mockPush).not.toHaveBeenCalled();
+      const errorLabel = screen.getByText(t.errorMessage);
+      expect(errorLabel).toBeInTheDocument();
+    });
+  });
+
   describe('credential input mask', () => {
     it('formats input with dashes in groups of 4', async () => {
       const user = userEvent.setup();

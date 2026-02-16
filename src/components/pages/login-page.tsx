@@ -75,6 +75,11 @@ export function LoginPage(): ReactNode {
               mask="****-****-****-****"
               value={credential}
               onChange={setCredential}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleNextClick();
+                }
+              }}
             />
           </div>
         </div>

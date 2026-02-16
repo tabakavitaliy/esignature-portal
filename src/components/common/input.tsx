@@ -16,6 +16,7 @@ interface InputProps {
   mask?: string;
   value: string;
   onChange: (value: string) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 /**
@@ -105,6 +106,7 @@ export function Input({
   mask,
   value,
   onChange,
+  onKeyDown,
 }: InputProps): ReactNode {
   const generatedId = useId();
   const inputId = id || generatedId;
@@ -145,6 +147,7 @@ export function Input({
         )}
         value={value}
         onChange={handleChange}
+        onKeyDown={onKeyDown}
       />
     </div>
   );

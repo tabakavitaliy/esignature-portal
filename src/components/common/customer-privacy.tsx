@@ -26,7 +26,7 @@ export function CustomerPrivacy({ className }: CustomerPrivacyProps): ReactNode 
     <div
       className={cn(
         'flex h-[34px] w-full items-center justify-center',
-        'bg-[var(--privacy-notice-bg)]',
+        'bg-[var(--login-card-bg)] backdrop-blur-sm',
         className
       )}
     >

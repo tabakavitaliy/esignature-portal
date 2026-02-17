@@ -110,7 +110,8 @@ describe('CustomerPrivacy', () => {
 
     const { container } = render(<CustomerPrivacy />);
     const wrapper = container.firstChild;
-    expect(wrapper).toHaveClass('bg-[var(--privacy-notice-bg)]');
+    expect(wrapper).toHaveClass('bg-[var(--login-card-bg)]');
+    expect(wrapper).toHaveClass('backdrop-blur-sm');
   });
 
   it('uses text color CSS variable class', () => {

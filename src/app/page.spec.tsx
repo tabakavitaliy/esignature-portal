@@ -6,6 +6,11 @@ import translations from '@/i18n/en.json';
 
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
+  useSearchParams: vi.fn(() => new URLSearchParams()),
+}));
+
+vi.mock('@/hooks/queries/use-token', () => ({
+  useToken: vi.fn(() => ({ token: null, setToken: vi.fn() })),
 }));
 
 describe('HomePage', () => {
@@ -16,6 +21,7 @@ describe('HomePage', () => {
     vi.clearAllMocks();
     (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
       push: mockPush,
+      replace: vi.fn(),
     });
   });
 

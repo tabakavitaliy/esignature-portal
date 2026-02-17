@@ -1,22 +1,38 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { LoginPage } from './login-page';
 import translations from '@/i18n/en.json';
+import { useToken } from '@/hooks/queries/use-token';
 
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
+}));
+
+vi.mock('@/hooks/queries/use-token', () => ({
+  useToken: vi.fn(),
 }));
 
 describe('LoginPage', () => {
   const { loginPage: t } = translations;
   const mockPush = vi.fn();
+  const mockReplace = vi.fn();
+  const mockSetToken = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
     (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
       push: mockPush,
+      replace: mockReplace,
+    });
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(
+      new URLSearchParams()
+    );
+    (useToken as ReturnType<typeof vi.fn>).mockReturnValue({
+      token: null,
+      setToken: mockSetToken,
     });
   });
 
@@ -457,6 +473,87 @@ describe('LoginPage', () => {
 
       await user.type(input, '2a2e-42wx-8375-qc3b');
       expect(input.value).toBe('2A2E-42WX-8375-QC3B');
+    });
+  });
+
+  describe('key query parameter handling', () => {
+    it('sets token and credential from key query param and removes it from URL', () => {
+      const keyValue = 'TEST-KEY1-ABCD-1234';
+      (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(
+        new URLSearchParams({ key: keyValue })
+      );
+
+      render(<LoginPage />);
+
+      expect(mockSetToken).toHaveBeenCalledWith(keyValue);
+      expect(mockReplace).toHaveBeenCalledWith('/');
+    });
+
+    it('pre-fills credential input when key query param is present', () => {
+      const keyValue = 'TEST-KEY1-ABCD-1234';
+      (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(
+        new URLSearchParams({ key: keyValue })
+      );
+
+      render(<LoginPage />);
+      const input = screen.getByLabelText(t.credentialLabel) as HTMLInputElement;
+
+      expect(input.value).toBe(keyValue);
+    });
+
+    it('does not call setToken or replace when no key param is present', () => {
+      (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(
+        new URLSearchParams()
+      );
+
+      render(<LoginPage />);
+
+      expect(mockSetToken).not.toHaveBeenCalled();
+      expect(mockReplace).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('token pre-fill on load', () => {
+    it('pre-fills credential input with existing token from session storage', () => {
+      const existingToken = 'ABCD-1234-EFGH-5678';
+      (useToken as ReturnType<typeof vi.fn>).mockReturnValue({
+        token: existingToken,
+        setToken: mockSetToken,
+      });
+
+      render(<LoginPage />);
+      const input = screen.getByLabelText(t.credentialLabel) as HTMLInputElement;
+
+      expect(input.value).toBe(existingToken);
+    });
+
+    it('does not pre-fill credential when no token exists in session storage', () => {
+      (useToken as ReturnType<typeof vi.fn>).mockReturnValue({
+        token: null,
+        setToken: mockSetToken,
+      });
+
+      render(<LoginPage />);
+      const input = screen.getByLabelText(t.credentialLabel) as HTMLInputElement;
+
+      expect(input.value).toBe('');
+    });
+
+    it('key query param takes priority over existing token', () => {
+      const keyValue = 'NEWK-EY12-ABCD-5678';
+      const existingToken = 'ABCD-1234-EFGH-5678';
+      (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(
+        new URLSearchParams({ key: keyValue })
+      );
+      (useToken as ReturnType<typeof vi.fn>).mockReturnValue({
+        token: existingToken,
+        setToken: mockSetToken,
+      });
+
+      render(<LoginPage />);
+
+      expect(mockSetToken).toHaveBeenCalledWith(keyValue);
+      expect(mockReplace).toHaveBeenCalledWith('/');
     });
   });
 });

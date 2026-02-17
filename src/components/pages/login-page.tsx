@@ -1,8 +1,8 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ContentWrapper } from '@/components/layout/content-wrapper';
 import { MainLogo } from '@/components/common/main-logo';
@@ -21,9 +21,23 @@ import { useToken } from '@/hooks/queries/use-token';
 export function LoginPage(): ReactNode {
   const { loginPage: t } = translations;
   const router = useRouter();
-  const { setToken } = useToken();
+  const searchParams = useSearchParams();
+  const { token, setToken } = useToken();
   const [credential, setCredential] = useState('');
   const [isInvalid, setIsInvalid] = useState(false);
+
+  useEffect(() => {
+    const key = searchParams.get('key');
+    if (key) {
+      setToken(key);
+      setCredential(key);
+      router.replace('/');
+      return;
+    }
+    if (token) {
+      setCredential(token);
+    }
+  }, [searchParams, token, setToken, router]);
 
   const handleNextClick = (): void => {
     const pattern = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;

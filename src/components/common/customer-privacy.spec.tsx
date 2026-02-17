@@ -109,9 +109,14 @@ describe('CustomerPrivacy', () => {
     });
 
     const { container } = render(<CustomerPrivacy />);
-    const wrapper = container.firstChild;
-    expect(wrapper).toHaveClass('bg-[var(--login-card-bg)]');
-    expect(wrapper).toHaveClass('backdrop-blur-sm');
+    const outerWrapper = container.firstChild as HTMLElement;
+    expect(outerWrapper).toHaveClass('bg-gradient-to-b');
+    expect(outerWrapper).toHaveClass('from-[var(--login-gradient-start)]');
+    expect(outerWrapper).toHaveClass('to-[var(--login-gradient-end)]');
+    
+    const innerWrapper = outerWrapper.firstChild as HTMLElement;
+    expect(innerWrapper).toHaveClass('bg-[var(--login-card-bg)]');
+    expect(innerWrapper).toHaveClass('backdrop-blur-sm');
   });
 
   it('uses text color CSS variable class', () => {
@@ -134,8 +139,9 @@ describe('CustomerPrivacy', () => {
     });
 
     const { container } = render(<CustomerPrivacy className="custom-class" />);
-    const wrapper = container.firstChild;
-    expect(wrapper).toHaveClass('custom-class');
+    const outerWrapper = container.firstChild as HTMLElement;
+    const innerWrapper = outerWrapper.firstChild as HTMLElement;
+    expect(innerWrapper).toHaveClass('custom-class');
   });
 
   it('renders nothing when data is undefined', () => {

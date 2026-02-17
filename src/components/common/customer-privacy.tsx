@@ -23,22 +23,27 @@ export function CustomerPrivacy({ className }: CustomerPrivacyProps): ReactNode 
   }
 
   return (
-    <div
-      className={cn(
+    <div className={cn(
         'flex h-[34px] w-full items-center justify-center',
-        'bg-[var(--login-card-bg)] backdrop-blur-sm',
-        className
-      )}
-    >
-      <a
-        href={data.privacyPolicyUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-xs text-[hsl(var(--privacy-notice-text))] hover:underline focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
-        aria-label={t.linkText}
-      >
-        {t.linkText}
-      </a>
+        'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
+    )}>
+        <div
+        className={cn(
+            'flex h-[34px] w-full items-center justify-center',
+            'bg-[var(--login-card-bg)] backdrop-blur-sm',
+            className
+        )}
+        >
+        <a
+            href={data.privacyPolicyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-[hsl(var(--privacy-notice-text))] hover:underline focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
+            aria-label={t.linkText}
+        >
+            {t.linkText}
+        </a>
+        </div>
     </div>
   );
 }

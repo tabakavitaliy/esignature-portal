@@ -66,13 +66,15 @@ const [selectedOption, setSelectedOption] = useState<string>('');
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className={cn(
+      "flex min-h-screen flex-col",
+      'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
+      )}>
       <Header text={t.headerText} />
 
       <main
         className={cn(
           'flex flex-1 flex-col px-6 py-12',
-          'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
         )}
       >
         <ContentWrapper className="flex flex-1 flex-col gap-8">

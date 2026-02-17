@@ -17,7 +17,7 @@ export function Header({ text, className }: HeaderProps): ReactNode {
   return (
     <header
       className={cn(
-        'flex w-full items-center justify-between bg-[hsl(var(--header-bg))] px-6 py-4',
+        'flex w-full items-center justify-between bg-[var(--header-bg)] px-6 py-4',
         className
       )}
     >

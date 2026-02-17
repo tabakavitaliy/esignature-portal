@@ -113,8 +113,8 @@ describe('ConfirmName', () => {
 
   it('has gradient background styling', () => {
     const { container } = render(<ConfirmName />);
-    const main = container.querySelector('main');
-    expect(main).toHaveClass('bg-gradient-to-b');
+    const wrapper = container.firstChild;
+    expect(wrapper).toHaveClass('bg-gradient-to-b');
   });
 
   it('has full-screen height', () => {

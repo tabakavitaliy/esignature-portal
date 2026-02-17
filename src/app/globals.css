@@ -39,7 +39,7 @@
     --stepper-upcoming: 245 55% 15%;
     --stepper-upcoming-border: 0 0% 100%;
     --stepper-line: 0 0% 100%;
-    --header-bg: 250 58% 37%;
+    --header-bg: rgba(17, 17, 17, 0.25);
     --select-item-selected: 250 30% 93%;
     --button-error: 4 85% 76%;
     --checkbox-border: 0 0% 100%;

@@ -25,7 +25,7 @@ export function CustomerPrivacy({ className }: CustomerPrivacyProps): ReactNode 
   return (
     <div className={cn(
         'flex h-[34px] w-full items-center justify-center',
-        'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
+        'bg-[var(--login-gradient-end)]'
     )}>
         <div
         className={cn(

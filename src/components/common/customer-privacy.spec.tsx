@@ -110,9 +110,7 @@ describe('CustomerPrivacy', () => {
 
     const { container } = render(<CustomerPrivacy />);
     const outerWrapper = container.firstChild as HTMLElement;
-    expect(outerWrapper).toHaveClass('bg-gradient-to-b');
-    expect(outerWrapper).toHaveClass('from-[var(--login-gradient-start)]');
-    expect(outerWrapper).toHaveClass('to-[var(--login-gradient-end)]');
+    expect(outerWrapper).toHaveClass('bg-[var(--login-gradient-end)]');
     
     const innerWrapper = outerWrapper.firstChild as HTMLElement;
     expect(innerWrapper).toHaveClass('bg-[var(--login-card-bg)]');

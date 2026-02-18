@@ -11,6 +11,7 @@ import { Select } from '@/components/common/select';
 import { Checkbox } from '@/components/common/checkbox';
 import { Button } from '@/components/common/button';
 import { ButtonErrorLabel } from '@/components/common/button-error-label';
+import { BackgroundPattern } from '@/components/common/background-pattern';
 import translations from '@/i18n/en.json';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useMatterDetails } from '@/hooks/queries/use-matter-details';
@@ -67,9 +68,10 @@ const [selectedOption, setSelectedOption] = useState<string>('');
 
   return (
     <div className={cn(
-      "flex min-h-screen flex-col",
+      "relative flex min-h-screen flex-col overflow-hidden",
       'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
       )}>
+      <BackgroundPattern />
       <Header text={t.headerText} />
 
       <main

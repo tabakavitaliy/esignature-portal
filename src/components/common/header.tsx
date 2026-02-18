@@ -22,7 +22,7 @@ export function Header({ text, className }: HeaderProps): ReactNode {
       )}
     >
       <MainLogo size="small" />
-      <h1 className="text-base italic text-white">{text}</h1>
+      <h1 className="text-base font-bold text-white">{text}</h1>
     </header>
   );
 }

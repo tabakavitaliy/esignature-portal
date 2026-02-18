@@ -10,6 +10,7 @@ import { Input } from '@/components/common/input';
 import { Button } from '@/components/common/button';
 import { ButtonErrorLabel } from '@/components/common/button-error-label';
 import { Recaptcha } from '@/components/common/recaptcha';
+import { BackgroundPattern } from '@/components/common/background-pattern';
 import translations from '@/i18n/en.json';
 import { ArrowRight } from 'lucide-react';
 import { useToken } from '@/hooks/queries/use-token';
@@ -52,10 +53,11 @@ export function LoginPage(): ReactNode {
   return (
     <main
       className={cn(
-        'flex min-h-screen flex-col justify-between px-6 py-12',
+        'relative flex min-h-screen flex-col justify-between overflow-hidden px-6 py-12',
         'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
       )}
     >
+      <BackgroundPattern />
       <ContentWrapper className="flex flex-col gap-8">
         <header className="flex flex-col items-center gap-4 text-center">
           <MainLogo size="regular" />

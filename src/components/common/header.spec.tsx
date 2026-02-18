@@ -44,7 +44,7 @@ describe('Header', () => {
     render(<Header text="Styled Text" />);
     const heading = screen.getByRole('heading');
     expect(heading).toHaveClass('text-base');
-    expect(heading).toHaveClass('italic');
+    expect(heading).toHaveClass('font-bold');
     expect(heading).toHaveClass('text-white');
   });
 

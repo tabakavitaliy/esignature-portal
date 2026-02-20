@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
+import { ConfirmDetails } from '@/components/pages';
 
 export default function ConfirmDetailsPage(): ReactNode {
-  return <div>hello world</div>;
+  return <ConfirmDetails />;
 }

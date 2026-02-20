@@ -27,5 +27,25 @@
   },
   "customerPrivacy": {
     "linkText": "Customer privacy notice"
+  },
+  "confirmDetailsPage": {
+    "headerText": "Confirm your details",
+    "description": "Check your details below and confirm they're correct. To correct any errors in your contact information, click \"Edit\" and update the details as needed.",
+    "signatoryDetailsHeading": "Signatory details",
+    "editButton": "Edit",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Select",
+    "firstNameLabel": "First name",
+    "lastNameLabel": "Last name",
+    "emailLabel": "Email",
+    "mobileLabel": "Mobile number (optional)",
+    "correspondenceAddressLabel": "Correspondence address (optional)",
+    "addressLine1Label": "Address line 1",
+    "addressLine2Label": "Address line 2",
+    "townLabel": "Town or city",
+    "postcodeLabel": "Postcode",
+    "confirmCheckboxLabel": "I confirm the details above are correct and mine.",
+    "nextButton": "Next",
+    "backButtonLabel": "Go back"
   }
 }

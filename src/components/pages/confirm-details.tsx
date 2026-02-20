@@ -43,65 +43,65 @@ export function ConfirmDetails(): ReactNode {
   ];
 
   const handleBackClick = (): void => {
-    console.log('Back button clicked');
+    console.warn('Back button clicked');
     router.push('/confirm-name');
   };
 
   const handleNextClick = (): void => {
-    console.log('Next button clicked');
+    console.warn('Next button clicked');
   };
 
   const handleEditClick = (): void => {
-    console.log('Edit button clicked');
+    console.warn('Edit button clicked');
   };
 
   const handleTitleChange = (value: string): void => {
-    console.log('Title changed:', value);
+    console.warn('Title changed:', value);
     setTitle(value);
   };
 
   const handleFirstNameChange = (value: string): void => {
-    console.log('First name changed:', value);
+    console.warn('First name changed:', value);
     setFirstName(value);
   };
 
   const handleLastNameChange = (value: string): void => {
-    console.log('Last name changed:', value);
+    console.warn('Last name changed:', value);
     setLastName(value);
   };
 
   const handleEmailChange = (value: string): void => {
-    console.log('Email changed:', value);
+    console.warn('Email changed:', value);
     setEmail(value);
   };
 
   const handleMobileChange = (value: string): void => {
-    console.log('Mobile changed:', value);
+    console.warn('Mobile changed:', value);
     setMobile(value);
   };
 
   const handleAddressLine1Change = (value: string): void => {
-    console.log('Address line 1 changed:', value);
+    console.warn('Address line 1 changed:', value);
     setAddressLine1(value);
   };
 
   const handleAddressLine2Change = (value: string): void => {
-    console.log('Address line 2 changed:', value);
+    console.warn('Address line 2 changed:', value);
     setAddressLine2(value);
   };
 
   const handleTownChange = (value: string): void => {
-    console.log('Town changed:', value);
+    console.warn('Town changed:', value);
     setTown(value);
   };
 
   const handlePostcodeChange = (value: string): void => {
-    console.log('Postcode changed:', value);
+    console.warn('Postcode changed:', value);
     setPostcode(value);
   };
 
   const handleCheckboxChange = (value: boolean): void => {
-    console.log('Checkbox changed:', value);
+    console.warn('Checkbox changed:', value);
     setIsConfirmed(value);
   };
 
@@ -187,25 +187,25 @@ export function ConfirmDetails(): ReactNode {
                 <label className="text-xs text-white mb-1 block">{t.correspondenceAddressLabel}</label>
                 <div className="space-y-1">
                   <Input
-                    label={''}
+                    label={t.addressLine1Label}
                     value={addressLine1}
                     onChange={handleAddressLine1Change}
                   />
 
                   <Input
-                    label={''}
+                    label={t.addressLine2Label}
                     value={addressLine2}
                     onChange={handleAddressLine2Change}
                   />
 
                   <Input
-                    label={''}
+                    label={t.townLabel}
                     value={town}
                     onChange={handleTownChange}
                   />
 
                   <Input
-                    label={''}
+                    label={t.postcodeLabel}
                     value={postcode}
                     onChange={handlePostcodeChange}
                   />

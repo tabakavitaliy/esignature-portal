@@ -65,7 +65,7 @@ export function Select({
         <SelectTrigger
           id={selectId}
           className={cn(
-            'bg-white text-gray-900 text-sm',
+            'bg-white text-gray-900 text-sm [&>span[data-placeholder]]:text-[#999999]',
             selectClassName
           )}
         >

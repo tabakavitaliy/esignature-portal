@@ -335,7 +335,7 @@ describe('ConfirmDetails', () => {
   describe('Interaction tests', () => {
     it('navigates to /confirm-name when Back button is clicked', async () => {
       const user = userEvent.setup();
-      const consoleSpy = vi.spyOn(console, 'log');
+      const consoleSpy = vi.spyOn(console, 'warn');
 
       render(<ConfirmDetails />);
       const backButton = screen.getByRole('button', { name: t.backButtonLabel });
@@ -351,7 +351,7 @@ describe('ConfirmDetails', () => {
 
     it('logs when Next button is clicked', async () => {
       const user = userEvent.setup();
-      const consoleSpy = vi.spyOn(console, 'log');
+      const consoleSpy = vi.spyOn(console, 'warn');
 
       render(<ConfirmDetails />);
       const nextButton = screen.getByRole('button', { name: t.nextButton });
@@ -365,7 +365,7 @@ describe('ConfirmDetails', () => {
 
     it('logs when Edit button is clicked', async () => {
       const user = userEvent.setup();
-      const consoleSpy = vi.spyOn(console, 'log');
+      const consoleSpy = vi.spyOn(console, 'warn');
 
       render(<ConfirmDetails />);
       const editButton = screen.getByRole('button', { name: t.editButton });
@@ -379,7 +379,7 @@ describe('ConfirmDetails', () => {
 
     it('logs when Title select changes', async () => {
       const user = userEvent.setup();
-      const consoleSpy = vi.spyOn(console, 'log');
+      const consoleSpy = vi.spyOn(console, 'warn');
 
       render(<ConfirmDetails />);
       const select = screen.getByRole('combobox');
@@ -395,7 +395,7 @@ describe('ConfirmDetails', () => {
 
     it('checkbox can be toggled', async () => {
       const user = userEvent.setup();
-      const consoleSpy = vi.spyOn(console, 'log');
+      const consoleSpy = vi.spyOn(console, 'warn');
 
       render(<ConfirmDetails />);
       const checkbox = screen.getByRole('checkbox');

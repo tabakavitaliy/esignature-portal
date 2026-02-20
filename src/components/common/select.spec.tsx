@@ -147,6 +147,12 @@ describe('Select', () => {
     expect(trigger).toHaveClass('text-sm');
   });
 
+  it('has placeholder color #999999 applied via Tailwind class', () => {
+    render(<Select label="Placeholder Color Test" placeholder="Pick one" options={mockOptions} />);
+    const trigger = screen.getByRole('combobox');
+    expect(trigger.className).toContain('[&>span[data-placeholder]]:text-[#999999]');
+  });
+
   it('renders with empty options array', () => {
     render(<Select label="Empty" options={[]} />);
     const label = screen.getByText('Empty');

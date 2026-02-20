@@ -41,6 +41,7 @@
     --stepper-line: 0 0% 100%;
     --header-bg: rgba(17, 17, 17, 0.25);
     --select-item-selected: 250 30% 93%;
+    --select-placeholder: #999999;
     --button-error: 4 85% 76%;
     --checkbox-border: 0 0% 100%;
     --checkbox-checked-bg: 0 0% 100%;
@@ -84,4 +85,8 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+[data-placeholder] {
+  color: var(--select-placeholder);
 }

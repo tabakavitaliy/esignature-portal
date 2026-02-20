@@ -465,6 +465,120 @@ describe('ConfirmDetails', () => {
     });
   });
 
+  describe('Form input interaction tests', () => {
+    it('logs when First name input changes', async () => {
+      const user = userEvent.setup();
+      const consoleSpy = vi.spyOn(console, 'warn');
+
+      render(<ConfirmDetails />);
+      const input = screen.getByLabelText(t.firstNameLabel);
+
+      await user.type(input, 'J');
+
+      expect(consoleSpy).toHaveBeenCalledWith('First name changed:', 'J');
+
+      consoleSpy.mockRestore();
+    });
+
+    it('logs when Last name input changes', async () => {
+      const user = userEvent.setup();
+      const consoleSpy = vi.spyOn(console, 'warn');
+
+      render(<ConfirmDetails />);
+      const input = screen.getByLabelText(t.lastNameLabel);
+
+      await user.type(input, 'D');
+
+      expect(consoleSpy).toHaveBeenCalledWith('Last name changed:', 'D');
+
+      consoleSpy.mockRestore();
+    });
+
+    it('logs when Email input changes', async () => {
+      const user = userEvent.setup();
+      const consoleSpy = vi.spyOn(console, 'warn');
+
+      render(<ConfirmDetails />);
+      const input = screen.getByLabelText(t.emailLabel);
+
+      await user.type(input, 'a');
+
+      expect(consoleSpy).toHaveBeenCalledWith('Email changed:', 'a');
+
+      consoleSpy.mockRestore();
+    });
+
+    it('logs when Mobile number input changes', async () => {
+      const user = userEvent.setup();
+      const consoleSpy = vi.spyOn(console, 'warn');
+
+      render(<ConfirmDetails />);
+      const input = screen.getByLabelText(t.mobileLabel);
+
+      await user.type(input, '0');
+
+      expect(consoleSpy).toHaveBeenCalledWith('Mobile changed:', '0');
+
+      consoleSpy.mockRestore();
+    });
+
+    it('logs when Address line 1 input changes', async () => {
+      const user = userEvent.setup();
+      const consoleSpy = vi.spyOn(console, 'warn');
+
+      render(<ConfirmDetails />);
+      const input = screen.getByLabelText(t.addressLine1Label);
+
+      await user.type(input, '1');
+
+      expect(consoleSpy).toHaveBeenCalledWith('Address line 1 changed:', '1');
+
+      consoleSpy.mockRestore();
+    });
+
+    it('logs when Address line 2 input changes', async () => {
+      const user = userEvent.setup();
+      const consoleSpy = vi.spyOn(console, 'warn');
+
+      render(<ConfirmDetails />);
+      const input = screen.getByLabelText(t.addressLine2Label);
+
+      await user.type(input, 'A');
+
+      expect(consoleSpy).toHaveBeenCalledWith('Address line 2 changed:', 'A');
+
+      consoleSpy.mockRestore();
+    });
+
+    it('logs when Town input changes', async () => {
+      const user = userEvent.setup();
+      const consoleSpy = vi.spyOn(console, 'warn');
+
+      render(<ConfirmDetails />);
+      const input = screen.getByLabelText(t.townLabel);
+
+      await user.type(input, 'L');
+
+      expect(consoleSpy).toHaveBeenCalledWith('Town changed:', 'L');
+
+      consoleSpy.mockRestore();
+    });
+
+    it('logs when Postcode input changes', async () => {
+      const user = userEvent.setup();
+      const consoleSpy = vi.spyOn(console, 'warn');
+
+      render(<ConfirmDetails />);
+      const input = screen.getByLabelText(t.postcodeLabel);
+
+      await user.type(input, 'S');
+
+      expect(consoleSpy).toHaveBeenCalledWith('Postcode changed:', 'S');
+
+      consoleSpy.mockRestore();
+    });
+  });
+
   describe('Form inputs state', () => {
     it('all inputs are initially empty', () => {
       render(<ConfirmDetails />);

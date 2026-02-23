@@ -17,6 +17,7 @@ interface InputProps {
   value: string;
   onChange: (value: string) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
 }
 
 /**
@@ -94,6 +95,7 @@ function applyMask(value: string, mask: string): string {
  * @param className - Additional CSS classes for the container
  * @param inputClassName - Additional CSS classes for the input element
  * @param mask - Optional input mask pattern (9=digit, a=letter, *=alphanumeric)
+ * @param disabled - Whether the input is disabled
  * @returns ReactNode
  */
 export function Input({
@@ -107,6 +109,7 @@ export function Input({
   value,
   onChange,
   onKeyDown,
+  disabled = false,
 }: InputProps): ReactNode {
   const generatedId = useId();
   const inputId = id || generatedId;
@@ -143,11 +146,13 @@ export function Input({
         placeholder={placeholder}
         className={cn(
           'bg-white text-gray-900 placeholder:text-gray-400 text-sm placeholder:text-sm',
+          'disabled:bg-[#F5F5F5] disabled:text-[#CCCCCC] disabled:placeholder:text-[#CCCCCC] disabled:opacity-100',
           inputClassName
         )}
         value={value}
         onChange={handleChange}
         onKeyDown={onKeyDown}
+        disabled={disabled}
       />
     </div>
   );

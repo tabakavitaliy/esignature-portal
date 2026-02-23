@@ -1,0 +1,145 @@
+---
+alwaysApply: true
+---
+## Figma MCP Integration Rules
+
+**These rules define how to translate Figma designs into code for this project. MUST be followed for every Figma-driven change.**
+
+### Design Source
+- **Figma File**: [Morae - Land Access Signature Portal](https://www.figma.com/design/RYyaj5N6qnsJTO3aGJmec5/Morae---Land-Access-Signature-Portal?node-id=0-1&p=f&t=XYPijxfkKMsoPP3I-0)
+- **MCP Server**: Remote server at `https://mcp.figma.com/mcp` (configured in `.cursor/mcp.json`)
+
+---
+
+## Required Workflow (Do NOT Skip Steps)
+
+1. **Get Design Context**: Run `get_design_context` FIRST to fetch the structured representation for the exact node(s).
+
+2. **Handle Truncation**: If the response is too large or truncated, run `get_metadata` to get the high-level node map, then re-fetch only the required node(s) with `get_design_context`.
+
+3. **Get Visual Reference**: Run `get_screenshot` for a visual reference of the node/variant being implemented.
+
+4. **Download Assets**: After you have both `get_design_context` and `get_screenshot`, download any assets needed.
+
+5. **Implement**: Translate the output into this project's conventions and start implementation.
+
+6. **Validate**: Validate against Figma for 1:1 visual parity before marking complete.
+
+---
+
+## Implementation Rules
+
+### Architecture Translation
+
+- **Treat Figma MCP output as design representation**, not final code style.
+- The MCP server typically outputs React + Tailwind — translate this into our project's conventions.
+- **Framework**: Next.js (App Router) with `output: 'export'` (SSG+CSR only), NO SSR, NO API routes.
+- **UI Components**: shadcn/ui is the primary UI system; **no competing UI frameworks**.
+- **Styling**: Tailwind CSS with `cn()` utility for conditional classes.
+- **Data Fetching**: TanStack Query ONLY (no `useEffect` fetching).
+
+### Component Reuse
+
+- **ALWAYS reuse existing shadcn/ui components** instead of duplicating functionality:
+  - Buttons → `components/ui/button.tsx`
+  - Inputs → `components/ui/input.tsx`
+  - Typography → shadcn/ui typography components
+  - Icons → reuse project's icon system
+- Check `src/components/ui/` for available shadcn components before creating new ones.
+- Check `src/components/common/` for custom reusable components.
+- Place page-specific components in `src/components/pages/`.
+
+### Design Tokens & Styling
+
+- **Replace Tailwind utility classes** with the project's design tokens when applicable.
+- Use the project's color system, typography scale, and spacing tokens consistently.
+- Use `cn()` utility from `lib/utils.ts` for conditional class names.
+- Respect existing routing, state management, and data-fetch patterns.
+- **Strive for 1:1 visual parity** with the Figma design.
+- When conflicts arise, prefer design-system tokens and adjust spacing/sizes minimally to match visuals.
+
+### Code Quality
+
+- Follow all TypeScript, testing, and code quality rules from `js.mdc`.
+- Functions <= 50 lines; split large functions into helpers.
+- Explicit return types for all functions/methods.
+- Use strict TypeScript mode; avoid `any` type.
+- Write unit tests (Vitest) and E2E tests (Playwright) for new components/features.
+
+---
+
+## Asset Management Rules
+
+### Critical Asset Rules
+
+- **IMPORTANT**: If the Figma MCP Server returns a **localhost source** for an image or SVG, **use that source directly**.
+- **DO NOT import/add new icon packages** — all assets should be in the Figma payload.
+- **DO NOT use or create placeholders** if a localhost source is provided.
+- **DO NOT bypass** the Figma MCP asset endpoint — it's designed to serve images and SVGs correctly.
+
+### Asset Organization
+
+- Store downloaded assets in appropriate directories:
+  - Images → `public/images/`
+  - Icons → `public/icons/` (or use shadcn/ui icon components if available)
+  - SVGs → `public/svg/` or inline as React components when appropriate
+- Follow project naming conventions: kebab-case for files (`hero-image.png`).
+- Optimize images for web (compress, use appropriate formats).
+- Use Next.js `<Image>` component for images when possible (respecting `output: 'export'` constraints).
+
+---
+
+## Validation Checklist
+
+Before marking implementation complete, verify:
+
+- [ ] Visual output matches Figma screenshot (1:1 parity)
+- [ ] All assets from Figma are properly integrated (no placeholders)
+- [ ] Reused existing shadcn/ui components where applicable
+- [ ] Used `cn()` utility for conditional classes
+- [ ] Followed project's TypeScript conventions
+- [ ] Added unit tests (Vitest) for business logic
+- [ ] Added E2E tests (Playwright) if UI flow is affected
+- [ ] Ran `npm run lint` and `npm run typecheck` with zero errors
+- [ ] Ran `npm run test:coverage` with >90% coverage
+- [ ] Responsive design works across breakpoints
+- [ ] Accessibility requirements met (WCAG compliance)
+
+---
+
+## Common Pitfalls to Avoid
+
+- ❌ Skipping `get_design_context` or `get_screenshot`
+- ❌ Creating new components when shadcn/ui equivalents exist
+- ❌ Hardcoding colors/spacing instead of using Tailwind tokens
+- ❌ Using inline styles instead of Tailwind classes
+- ❌ Adding new icon libraries instead of using Figma assets
+- ❌ Creating placeholders when localhost sources are available
+- ❌ Ignoring responsive design considerations
+- ❌ Not testing the implementation against the Figma screenshot
+- ❌ Forgetting to run quality checks (`lint`, `typecheck`, `test`)
+
+---
+
+## Example Workflow
+
+```bash
+# 1. Get design context from Figma node
+> Use MCP: get_design_context with node URL
+
+# 2. Get visual reference
+> Use MCP: get_screenshot with node URL
+
+# 3. Download assets if needed
+> Use MCP asset endpoint for images/icons
+
+# 4. Implement using existing components
+> Check src/components/ui/ for shadcn components
+> Reuse existing components, use cn() utility
+
+# 5. Run quality checks
+npm run lint && npm run typecheck && npm run test:coverage
+
+# 6. Validate against Figma
+> Compare implementation with get_screenshot output
+```

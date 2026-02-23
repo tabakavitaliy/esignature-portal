@@ -60,6 +60,7 @@ const [selectedOption, setSelectedOption] = useState<string>('');
     }
     
     if (isConfirmed) {
+      sessionStorage.setItem('selectedSignatoryId', selectedOption);
       router.push('/confirm-details');
     } else {
       setErrorMessage(t.confirmNameError);

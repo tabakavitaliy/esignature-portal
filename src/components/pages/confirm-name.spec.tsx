@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/navigation';
 import { ConfirmName } from './confirm-name';
@@ -1520,6 +1520,195 @@ describe('ConfirmName', () => {
       expect(mockData.signatories[0]?.firstname).toBe('Adam');
       expect(mockData.signatories[1]?.firstname).toBe('Betty');
       expect(mockData.signatories[2]?.firstname).toBe('Charlie');
+    });
+  });
+
+  describe('sessionStorage', () => {
+    let sessionStorageSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      sessionStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
+    });
+
+    afterEach(() => {
+      sessionStorageSpy.mockRestore();
+    });
+
+    it('saves selectedSignatoryId to sessionStorage on confirmed navigation', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      const checkbox = await screen.findByRole('checkbox');
+      await user.click(checkbox);
+
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+      await user.click(nextButton);
+
+      expect(sessionStorageSpy).toHaveBeenCalledWith('selectedSignatoryId', 'signatory-1');
+      expect(mockPush).toHaveBeenCalledWith('/confirm-details');
+    });
+
+    it('does not save to sessionStorage when no option is selected', async () => {
+      const user = userEvent.setup();
+      
+      render(<ConfirmName />);
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+      
+      await user.click(nextButton);
+      
+      expect(sessionStorageSpy).not.toHaveBeenCalled();
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+
+    it('does not save to sessionStorage when checkbox is unchecked', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: true,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Active',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const johnDoeOption = await screen.findByText('John Doe');
+      await user.click(johnDoeOption);
+
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+      await user.click(nextButton);
+
+      expect(sessionStorageSpy).not.toHaveBeenCalled();
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+
+    it('does not save to sessionStorage when "no-name-exists" is selected', async () => {
+      const user = userEvent.setup();
+      const mockData: MatterDetails = {
+        hasSignedMatter: false,
+        matterId: 'test-matter-id',
+        matterReference: 'REF123',
+        matterStatus: 'Pending',
+        privacyPolicyUrl: 'https://example.com/privacy',
+        matterDocumentId: 'test-doc-id',
+        propertyAddresses: [],
+        signatories: [
+          {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: '',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        ],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockData,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+      const select = screen.getByRole('combobox');
+      
+      await user.click(select);
+      const noNameOption = await screen.findByText(t.noNameExistsLabel);
+      await user.click(noNameOption);
+
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+      await user.click(nextButton);
+
+      expect(sessionStorageSpy).not.toHaveBeenCalled();
+      expect(mockPush).toHaveBeenCalledWith('/add-new-name');
     });
   });
 

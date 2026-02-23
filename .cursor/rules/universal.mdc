@@ -13,3 +13,6 @@ alwaysApply: true
 - Follow `PLAYBOOK.md` for detailed workflow and quality rules.
 - Requirements: chunk large inputs and verify EOF.
 - Pause points: after plan, after implementation, before final deliverable.
+
+## Design Reference
+- **Figma**: [Morae - Land Access Signature Portal](https://www.figma.com/design/RYyaj5N6qnsJTO3aGJmec5/Morae---Land-Access-Signature-Portal?node-id=0-1&p=f&t=XYPijxfkKMsoPP3I-0)

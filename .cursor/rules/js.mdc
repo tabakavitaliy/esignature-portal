@@ -172,7 +172,6 @@ src/
 ```bash
 # Development
 npm run dev                # Start dev server
-npm run storybook          # Start Storybook
 
 # shadcn/ui
 npx shadcn@latest add <component>  # Add a shadcn component

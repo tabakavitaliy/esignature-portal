@@ -38,7 +38,7 @@ export function CustomerPrivacy({ className }: CustomerPrivacyProps): ReactNode 
             href={data.privacyPolicyUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-[hsl(var(--privacy-notice-text))] hover:underline focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
+            className="text-xs text-[hsl(var(--privacy-notice-text))] hover:underline focus:outline-none"
             aria-label={t.linkText}
         >
             {t.linkText}

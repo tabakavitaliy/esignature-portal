@@ -232,7 +232,7 @@ describe('CustomerPrivacy', () => {
     expect(link).toHaveClass('hover:underline');
   });
 
-  it('link has focus ring for accessibility', () => {
+  it('link has focus outline removed', () => {
     (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
       data: mockMatterDetails,
       isLoading: false,
@@ -242,7 +242,5 @@ describe('CustomerPrivacy', () => {
     render(<CustomerPrivacy />);
     const link = screen.getByRole('link');
     expect(link).toHaveClass('focus:outline-none');
-    expect(link).toHaveClass('focus:ring-2');
-    expect(link).toHaveClass('focus:ring-white');
   });
 });

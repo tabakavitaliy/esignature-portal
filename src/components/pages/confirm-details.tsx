@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ContentWrapper } from '@/components/layout/content-wrapper';
@@ -11,9 +11,11 @@ import { Select } from '@/components/common/select';
 import { Input } from '@/components/common/input';
 import { Checkbox } from '@/components/common/checkbox';
 import { Button } from '@/components/common/button';
+import { ButtonErrorLabel } from '@/components/common/button-error-label';
 import { BackgroundPattern } from '@/components/common/background-pattern';
 import translations from '@/i18n/en.json';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useMatterDetails } from '@/hooks/queries/use-matter-details';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
 
 /**
@@ -21,6 +23,10 @@ import { CustomerPrivacy } from '@/components/common/customer-privacy';
  * @returns ReactNode
  */
 export function ConfirmDetails(): ReactNode {
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  
   const [title, setTitle] = useState<string>('');
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
@@ -30,79 +36,90 @@ export function ConfirmDetails(): ReactNode {
   const [addressLine2, setAddressLine2] = useState<string>('');
   const [town, setTown] = useState<string>('');
   const [postcode, setPostcode] = useState<string>('');
-  const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
+
   const { confirmDetailsPage: t } = translations;
   const router = useRouter();
+  const { data, isLoading: _isLoading, error: _error } = useMatterDetails();
 
-  const titleOptions = [
-    { value: 'mr', label: 'Mr' },
-    { value: 'mrs', label: 'Mrs' },
-    { value: 'miss', label: 'Miss' },
-    { value: 'ms', label: 'Ms' },
-    { value: 'dr', label: 'Dr' },
-  ];
+  const titleOptions = useMemo(() => [
+    { value: 'Mr', label: 'Mr' },
+    { value: 'Mrs', label: 'Mrs' },
+    { value: 'Miss', label: 'Miss' },
+    { value: 'Ms', label: 'Ms' },
+    { value: 'Dr', label: 'Dr' },
+  ], []);
+
+  useEffect(() => {
+    const selectedSignatoryId = sessionStorage.getItem('selectedSignatoryId');
+    if (selectedSignatoryId && data?.signatories) {
+      const signatory = data.signatories.find(
+        (s) => s.signatoryId === selectedSignatoryId
+      );
+      
+      if (signatory) {
+        setTitle(signatory.title);
+        setFirstName(signatory.firstname);
+        setLastName(signatory.surname);
+        setEmail(signatory.emailAddress);
+        setMobile(signatory.mobile || '');
+        setAddressLine1(signatory.correspondenceAddress?.addressLine1 || '');
+        setAddressLine2(signatory.correspondenceAddress?.addressLine2 || '');
+        setTown(signatory.correspondenceAddress?.town || '');
+        setPostcode(signatory.correspondenceAddress?.postcode || '');
+      }
+    }
+  }, [data]);
 
   const handleBackClick = (): void => {
-    console.warn('Back button clicked');
     router.push('/confirm-name');
   };
 
-  const handleNextClick = (): void => {
-    console.warn('Next button clicked');
-  };
-
   const handleEditClick = (): void => {
-    console.warn('Edit button clicked');
+    setIsEditMode(true);
   };
 
-  const handleTitleChange = (value: string): void => {
-    console.warn('Title changed:', value);
-    setTitle(value);
+  const validateForm = (): boolean => {
+    if (!title || !firstName || !lastName || !email) {
+      setErrorMessage(t.requiredFieldsError);
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage(t.invalidEmailError);
+      return false;
+    }
+
+    return true;
   };
 
-  const handleFirstNameChange = (value: string): void => {
-    console.warn('First name changed:', value);
-    setFirstName(value);
-  };
+  const handleNextClick = (): void => {
+    setErrorMessage('');
 
-  const handleLastNameChange = (value: string): void => {
-    console.warn('Last name changed:', value);
-    setLastName(value);
-  };
-
-  const handleEmailChange = (value: string): void => {
-    console.warn('Email changed:', value);
-    setEmail(value);
-  };
-
-  const handleMobileChange = (value: string): void => {
-    console.warn('Mobile changed:', value);
-    setMobile(value);
-  };
-
-  const handleAddressLine1Change = (value: string): void => {
-    console.warn('Address line 1 changed:', value);
-    setAddressLine1(value);
-  };
-
-  const handleAddressLine2Change = (value: string): void => {
-    console.warn('Address line 2 changed:', value);
-    setAddressLine2(value);
-  };
-
-  const handleTownChange = (value: string): void => {
-    console.warn('Town changed:', value);
-    setTown(value);
-  };
-
-  const handlePostcodeChange = (value: string): void => {
-    console.warn('Postcode changed:', value);
-    setPostcode(value);
-  };
-
-  const handleCheckboxChange = (value: boolean): void => {
-    console.warn('Checkbox changed:', value);
-    setIsConfirmed(value);
+    if (isEditMode) {
+      if (!validateForm()) {
+        return;
+      }
+      // TODO: Save form data - API integration TBD
+      console.warn('Form data saved', {
+        title,
+        firstName,
+        lastName,
+        email,
+        mobile,
+        addressLine1,
+        addressLine2,
+        town,
+        postcode,
+      });
+      // TODO: Navigate to next step - routing TBD
+    } else {
+      if (!isConfirmed) {
+        setErrorMessage(t.confirmDetailsError);
+        return;
+      }
+      // TODO: Navigate to next step - routing TBD
+    }
   };
 
   return (
@@ -129,96 +146,121 @@ export function ConfirmDetails(): ReactNode {
 
             <div className="h-px w-[24px] bg-white/20 mb-6 mx-auto" />
 
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-base font-semibold text-white">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-base font-bold text-white">
                 {t.signatoryDetailsHeading}
-              </h2>
-              <button
-                onClick={handleEditClick}
-                className={cn(
-                  'flex items-center gap-2 text-sm text-white',
-                  'hover:underline focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent rounded'
-                )}
-                aria-label={t.editButton}
-              >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M6 1.98744H1.91667C1.60725 1.98744 1.3105 2.11035 1.09171 2.32915C0.872916 2.54794 0.75 2.84468 0.75 3.1541V11.3208C0.75 11.6302 0.872916 11.9269 1.09171 12.1457C1.3105 12.3645 1.60725 12.4874 1.91667 12.4874H10.0833C10.3928 12.4874 10.6895 12.3645 10.9083 12.1457C11.1271 11.9269 11.25 11.6302 11.25 11.3208V7.23744M10.375 1.11244C10.6071 0.880372 10.9218 0.75 11.25 0.75C11.5782 0.75 11.8929 0.880372 12.125 1.11244C12.3571 1.3445 12.4874 1.65925 12.4874 1.98744C12.4874 2.31563 12.3571 2.63037 12.125 2.86244L6.58333 8.4041L4.25 8.98744L4.83333 6.6541L10.375 1.11244Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span>{t.editButton}</span>
-              </button>
+              </h3>
+              {!isEditMode && (
+                <Button
+                  text={t.editButton}
+                  kind="secondary"
+                  onClick={handleEditClick}
+                  className="w-auto px-6 h-9 text-sm border-0"
+                  iconBefore={
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6 1.98744H1.91667C1.60725 1.98744 1.3105 2.11035 1.09171 2.32915C0.872916 2.54794 0.75 2.84468 0.75 3.1541V11.3208C0.75 11.6302 0.872916 11.9269 1.09171 12.1457C1.3105 12.3645 1.60725 12.4874 1.91667 12.4874H10.0833C10.3928 12.4874 10.6895 12.3645 10.9083 12.1457C11.1271 11.9269 11.25 11.6302 11.25 11.3208V7.23744M10.375 1.11244C10.6071 0.880372 10.9218 0.75 11.25 0.75C11.5782 0.75 11.8929 0.880372 12.125 1.11244C12.3571 1.3445 12.4874 1.65925 12.4874 1.98744C12.4874 2.31563 12.3571 2.63037 12.125 2.86244L6.58333 8.4041L4.25 8.98744L4.83333 6.6541L10.375 1.11244Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  }
+                />
+              )}
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-5">
               <Select
                 label={t.titleLabel}
                 placeholder={t.titlePlaceholder}
                 options={titleOptions}
                 value={title}
-                onChange={handleTitleChange}
+                onChange={setTitle}
+                disabled={!isEditMode}
               />
 
               <Input
                 label={t.firstNameLabel}
+                placeholder={t.firstNameLabel}
                 value={firstName}
-                onChange={handleFirstNameChange}
+                onChange={setFirstName}
+                disabled={!isEditMode}
               />
 
               <Input
                 label={t.lastNameLabel}
+                placeholder={t.lastNameLabel}
                 value={lastName}
-                onChange={handleLastNameChange}
+                onChange={setLastName}
+                disabled={!isEditMode}
               />
 
               <Input
                 label={t.emailLabel}
                 type="email"
+                placeholder={t.emailLabel}
                 value={email}
-                onChange={handleEmailChange}
+                onChange={setEmail}
+                disabled={!isEditMode}
               />
 
               <Input
                 label={t.mobileLabel}
                 type="tel"
+                placeholder={t.mobileLabel}
                 value={mobile}
-                onChange={handleMobileChange}
+                onChange={setMobile}
+                disabled={!isEditMode}
               />
 
-              <div className="pt-2">
-                <label className="text-xs text-white mb-1 block">{t.correspondenceAddressLabel}</label>
-                <div className="space-y-1">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs text-white">{t.correspondenceAddressLabel}</label>
+                <div className="space-y-2">
                   <Input
-                    label={t.addressLine1Label}
+                    label=""
+                    placeholder={t.addressLine1Label}
                     value={addressLine1}
-                    onChange={handleAddressLine1Change}
+                    onChange={setAddressLine1}
+                    disabled={!isEditMode}
+                    className="gap-0"
                   />
 
                   <Input
-                    label={t.addressLine2Label}
+                    label=""
+                    placeholder={t.addressLine2Label}
                     value={addressLine2}
-                    onChange={handleAddressLine2Change}
+                    onChange={setAddressLine2}
+                    disabled={!isEditMode}
+                    className="gap-0"
                   />
 
                   <Input
-                    label={t.townLabel}
+                    label=""
+                    placeholder={t.townLabel}
                     value={town}
-                    onChange={handleTownChange}
+                    onChange={setTown}
+                    disabled={!isEditMode}
+                    className="gap-0"
                   />
 
                   <Input
-                    label={t.postcodeLabel}
+                    label=""
+                    placeholder={t.postcodeLabel}
                     value={postcode}
-                    onChange={handlePostcodeChange}
+                    onChange={setPostcode}
+                    disabled={!isEditMode}
+                    className="gap-0"
                   />
                 </div>
               </div>
             </div>
           </div>
+
           <Checkbox
-              label={t.confirmCheckboxLabel}
-              value={isConfirmed}
-              onChange={handleCheckboxChange}
-              className="mt-6"
-            />
+            label={t.confirmCheckboxLabel}
+            value={isConfirmed}
+            onChange={setIsConfirmed}
+            className="mt-6"
+          />
+
+          {errorMessage && <ButtonErrorLabel message={errorMessage} />}
+
           <div className="flex gap-4">
             <Button
               text=""
@@ -229,7 +271,7 @@ export function ConfirmDetails(): ReactNode {
               className="w-auto px-6"
             />
             <Button
-              text={t.nextButton}
+              text={isEditMode ? t.saveAndNextButton : t.nextButton}
               kind="primary"
               iconAfter={<ArrowRight className="h-5 w-5" />}
               onClick={handleNextClick}

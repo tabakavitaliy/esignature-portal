@@ -26,6 +26,7 @@ interface SelectProps {
   id?: string;
   className?: string;
   selectClassName?: string;
+  disabled?: boolean;
 }
 
 /**
@@ -38,6 +39,7 @@ interface SelectProps {
  * @param id - Optional custom id for the select
  * @param className - Additional CSS classes for the container
  * @param selectClassName - Additional CSS classes for the select trigger
+ * @param disabled - Whether the select is disabled
  * @returns ReactNode
  */
 export function Select({
@@ -49,6 +51,7 @@ export function Select({
   id,
   className,
   selectClassName,
+  disabled = false,
 }: SelectProps): ReactNode {
   const generatedId = useId();
   const selectId = id || generatedId;
@@ -61,13 +64,16 @@ export function Select({
       <BaseSelect 
         {...(value !== undefined ? { value } : {})}
         {...(onChange !== undefined ? { onValueChange: onChange } : {})}
+        disabled={disabled}
       >
         <SelectTrigger
           id={selectId}
           className={cn(
-            'bg-white text-gray-900 text-sm',
+            'bg-white text-gray-900 text-sm group',
+            'disabled:bg-[#F5F5F5] disabled:text-[#CCCCCC] disabled:opacity-100',
             selectClassName
           )}
+          disabled={disabled}
         >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>

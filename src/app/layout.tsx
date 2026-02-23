@@ -2,6 +2,10 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Inter } from 'next/font/google';
 import { QueryProvider } from '@/providers';
+import { ConsentMode } from '@/components/common/consent-mode';
+import { OneTrust } from '@/components/common/one-trust';
+import { GA4 } from '@/components/common/ga4';
+import { PageTracker } from '@/components/common/page-tracker';
 import './globals.css';
 
 const inter = Inter({
@@ -21,8 +25,14 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps): ReactNode {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <ConsentMode />
+        <OneTrust />
+      </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <QueryProvider>{children}</QueryProvider>
+        <GA4 />
+        <PageTracker />
       </body>
     </html>
   );

@@ -637,23 +637,47 @@ describe('ConfirmSignatory', () => {
       expect(mockPush).not.toHaveBeenCalled();
     });
 
-    it('logs selected authority and does not navigate when authority is selected', async () => {
+    it('navigates to /preview-agreement when Yes authority is selected', async () => {
       const user = userEvent.setup();
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       render(<ConfirmSignatory />);
       const radios = screen.getAllByRole('radio');
       const yesRadio = radios[0]!;
-      
+
       await user.click(yesRadio);
-      
+
       const nextButton = screen.getByRole('button', { name: t.nextButton });
       await user.click(nextButton);
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Selected authority:', 'yes');
-      expect(mockPush).not.toHaveBeenCalled();
-      
-      consoleWarnSpy.mockRestore();
+      expect(mockPush).toHaveBeenCalledWith('/preview-agreement');
+    });
+
+    it('shows Next button label when No authority is selected', async () => {
+      const user = userEvent.setup();
+
+      render(<ConfirmSignatory />);
+      const radios = screen.getAllByRole('radio');
+      const noRadio = radios[1]!;
+
+      await user.click(noRadio);
+
+      expect(screen.getByRole('button', { name: t.nextButtonNoAuth })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: t.nextButton })).not.toBeInTheDocument();
+    });
+
+    it('navigates to /not-authorized-signatory when No authority is selected', async () => {
+      const user = userEvent.setup();
+
+      render(<ConfirmSignatory />);
+      const radios = screen.getAllByRole('radio');
+      const noRadio = radios[1]!;
+
+      await user.click(noRadio);
+
+      const nextButton = screen.getByRole('button', { name: t.nextButtonNoAuth });
+      await user.click(nextButton);
+
+      expect(mockPush).toHaveBeenCalledWith('/not-authorized-signatory');
     });
 
     it('error message clears when selecting an authority option after error', async () => {

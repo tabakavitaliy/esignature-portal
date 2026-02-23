@@ -14,6 +14,7 @@ import { BackgroundPattern } from '@/components/common/background-pattern';
 import translations from '@/i18n/en.json';
 import { ArrowRight } from 'lucide-react';
 import { useToken } from '@/hooks/queries/use-token';
+import { ROUTES } from '@/constants/routes';
 
 /**
  * LoginPage component displays the eSignature credential entry page
@@ -32,7 +33,7 @@ export function LoginPage(): ReactNode {
     if (key) {
       setToken(key);
       setCredential(key);
-      router.replace('/');
+      router.replace(ROUTES.HOME);
       return;
     }
     if (token) {
@@ -46,7 +47,7 @@ export function LoginPage(): ReactNode {
     setIsInvalid(!isValid);
     if (isValid) {
       setToken(credential);
-      router.push('/confirm-name');
+      router.push(ROUTES.CONFIRM_NAME);
     }
   };
 

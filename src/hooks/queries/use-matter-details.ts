@@ -6,13 +6,20 @@ export interface Address {
   addressLine1: string;
   addressLine2: string;
   addressLine3: string;
-  addressLine4: string;
+  addressLine4?: string;
   town: string;
   county: string;
   postcode: string;
 }
 
-export type AddressAssociation = 'Owner';
+export type AddressAssociation =
+  | 'Owner'
+  | 'Landlord'
+  | 'Property Manager'
+  | 'Solicitor'
+  | 'Executor'
+  | 'Director'
+  | 'Other';
 export type AgreementShareMethod = 'Unspecified';
 
 export interface Signatory {
@@ -23,7 +30,7 @@ export interface Signatory {
   surname: string;
   addressAssociation: AddressAssociation;
   emailAddress: string;
-  mobile: string;
+  mobile: string | null;
   agreementShareMethod: AgreementShareMethod;
   correspondenceAddress: Address;
 }

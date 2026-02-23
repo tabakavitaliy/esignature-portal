@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ContentWrapper } from '@/components/layout/content-wrapper';
@@ -18,19 +18,21 @@ import {
 import translations from '@/i18n/en.json';
 import { ArrowLeft } from 'lucide-react';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
+import { useMatterDetails, type AddressAssociation } from '@/hooks/queries/use-matter-details';
+import { useAddSignatory } from '@/hooks/queries/use-add-signatory';
 import { TITLE_OPTIONS, ADDRESS_ASSOCIATION_OPTIONS } from '@/constants/signatory-options';
 import { ROUTES } from '@/constants/routes';
 import { EMAIL_REGEX, PHONE_REGEX } from '@/constants/validation';
 
-const OWNER_ONLY_OPTIONS = ADDRESS_ASSOCIATION_OPTIONS.filter((o) => o.value === 'Owner');
+type RequiredFormValue = Required<Omit<SignatoryDetailsFormValue, 'mobile'>> & { mobile: string | null };
 
 /**
- * AddAuthorizedSign component displays the form for adding authorized signatory information
- * Used for the "My name is not listed" flow from confirm-name
+ * NotAuthorizedSignatory page for the "No, I do not have authority" flow.
+ * Collects details of an authorised person who can sign the wayleave agreement.
  * @returns ReactNode
  */
-export function AddAuthorizedSign(): ReactNode {
-  const [formValue, setFormValue] = useState<SignatoryDetailsFormValue>({
+export function NotAuthorizedSignatory(): ReactNode {
+  const [formValue, setFormValue] = useState<RequiredFormValue>({
     title: '',
     firstName: '',
     lastName: '',
@@ -46,16 +48,25 @@ export function AddAuthorizedSign(): ReactNode {
     postcode: '',
   });
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [selectedSignatoryId, setSelectedSignatoryId] = useState<string | null>(null);
 
-  const { addAuthorizedSignPage: t, signatoryDetailsForm: tForm } = translations;
+  const { notAuthorizedSignatoryPage: t, signatoryDetailsForm: tForm } = translations;
   const router = useRouter();
+  const { data: matterData } = useMatterDetails();
+  const { addSignatory, isPending } = useAddSignatory();
 
-  const handleFormChange = useCallback((field: keyof SignatoryDetailsFormValue, value: string): void => {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setSelectedSignatoryId(sessionStorage.getItem('selectedSignatoryId'));
+    }
+  }, []);
+
+  const handleFormChange = useCallback((field: keyof RequiredFormValue, value: string): void => {
     setFormValue((prev) => ({ ...prev, [field]: value }));
   }, []);
 
   const handleBackClick = (): void => {
-    router.push(ROUTES.CONFIRM_NAME);
+    router.push(ROUTES.CONFIRM_SIGNATORY);
   };
 
   const validateForm = (): boolean => {
@@ -84,15 +95,45 @@ export function AddAuthorizedSign(): ReactNode {
     return true;
   };
 
-  const handleSubmitClick = (): void => {
+  const handleSubmitClick = async (): Promise<void> => {
     setErrorMessage('');
 
     if (!validateForm()) {
       return;
     }
 
-    // TODO: Submit form data - navigation to next step TBD
-    console.warn('Form submitted successfully', formValue);
+    const currentSignatory = matterData?.signatories.find(
+      (s) => s.signatoryId === selectedSignatoryId
+    );
+
+    const { title, firstName, lastName, addressAssociation, email, mobile, addressLine1, addressLine2, addressLine3, town, county, postcode } = formValue;
+
+    try {
+      await addSignatory({
+        signatory: {
+          signatoryId: currentSignatory?.signatoryId ?? '',
+          envelopeId: currentSignatory?.envelopeId ?? '',
+          title,
+          firstname: firstName,
+          surname: lastName,
+          addressAssociation: addressAssociation as AddressAssociation,
+          emailAddress: email,
+          mobile: mobile ?? '',
+          agreementShareMethod: 'Unspecified',
+          correspondenceAddress: {
+            addressLine1,
+            addressLine2,
+            addressLine3,
+            town,
+            county,
+            postcode,
+          },
+        },
+      });
+      router.push(ROUTES.THANK_YOU);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'An error occurred while adding signatory');
+    }
   };
 
   return (
@@ -107,7 +148,7 @@ export function AddAuthorizedSign(): ReactNode {
 
       <main className={cn('flex flex-1 flex-col px-6 py-12')}>
         <ContentWrapper className="flex flex-1 flex-col gap-8">
-          <ProgressStepper stepCount={4} currentStep={2} className="self-center" />
+          <ProgressStepper stepCount={4} currentStep={4} className="self-center" />
 
           <div
             className={cn(
@@ -115,12 +156,12 @@ export function AddAuthorizedSign(): ReactNode {
               'bg-[var(--login-card-bg)] backdrop-blur-sm'
             )}
           >
-            <div className="flex flex-col gap-2 mb-6">
+            <div className="flex flex-col gap-2 mb-4">
               <h2 className="text-base font-bold text-white">{t.formHeading}</h2>
               <p className="text-sm text-white">{t.formDescription}</p>
             </div>
 
-            <div className="h-px w-[24px] bg-white/20 mb-6 mx-auto" />
+            <div className="h-px w-[24px] bg-white/20 mb-4 mx-auto" />
 
             <h3 className="text-base font-bold text-white mb-6">
               {t.signatoryDetailsHeading}
@@ -129,9 +170,9 @@ export function AddAuthorizedSign(): ReactNode {
             <SignatoryDetailsForm
               value={formValue}
               onChange={handleFormChange}
-              config={SIGNATORY_FORM_CONFIG.addAuthorizedSign}
+              config={SIGNATORY_FORM_CONFIG.notAuthorizedSignatory}
               titleOptions={TITLE_OPTIONS}
-              addressAssociationOptions={OWNER_ONLY_OPTIONS}
+              addressAssociationOptions={ADDRESS_ASSOCIATION_OPTIONS}
             />
           </div>
 
@@ -154,12 +195,9 @@ export function AddAuthorizedSign(): ReactNode {
               text={t.submitButton}
               kind="primary"
               onClick={handleSubmitClick}
+              disabled={isPending}
             />
           </div>
-
-          <p className="text-xs text-center text-white/80 pt-4">
-            {t.dataHandlingText}
-          </p>
         </ContentWrapper>
       </main>
       <CustomerPrivacy />

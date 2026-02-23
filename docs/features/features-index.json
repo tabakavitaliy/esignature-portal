@@ -1,7 +1,59 @@
 {
-  "features": [],
+  "features": [
+    {
+      "id": "signatory-flow",
+      "title": "Signatory Flow (4-step wizard)",
+      "description": "4-step wizard guiding users through identity confirmation, detail verification, authority check, and signing",
+      "status": "in-progress",
+      "progress": "95%",
+      "featureFile": "docs/features/signatory-flow.md",
+      "relatedTickets": ["WEP-33"],
+      "relatedFiles": [
+        "src/components/pages/confirm-name.tsx",
+        "src/components/pages/confirm-details.tsx",
+        "src/components/pages/confirm-signatory.tsx",
+        "src/components/pages/add-authorized-sign.tsx",
+        "src/components/pages/not-authorized-signatory.tsx",
+        "src/components/pages/thank-you.tsx",
+        "src/components/common/signatory-details-form.tsx",
+        "src/hooks/queries/use-matter-details.ts",
+        "src/hooks/queries/use-update-signatory.ts",
+        "src/i18n/en.json"
+      ]
+    },
+    {
+      "id": "analytics",
+      "title": "GA4 Analytics (consent-gated)",
+      "description": "Internal GA4 analytics gated by OneTrust Performance consent (C0003), with page view tracking",
+      "status": "planned",
+      "progress": "0%",
+      "featureFile": "docs/features/analytics.md",
+      "relatedTickets": ["WEP-16"],
+      "relatedFiles": [
+        "src/types/analytics.d.ts",
+        "src/hooks/common/use-analytics-consent.ts",
+        "src/components/common/ga4.tsx",
+        "src/components/common/page-tracker.tsx",
+        "src/lib/analytics.ts"
+      ]
+    },
+    {
+      "id": "cookie-consent",
+      "title": "Cookie Consent Management (OneTrust)",
+      "description": "GDPR cookie consent via OneTrust SDK integration with banner, modals, and preferences",
+      "status": "in-progress",
+      "progress": "60%",
+      "featureFile": "docs/features/cookie-consent.md",
+      "relatedTickets": ["WEP-6"],
+      "relatedFiles": [
+        "src/app/layout.tsx",
+        ".env.example",
+        "tests/e2e/cookie-consent.e2e-spec.ts"
+      ]
+    }
+  ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-02-02"
+    "lastUpdated": "2026-02-24"
   }
 }

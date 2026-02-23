@@ -16,6 +16,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useMatterDetails } from '@/hooks/queries/use-matter-details';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
 import type { Address } from '@/hooks/queries/use-matter-details';
+import { ROUTES } from '@/constants/routes';
 
 /**
  * Formats an address object into a human-readable string
@@ -60,18 +61,22 @@ export function ConfirmSignatory(): ReactNode {
   ], [t]);
 
   const handleBackClick = (): void => {
-    router.push('/confirm-details');
+    router.push(ROUTES.CONFIRM_DETAILS);
   };
 
   const handleNextClick = (): void => {
     setErrorMessage('');
-    
+
     if (selectedAuthority === '') {
       setErrorMessage(t.selectAuthorityError);
       return;
     }
-    
-    console.warn('Selected authority:', selectedAuthority);
+
+    if (selectedAuthority === 'yes') {
+      router.push(ROUTES.PREVIEW_AGREEMENT);
+    } else {
+      router.push(ROUTES.NOT_AUTHORIZED_SIGNATORY);
+    }
   };
 
   return (
@@ -138,7 +143,7 @@ export function ConfirmSignatory(): ReactNode {
               className="w-auto px-6"
             />
             <Button
-              text={t.nextButton}
+              text={selectedAuthority === 'no' ? t.nextButtonNoAuth : t.nextButton}
               kind="primary"
               iconAfter={<ArrowRight className="h-5 w-5" />}
               onClick={handleNextClick}

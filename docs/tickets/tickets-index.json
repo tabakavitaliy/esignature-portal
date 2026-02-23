@@ -1,7 +1,41 @@
 {
-  "tickets": [],
+  "tickets": [
+    {
+      "id": "WEP-16",
+      "title": "Consent and Analytics Scaffolding (GA4 gated by OneTrust)",
+      "description": "Consent hook, GA4 conditional loader, analytics utility, page tracker -- Phase 2 of WEP-6",
+      "status": "planning",
+      "progress": "5%",
+      "jiraUrl": "https://jdc.eleks.com/browse/WEP-16",
+      "ticketFile": "docs/tickets/WEP-16.md",
+      "relatedFeatures": ["cookie-consent", "analytics"],
+      "relatedFiles": [
+        "src/types/analytics.d.ts",
+        "src/hooks/common/use-analytics-consent.ts",
+        "src/components/common/ga4.tsx",
+        "src/components/common/page-tracker.tsx",
+        "src/lib/analytics.ts",
+        "src/app/layout.tsx"
+      ]
+    },
+    {
+      "id": "WEP-6",
+      "title": "Cookie Consent Management (OneTrust Integration)",
+      "description": "Integrate OneTrust cookie consent SDK into the portal for GDPR compliance",
+      "status": "in-progress",
+      "progress": "60%",
+      "jiraUrl": "https://jdc.eleks.com/browse/WEP-6",
+      "ticketFile": "docs/tickets/WEP-6.md",
+      "relatedFeatures": ["cookie-consent"],
+      "relatedFiles": [
+        "src/app/layout.tsx",
+        ".env.example",
+        "tests/e2e/cookie-consent.e2e-spec.ts"
+      ]
+    }
+  ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-02-02"
+    "lastUpdated": "2026-02-20"
   }
 }

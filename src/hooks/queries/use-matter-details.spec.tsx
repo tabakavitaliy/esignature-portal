@@ -186,4 +186,35 @@ describe('useMatterDetails', () => {
       })
     );
   });
+
+  it('returns refetch function that can be called', async () => {
+    const mockData: MatterDetails = {
+      hasSignedMatter: false,
+      matterId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+      matterReference: 'REF123',
+      matterStatus: 'Active',
+      privacyPolicyUrl: 'https://example.com/privacy',
+      matterDocumentId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+      propertyAddresses: [],
+      signatories: [],
+    };
+
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockData,
+    });
+
+    const { result } = renderHook(() => useMatterDetails(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.refetch).toBeDefined();
+    expect(typeof result.current.refetch).toBe('function');
+
+    await result.current.refetch();
+
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+  });
 });

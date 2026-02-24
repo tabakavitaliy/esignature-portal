@@ -46,6 +46,7 @@ export default tseslint.config(
       '.next/**',
       'out/**',
       'coverage/**',
+      'playwright-report/**',
       '*.config.js',
       '*.config.mjs',
       '*.config.ts',

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import ConfirmDetailsPage from './page';
 import translations from '@/i18n/en.json';
 import * as useMatterDetailsModule from '@/hooks/queries/use-matter-details';
+import * as useUpdateSignatoryModule from '@/hooks/queries/use-update-signatory';
 
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
@@ -11,6 +12,10 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@/hooks/queries/use-matter-details', () => ({
   useMatterDetails: vi.fn(),
+}));
+
+vi.mock('@/hooks/queries/use-update-signatory', () => ({
+  useUpdateSignatory: vi.fn(),
 }));
 
 describe('ConfirmDetailsPage', () => {
@@ -25,6 +30,14 @@ describe('ConfirmDetailsPage', () => {
       data: undefined,
       isLoading: false,
       error: null,
+      refetch: vi.fn(),
+    });
+    (useUpdateSignatoryModule.useUpdateSignatory as ReturnType<typeof vi.fn>).mockReturnValue({
+      updateSignatory: vi.fn(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isSuccess: false,
     });
   });
 

@@ -6,6 +6,7 @@ import { ConfirmDetails } from './confirm-details';
 import translations from '@/i18n/en.json';
 import * as useMatterDetailsModule from '@/hooks/queries/use-matter-details';
 import type { MatterDetails } from '@/hooks/queries/use-matter-details';
+import * as useUpdateSignatoryModule from '@/hooks/queries/use-update-signatory';
 
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
@@ -15,9 +16,15 @@ vi.mock('@/hooks/queries/use-matter-details', () => ({
   useMatterDetails: vi.fn(),
 }));
 
+vi.mock('@/hooks/queries/use-update-signatory', () => ({
+  useUpdateSignatory: vi.fn(),
+}));
+
 describe('ConfirmDetails', () => {
   const { confirmDetailsPage: t } = translations;
   const mockPush = vi.fn();
+  const mockUpdateSignatory = vi.fn();
+  const mockRefetch = vi.fn();
 
   const mockSignatory = {
     signatoryId: 'signatory-1',
@@ -54,6 +61,8 @@ describe('ConfirmDetails', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     sessionStorage.clear();
+    mockUpdateSignatory.mockResolvedValue({ success: true });
+    mockRefetch.mockResolvedValue({ data: mockData });
     (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
       push: mockPush,
     });
@@ -61,6 +70,14 @@ describe('ConfirmDetails', () => {
       data: mockData,
       isLoading: false,
       error: null,
+      refetch: mockRefetch,
+    });
+    (useUpdateSignatoryModule.useUpdateSignatory as ReturnType<typeof vi.fn>).mockReturnValue({
+      updateSignatory: mockUpdateSignatory,
+      isPending: false,
+      isError: false,
+      error: null,
+      isSuccess: false,
     });
   });
 
@@ -314,7 +331,6 @@ describe('ConfirmDetails', () => {
 
     it('allows navigation when checkbox is confirmed in view mode', async () => {
       const user = userEvent.setup();
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       
       render(<ConfirmDetails />);
       
@@ -324,9 +340,8 @@ describe('ConfirmDetails', () => {
       const nextButton = screen.getByRole('button', { name: t.nextButton });
       await user.click(nextButton);
       
-      expect(mockPush).not.toHaveBeenCalled();
-      
-      consoleWarnSpy.mockRestore();
+      expect(mockPush).toHaveBeenCalledWith('/confirm-signatory');
+      expect(mockPush).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -400,7 +415,6 @@ describe('ConfirmDetails', () => {
 
     it('validates successfully with all required fields filled', async () => {
       const user = userEvent.setup();
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       
       render(<ConfirmDetails />);
@@ -416,17 +430,31 @@ describe('ConfirmDetails', () => {
         expect(firstNameInput).not.toBeDisabled();
       });
 
+      const checkbox = screen.getByRole('checkbox');
+      await user.click(checkbox);
+
       const saveButton = screen.getByRole('button', { name: t.saveAndNextButton });
       await user.click(saveButton);
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Form data saved', expect.any(Object));
-      
-      consoleWarnSpy.mockRestore();
+      await waitFor(() => {
+        expect(mockUpdateSignatory).toHaveBeenCalledWith({
+          signatory: expect.objectContaining({
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+          }),
+        });
+        expect(mockRefetch).toHaveBeenCalled();
+        expect(mockPush).toHaveBeenCalledWith('/confirm-signatory');
+      });
     });
 
     it('allows empty optional fields', async () => {
       const user = userEvent.setup();
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       
       render(<ConfirmDetails />);
@@ -451,12 +479,19 @@ describe('ConfirmDetails', () => {
         await user.clear(mobileInput);
       }
 
+      const checkbox = screen.getByRole('checkbox');
+      await user.click(checkbox);
+
       const saveButton = screen.getByRole('button', { name: t.saveAndNextButton });
       await user.click(saveButton);
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Form data saved', expect.any(Object));
-      
-      consoleWarnSpy.mockRestore();
+      await waitFor(() => {
+        expect(mockUpdateSignatory).toHaveBeenCalledWith({
+          signatory: expect.objectContaining({
+            mobile: '',
+          }),
+        });
+      });
     });
   });
 
@@ -688,7 +723,6 @@ describe('ConfirmDetails', () => {
 
     it('clears error message when clicking Save and Next again in edit mode', async () => {
       const user = userEvent.setup();
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       
       render(<ConfirmDetails />);
@@ -713,6 +747,9 @@ describe('ConfirmDetails', () => {
         await user.clear(firstNameInput);
       }
 
+      const checkbox = screen.getByRole('checkbox');
+      await user.click(checkbox);
+
       const saveButton = screen.getByRole('button', { name: t.saveAndNextButton });
       await user.click(saveButton);
 
@@ -727,8 +764,6 @@ describe('ConfirmDetails', () => {
 
       const errorAfter = screen.queryByText(t.requiredFieldsError);
       expect(errorAfter).not.toBeInTheDocument();
-      
-      consoleWarnSpy.mockRestore();
     });
   });
 
@@ -875,6 +910,7 @@ describe('ConfirmDetails', () => {
         data: undefined,
         isLoading: true,
         error: null,
+        refetch: mockRefetch,
       });
 
       render(<ConfirmDetails />);
@@ -887,6 +923,7 @@ describe('ConfirmDetails', () => {
         data: undefined,
         isLoading: false,
         error: new Error('Failed to fetch'),
+        refetch: mockRefetch,
       });
 
       render(<ConfirmDetails />);
@@ -899,6 +936,7 @@ describe('ConfirmDetails', () => {
         data: undefined,
         isLoading: false,
         error: null,
+        refetch: mockRefetch,
       });
 
       render(<ConfirmDetails />);
@@ -947,10 +985,87 @@ describe('ConfirmDetails', () => {
     });
   });
 
-  describe('console logging for debugging', () => {
-    it('logs form data when Save and Next is clicked with valid data', async () => {
+  describe('edit mode with API integration', () => {
+    it('calls updateSignatory with correct body when Save and Next is clicked', async () => {
       const user = userEvent.setup();
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const firstNameInput = inputs.find((input) => 
+          (input as HTMLInputElement).value === 'John'
+        );
+        expect(firstNameInput).not.toBeDisabled();
+      });
+
+      const checkbox = screen.getByRole('checkbox');
+      await user.click(checkbox);
+
+      const saveButton = screen.getByRole('button', { name: t.saveAndNextButton });
+      await user.click(saveButton);
+
+      await waitFor(() => {
+        expect(mockUpdateSignatory).toHaveBeenCalledWith({
+          signatory: {
+            signatoryId: 'signatory-1',
+            envelopeId: 'envelope-1',
+            title: 'Mr',
+            firstname: 'John',
+            surname: 'Doe',
+            addressAssociation: 'Owner',
+            emailAddress: 'john.doe@example.com',
+            mobile: '07700900000',
+            agreementShareMethod: 'Unspecified',
+            correspondenceAddress: {
+              addressLine1: '123 Main St',
+              addressLine2: 'Apt 4B',
+              addressLine3: '',
+              addressLine4: '',
+              town: 'London',
+              county: 'Greater London',
+              postcode: 'SW1A 1AA',
+            },
+          },
+        });
+      });
+    });
+
+    it('refetches data and navigates after successful update', async () => {
+      const user = userEvent.setup();
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const firstNameInput = inputs.find((input) => 
+          (input as HTMLInputElement).value === 'John'
+        );
+        expect(firstNameInput).not.toBeDisabled();
+      });
+
+      const checkbox = screen.getByRole('checkbox');
+      await user.click(checkbox);
+
+      const saveButton = screen.getByRole('button', { name: t.saveAndNextButton });
+      await user.click(saveButton);
+
+      await waitFor(() => {
+        expect(mockRefetch).toHaveBeenCalled();
+        expect(mockPush).toHaveBeenCalledWith('/confirm-signatory');
+      });
+    });
+
+    it('shows error when checkbox is not checked in edit mode', async () => {
+      const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       
       render(<ConfirmDetails />);
@@ -969,19 +1084,71 @@ describe('ConfirmDetails', () => {
       const saveButton = screen.getByRole('button', { name: t.saveAndNextButton });
       await user.click(saveButton);
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Form data saved', {
-        title: 'Mr',
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@example.com',
-        mobile: '07700900000',
-        addressLine1: '123 Main St',
-        addressLine2: 'Apt 4B',
-        town: 'London',
-        postcode: 'SW1A 1AA',
+      const errorMessage = await screen.findByText(t.confirmDetailsError);
+      expect(errorMessage).toBeInTheDocument();
+      expect(mockUpdateSignatory).not.toHaveBeenCalled();
+    });
+
+    it('displays error when updateSignatory fails', async () => {
+      const user = userEvent.setup();
+      const mockError = new Error('API update failed');
+      mockUpdateSignatory.mockRejectedValue(mockError);
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const firstNameInput = inputs.find((input) => 
+          (input as HTMLInputElement).value === 'John'
+        );
+        expect(firstNameInput).not.toBeDisabled();
+      });
+
+      const checkbox = screen.getByRole('checkbox');
+      await user.click(checkbox);
+
+      const saveButton = screen.getByRole('button', { name: t.saveAndNextButton });
+      await user.click(saveButton);
+
+      await waitFor(() => {
+        const errorMessage = screen.getByText('API update failed');
+        expect(errorMessage).toBeInTheDocument();
+      });
+
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+
+    it('disables Save and Next button while request is pending', async () => {
+      const user = userEvent.setup();
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      
+      (useUpdateSignatoryModule.useUpdateSignatory as ReturnType<typeof vi.fn>).mockReturnValue({
+        updateSignatory: mockUpdateSignatory,
+        isPending: true,
+        isError: false,
+        error: null,
+        isSuccess: false,
       });
       
-      consoleWarnSpy.mockRestore();
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const firstNameInput = inputs.find((input) => 
+          (input as HTMLInputElement).value === 'John'
+        );
+        expect(firstNameInput).not.toBeDisabled();
+      });
+
+      const saveButton = screen.getByRole('button', { name: t.saveAndNextButton });
+      expect(saveButton).toBeDisabled();
     });
   });
 });

@@ -84,5 +84,17 @@
     "dataHandlingText": "Your data will be handled in accordance with our customer's privacy notice",
     "emailMismatchError": "Email addresses do not match",
     "requiredFieldsError": "Please fill in all required fields"
+  },
+  "confirmSignatoryPage": {
+    "headerText": "Confirm your authority",
+    "addressCountSuffix": "associated with this agreement.",
+    "addressCountSingular": "address",
+    "addressCountPlural": "addresses",
+    "authorityQuestion": "Are you authorised to consent to the wayleave agreement?",
+    "authorityYes": "Yes, I have the authority",
+    "authorityNo": "No, I do not have the authority",
+    "nextButton": "Preview agreement",
+    "backButtonLabel": "Go back",
+    "selectAuthorityError": "You need to select an authority option to proceed"
   }
 }

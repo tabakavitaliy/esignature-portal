@@ -43,12 +43,13 @@ interface UseMatterDetailsReturn {
   data: MatterDetails | undefined;
   error: Error | null;
   isLoading: boolean;
+  refetch: () => Promise<unknown>;
 }
 
 export function useMatterDetails(): UseMatterDetailsReturn {
   const { token } = useToken();
 
-  const { data, error, isLoading } = useQuery<MatterDetails, Error>({
+  const { data, error, isLoading, refetch } = useQuery<MatterDetails, Error>({
     queryKey: ['matterDetails'],
     queryFn: async () => {
       return apiClient<MatterDetails>('/api/lb/matter/matterDetails', {
@@ -65,5 +66,6 @@ export function useMatterDetails(): UseMatterDetailsReturn {
     data,
     error,
     isLoading,
+    refetch,
   };
 }

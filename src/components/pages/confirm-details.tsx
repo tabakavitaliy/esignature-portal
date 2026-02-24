@@ -15,7 +15,8 @@ import { ButtonErrorLabel } from '@/components/common/button-error-label';
 import { BackgroundPattern } from '@/components/common/background-pattern';
 import translations from '@/i18n/en.json';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useMatterDetails } from '@/hooks/queries/use-matter-details';
+import { useMatterDetails, type Signatory } from '@/hooks/queries/use-matter-details';
+import { useUpdateSignatory } from '@/hooks/queries/use-update-signatory';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
 
 /**
@@ -39,7 +40,8 @@ export function ConfirmDetails(): ReactNode {
 
   const { confirmDetailsPage: t } = translations;
   const router = useRouter();
-  const { data, isLoading: _isLoading, error: _error } = useMatterDetails();
+  const { data, isLoading: _isLoading, error: _error, refetch } = useMatterDetails();
+  const { updateSignatory, isPending } = useUpdateSignatory();
 
   const titleOptions = useMemo(() => [
     { value: 'Mr', label: 'Mr' },
@@ -48,6 +50,16 @@ export function ConfirmDetails(): ReactNode {
     { value: 'Ms', label: 'Ms' },
     { value: 'Dr', label: 'Dr' },
   ], []);
+
+  const currentSignatory = useMemo(() => {
+    const selectedSignatoryId = sessionStorage.getItem('selectedSignatoryId');
+    if (selectedSignatoryId && data?.signatories) {
+      return data.signatories.find(
+        (s) => s.signatoryId === selectedSignatoryId
+      );
+    }
+    return undefined;
+  }, [data]);
 
   useEffect(() => {
     const selectedSignatoryId = sessionStorage.getItem('selectedSignatoryId');
@@ -93,32 +105,59 @@ export function ConfirmDetails(): ReactNode {
     return true;
   };
 
-  const handleNextClick = (): void => {
+  const handleNextClick = async (): Promise<void> => {
     setErrorMessage('');
 
     if (isEditMode) {
       if (!validateForm()) {
         return;
       }
-      // TODO: Save form data - API integration TBD
-      console.warn('Form data saved', {
+
+      if (!isConfirmed) {
+        setErrorMessage(t.confirmDetailsError);
+        return;
+      }
+
+      const selectedSignatoryId = sessionStorage.getItem('selectedSignatoryId');
+      if (!selectedSignatoryId || !currentSignatory) {
+        setErrorMessage('Signatory information is not available');
+        return;
+      }
+
+      const signatory: Signatory = {
+        signatoryId: selectedSignatoryId,
+        envelopeId: currentSignatory.envelopeId,
         title,
-        firstName,
-        lastName,
-        email,
+        firstname: firstName,
+        surname: lastName,
+        addressAssociation: currentSignatory.addressAssociation,
+        emailAddress: email,
         mobile,
-        addressLine1,
-        addressLine2,
-        town,
-        postcode,
-      });
-      // TODO: Navigate to next step - routing TBD
+        agreementShareMethod: currentSignatory.agreementShareMethod,
+        correspondenceAddress: {
+          addressLine1,
+          addressLine2,
+          addressLine3: currentSignatory.correspondenceAddress?.addressLine3 ?? '',
+          addressLine4: currentSignatory.correspondenceAddress?.addressLine4 ?? '',
+          town,
+          county: currentSignatory.correspondenceAddress?.county ?? '',
+          postcode,
+        },
+      };
+
+      try {
+        await updateSignatory({ signatory });
+        await refetch();
+        router.push('/confirm-signatory');
+      } catch (error) {
+        setErrorMessage(error instanceof Error ? error.message : 'An error occurred while updating signatory');
+      }
     } else {
       if (!isConfirmed) {
         setErrorMessage(t.confirmDetailsError);
         return;
       }
-      // TODO: Navigate to next step - routing TBD
+      router.push('/confirm-signatory');
     }
   };
 
@@ -275,6 +314,7 @@ export function ConfirmDetails(): ReactNode {
               kind="primary"
               iconAfter={<ArrowRight className="h-5 w-5" />}
               onClick={handleNextClick}
+              disabled={isPending}
             />
           </div>
         </ContentWrapper>

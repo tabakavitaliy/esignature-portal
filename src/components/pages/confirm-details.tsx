@@ -27,6 +27,7 @@ export function ConfirmDetails(): ReactNode {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [selectedSignatoryId, setSelectedSignatoryId] = useState<string | null>(null);
   
   const [title, setTitle] = useState<string>('');
   const [firstName, setFirstName] = useState<string>('');
@@ -43,6 +44,13 @@ export function ConfirmDetails(): ReactNode {
   const { data, isLoading: _isLoading, error: _error, refetch } = useMatterDetails();
   const { updateSignatory, isPending } = useUpdateSignatory();
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedId = sessionStorage.getItem('selectedSignatoryId');
+      setSelectedSignatoryId(storedId);
+    }
+  }, []);
+
   const titleOptions = useMemo(() => [
     { value: 'Mr', label: 'Mr' },
     { value: 'Mrs', label: 'Mrs' },
@@ -52,17 +60,15 @@ export function ConfirmDetails(): ReactNode {
   ], []);
 
   const currentSignatory = useMemo(() => {
-    const selectedSignatoryId = sessionStorage.getItem('selectedSignatoryId');
     if (selectedSignatoryId && data?.signatories) {
       return data.signatories.find(
         (s) => s.signatoryId === selectedSignatoryId
       );
     }
     return undefined;
-  }, [data]);
+  }, [selectedSignatoryId, data]);
 
   useEffect(() => {
-    const selectedSignatoryId = sessionStorage.getItem('selectedSignatoryId');
     if (selectedSignatoryId && data?.signatories) {
       const signatory = data.signatories.find(
         (s) => s.signatoryId === selectedSignatoryId
@@ -80,7 +86,7 @@ export function ConfirmDetails(): ReactNode {
         setPostcode(signatory.correspondenceAddress?.postcode || '');
       }
     }
-  }, [data]);
+  }, [selectedSignatoryId, data]);
 
   const handleBackClick = (): void => {
     router.push('/confirm-name');
@@ -118,7 +124,6 @@ export function ConfirmDetails(): ReactNode {
         return;
       }
 
-      const selectedSignatoryId = sessionStorage.getItem('selectedSignatoryId');
       if (!selectedSignatoryId || !currentSignatory) {
         setErrorMessage('Signatory information is not available');
         return;

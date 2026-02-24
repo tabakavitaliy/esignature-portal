@@ -133,6 +133,7 @@ describe('ConfirmDetails', () => {
   });
 
   it('renders all form fields', () => {
+    sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
     render(<ConfirmDetails />);
     
     expect(screen.getByText(t.titleLabel)).toBeInTheDocument();
@@ -210,6 +211,45 @@ describe('ConfirmDetails', () => {
           (input as HTMLInputElement).value === 'John'
         );
         expect(firstNameInput).toHaveValue('John');
+      });
+    });
+  });
+
+  describe('confirm email field visibility', () => {
+    it('does not render Confirm email field in view mode', () => {
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const confirmEmailLabel = screen.queryByText(t.confirmEmailLabel);
+      expect(confirmEmailLabel).not.toBeInTheDocument();
+    });
+
+    it('renders Confirm email field in edit mode', async () => {
+      const user = userEvent.setup();
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      const confirmEmailLabel = screen.getByText(t.confirmEmailLabel);
+      expect(confirmEmailLabel).toBeInTheDocument();
+    });
+
+    it('initializes Confirm email with same value as Email', async () => {
+      const user = userEvent.setup();
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const confirmEmailInput = inputs.find((input) => 
+          input.getAttribute('placeholder') === t.confirmEmailLabel
+        );
+        expect(confirmEmailInput).toHaveValue('john.doe@example.com');
       });
     });
   });
@@ -345,6 +385,273 @@ describe('ConfirmDetails', () => {
     });
   });
 
+  describe('address line 3 and county fields', () => {
+    it('renders Address line 3 field in edit mode', async () => {
+      const user = userEvent.setup();
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const addressLine3Input = inputs.find((input) => 
+          input.getAttribute('placeholder') === t.addressLine3Label
+        );
+        expect(addressLine3Input).toBeInTheDocument();
+      });
+    });
+
+    it('renders County field in edit mode', async () => {
+      const user = userEvent.setup();
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const countyInput = inputs.find((input) => 
+          input.getAttribute('placeholder') === t.countyLabel
+        );
+        expect(countyInput).toBeInTheDocument();
+      });
+    });
+
+    it('can edit Address line 3 in edit mode', async () => {
+      const user = userEvent.setup();
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const addressLine3Input = inputs.find((input) => 
+          input.getAttribute('placeholder') === t.addressLine3Label
+        );
+        expect(addressLine3Input).not.toBeDisabled();
+      });
+
+      const inputs = screen.getAllByRole('textbox');
+      const addressLine3Input = inputs.find((input) => 
+        input.getAttribute('placeholder') === t.addressLine3Label
+      );
+      
+      if (addressLine3Input) {
+        await user.type(addressLine3Input, 'Building 5');
+        expect(addressLine3Input).toHaveValue('Building 5');
+      }
+    });
+
+    it('can edit County in edit mode', async () => {
+      const user = userEvent.setup();
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const countyInput = inputs.find((input) => 
+          input.getAttribute('placeholder') === t.countyLabel
+        );
+        expect(countyInput).not.toBeDisabled();
+      });
+
+      const inputs = screen.getAllByRole('textbox');
+      const countyInput = inputs.find((input) => 
+        input.getAttribute('placeholder') === t.countyLabel
+      );
+      
+      if (countyInput) {
+        await user.clear(countyInput);
+        await user.type(countyInput, 'Surrey');
+        expect(countyInput).toHaveValue('Surrey');
+      }
+    });
+  });
+
+  describe('conditional field visibility', () => {
+    it('hides mobile field when empty in view mode', () => {
+      const mockDataWithoutMobile = {
+        ...mockData,
+        signatories: [{
+          ...mockSignatory,
+          mobile: '',
+        }],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockDataWithoutMobile,
+        isLoading: false,
+        error: null,
+        refetch: mockRefetch,
+      });
+
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const mobileLabel = screen.queryByText(t.mobileLabel);
+      expect(mobileLabel).not.toBeInTheDocument();
+    });
+
+    it('shows mobile field when not empty in view mode', () => {
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const mobileLabel = screen.getByText(t.mobileLabel);
+      expect(mobileLabel).toBeInTheDocument();
+    });
+
+    it('shows mobile field in edit mode even when empty', async () => {
+      const user = userEvent.setup();
+      const mockDataWithoutMobile = {
+        ...mockData,
+        signatories: [{
+          ...mockSignatory,
+          mobile: '',
+        }],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockDataWithoutMobile,
+        isLoading: false,
+        error: null,
+        refetch: mockRefetch,
+      });
+
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const mobileLabel = screen.getByText(t.mobileLabel);
+        expect(mobileLabel).toBeInTheDocument();
+      });
+    });
+
+    it('hides correspondence address section when all fields empty in view mode', () => {
+      const mockDataWithoutAddress = {
+        ...mockData,
+        signatories: [{
+          ...mockSignatory,
+          correspondenceAddress: {
+            addressLine1: '',
+            addressLine2: '',
+            addressLine3: '',
+            addressLine4: '',
+            town: '',
+            county: '',
+            postcode: '',
+          },
+        }],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockDataWithoutAddress,
+        isLoading: false,
+        error: null,
+        refetch: mockRefetch,
+      });
+
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const addressLabel = screen.queryByText(t.correspondenceAddressLabel);
+      expect(addressLabel).not.toBeInTheDocument();
+    });
+
+    it('shows correspondence address section in edit mode even when all fields empty', async () => {
+      const user = userEvent.setup();
+      const mockDataWithoutAddress = {
+        ...mockData,
+        signatories: [{
+          ...mockSignatory,
+          correspondenceAddress: {
+            addressLine1: '',
+            addressLine2: '',
+            addressLine3: '',
+            addressLine4: '',
+            town: '',
+            county: '',
+            postcode: '',
+          },
+        }],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockDataWithoutAddress,
+        isLoading: false,
+        error: null,
+        refetch: mockRefetch,
+      });
+
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const addressLabel = screen.getByText(t.correspondenceAddressLabel);
+        expect(addressLabel).toBeInTheDocument();
+      });
+    });
+
+    it('hides empty address line 2 in view mode', () => {
+      const mockDataWithoutAddressLine2 = {
+        ...mockData,
+        signatories: [{
+          ...mockSignatory,
+          correspondenceAddress: {
+            ...mockSignatory.correspondenceAddress,
+            addressLine2: '',
+          },
+        }],
+      };
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: mockDataWithoutAddressLine2,
+        isLoading: false,
+        error: null,
+        refetch: mockRefetch,
+      });
+
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const inputs = screen.getAllByRole('textbox');
+      const addressLine2Input = inputs.find((input) => 
+        input.getAttribute('placeholder') === t.addressLine2Label
+      );
+      expect(addressLine2Input).toBeUndefined();
+    });
+
+    it('shows empty address line 3 in edit mode', async () => {
+      const user = userEvent.setup();
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const addressLine3Input = inputs.find((input) => 
+          input.getAttribute('placeholder') === t.addressLine3Label
+        );
+        expect(addressLine3Input).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('form validation in edit mode', () => {
     it('shows error when required fields are empty', async () => {
       const user = userEvent.setup();
@@ -411,6 +718,44 @@ describe('ConfirmDetails', () => {
 
       const errorMessage = await screen.findByText(t.invalidEmailError);
       expect(errorMessage).toBeInTheDocument();
+    });
+
+    it('shows error when emails do not match', async () => {
+      const user = userEvent.setup();
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+      
+      render(<ConfirmDetails />);
+      
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const confirmEmailInput = inputs.find((input) => 
+          input.getAttribute('placeholder') === t.confirmEmailLabel
+        );
+        expect(confirmEmailInput).not.toBeDisabled();
+      });
+
+      const inputs = screen.getAllByRole('textbox');
+      const confirmEmailInput = inputs.find((input) => 
+        input.getAttribute('placeholder') === t.confirmEmailLabel
+      );
+      
+      if (confirmEmailInput) {
+        await user.clear(confirmEmailInput);
+        await user.type(confirmEmailInput, 'different@example.com');
+      }
+
+      const checkbox = screen.getByRole('checkbox');
+      await user.click(checkbox);
+
+      const saveButton = screen.getByRole('button', { name: t.saveAndNextButton });
+      await user.click(saveButton);
+
+      const errorMessage = await screen.findByText(t.emailMismatchError);
+      expect(errorMessage).toBeInTheDocument();
+      expect(mockUpdateSignatory).not.toHaveBeenCalled();
     });
 
     it('validates successfully with all required fields filled', async () => {
@@ -886,6 +1231,7 @@ describe('ConfirmDetails', () => {
 
   describe('all text from translations', () => {
     it('uses translations for all visible text', () => {
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
       
       expect(screen.getByText(t.headerText)).toBeInTheDocument();

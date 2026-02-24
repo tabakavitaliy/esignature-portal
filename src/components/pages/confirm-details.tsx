@@ -33,10 +33,13 @@ export function ConfirmDetails(): ReactNode {
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [confirmEmail, setConfirmEmail] = useState<string>('');
   const [mobile, setMobile] = useState<string>('');
   const [addressLine1, setAddressLine1] = useState<string>('');
   const [addressLine2, setAddressLine2] = useState<string>('');
+  const [addressLine3, setAddressLine3] = useState<string>('');
   const [town, setTown] = useState<string>('');
+  const [county, setCounty] = useState<string>('');
   const [postcode, setPostcode] = useState<string>('');
 
   const { confirmDetailsPage: t } = translations;
@@ -79,10 +82,13 @@ export function ConfirmDetails(): ReactNode {
         setFirstName(signatory.firstname);
         setLastName(signatory.surname);
         setEmail(signatory.emailAddress);
+        setConfirmEmail(signatory.emailAddress);
         setMobile(signatory.mobile || '');
         setAddressLine1(signatory.correspondenceAddress?.addressLine1 || '');
         setAddressLine2(signatory.correspondenceAddress?.addressLine2 || '');
+        setAddressLine3(signatory.correspondenceAddress?.addressLine3 || '');
         setTown(signatory.correspondenceAddress?.town || '');
+        setCounty(signatory.correspondenceAddress?.county || '');
         setPostcode(signatory.correspondenceAddress?.postcode || '');
       }
     }
@@ -105,6 +111,11 @@ export function ConfirmDetails(): ReactNode {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setErrorMessage(t.invalidEmailError);
+      return false;
+    }
+
+    if (email !== confirmEmail) {
+      setErrorMessage(t.emailMismatchError);
       return false;
     }
 
@@ -142,10 +153,10 @@ export function ConfirmDetails(): ReactNode {
         correspondenceAddress: {
           addressLine1,
           addressLine2,
-          addressLine3: currentSignatory.correspondenceAddress?.addressLine3 ?? '',
+          addressLine3,
           addressLine4: currentSignatory.correspondenceAddress?.addressLine4 ?? '',
           town,
-          county: currentSignatory.correspondenceAddress?.county ?? '',
+          county,
           postcode,
         },
       };
@@ -199,7 +210,7 @@ export function ConfirmDetails(): ReactNode {
                   text={t.editButton}
                   kind="secondary"
                   onClick={handleEditClick}
-                  className="w-auto px-6 h-9 text-sm border-0"
+                  className="w-auto px-6 h-9 text-sm border-0 shadow-none"
                   iconBefore={
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M6 1.98744H1.91667C1.60725 1.98744 1.3105 2.11035 1.09171 2.32915C0.872916 2.54794 0.75 2.84468 0.75 3.1541V11.3208C0.75 11.6302 0.872916 11.9269 1.09171 12.1457C1.3105 12.3645 1.60725 12.4874 1.91667 12.4874H10.0833C10.3928 12.4874 10.6895 12.3645 10.9083 12.1457C11.1271 11.9269 11.25 11.6302 11.25 11.3208V7.23744M10.375 1.11244C10.6071 0.880372 10.9218 0.75 11.25 0.75C11.5782 0.75 11.8929 0.880372 12.125 1.11244C12.3571 1.3445 12.4874 1.65925 12.4874 1.98744C12.4874 2.31563 12.3571 2.63037 12.125 2.86244L6.58333 8.4041L4.25 8.98744L4.83333 6.6541L10.375 1.11244Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -244,55 +255,100 @@ export function ConfirmDetails(): ReactNode {
                 disabled={!isEditMode}
               />
 
-              <Input
-                label={t.mobileLabel}
-                type="tel"
-                placeholder={t.mobileLabel}
-                value={mobile}
-                onChange={setMobile}
-                disabled={!isEditMode}
-              />
+              {isEditMode && (
+                <Input
+                  label={t.confirmEmailLabel}
+                  type="email"
+                  placeholder={t.confirmEmailLabel}
+                  value={confirmEmail}
+                  onChange={setConfirmEmail}
+                  disabled={!isEditMode}
+                />
+              )}
 
-              <div className="flex flex-col gap-2">
-                <label className="text-xs text-white">{t.correspondenceAddressLabel}</label>
-                <div className="space-y-2">
-                  <Input
-                    label=""
-                    placeholder={t.addressLine1Label}
-                    value={addressLine1}
-                    onChange={setAddressLine1}
-                    disabled={!isEditMode}
-                    className="gap-0"
-                  />
+              {(isEditMode || mobile) && (
+                <Input
+                  label={t.mobileLabel}
+                  type="tel"
+                  placeholder={t.mobileLabel}
+                  value={mobile}
+                  onChange={setMobile}
+                  disabled={!isEditMode}
+                />
+              )}
 
-                  <Input
-                    label=""
-                    placeholder={t.addressLine2Label}
-                    value={addressLine2}
-                    onChange={setAddressLine2}
-                    disabled={!isEditMode}
-                    className="gap-0"
-                  />
+              {(isEditMode || addressLine1 || addressLine2 || addressLine3 || town || county || postcode) && (
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs text-white">{t.correspondenceAddressLabel}</label>
+                  <div className="space-y-2">
+                    {(isEditMode || addressLine1) && (
+                      <Input
+                        label=""
+                        placeholder={t.addressLine1Label}
+                        value={addressLine1}
+                        onChange={setAddressLine1}
+                        disabled={!isEditMode}
+                        className="gap-0"
+                      />
+                    )}
 
-                  <Input
-                    label=""
-                    placeholder={t.townLabel}
-                    value={town}
-                    onChange={setTown}
-                    disabled={!isEditMode}
-                    className="gap-0"
-                  />
+                    {(isEditMode || addressLine2) && (
+                      <Input
+                        label=""
+                        placeholder={t.addressLine2Label}
+                        value={addressLine2}
+                        onChange={setAddressLine2}
+                        disabled={!isEditMode}
+                        className="gap-0"
+                      />
+                    )}
 
-                  <Input
-                    label=""
-                    placeholder={t.postcodeLabel}
-                    value={postcode}
-                    onChange={setPostcode}
-                    disabled={!isEditMode}
-                    className="gap-0"
-                  />
+                    {(isEditMode || addressLine3) && (
+                      <Input
+                        label=""
+                        placeholder={t.addressLine3Label}
+                        value={addressLine3}
+                        onChange={setAddressLine3}
+                        disabled={!isEditMode}
+                        className="gap-0"
+                      />
+                    )}
+
+                    {(isEditMode || town) && (
+                      <Input
+                        label=""
+                        placeholder={t.townLabel}
+                        value={town}
+                        onChange={setTown}
+                        disabled={!isEditMode}
+                        className="gap-0"
+                      />
+                    )}
+
+                    {(isEditMode || county) && (
+                      <Input
+                        label=""
+                        placeholder={t.countyLabel}
+                        value={county}
+                        onChange={setCounty}
+                        disabled={!isEditMode}
+                        className="gap-0"
+                      />
+                    )}
+
+                    {(isEditMode || postcode) && (
+                      <Input
+                        label=""
+                        placeholder={t.postcodeLabel}
+                        value={postcode}
+                        onChange={setPostcode}
+                        disabled={!isEditMode}
+                        className="gap-0"
+                      />
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 

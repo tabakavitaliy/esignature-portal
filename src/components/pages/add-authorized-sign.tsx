@@ -1,83 +1,79 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ContentWrapper } from '@/components/layout/content-wrapper';
 import { Header } from '@/components/common/header';
 import { ProgressStepper } from '@/components/common/progress-stepper';
+import { Select } from '@/components/common/select';
+import { Input } from '@/components/common/input';
 import { Button } from '@/components/common/button';
 import { ButtonErrorLabel } from '@/components/common/button-error-label';
 import { BackgroundPattern } from '@/components/common/background-pattern';
-import {
-  SignatoryDetailsForm,
-  SIGNATORY_FORM_CONFIG,
-  type SignatoryDetailsFormValue,
-} from '@/components/common/signatory-details-form';
 import translations from '@/i18n/en.json';
 import { ArrowLeft } from 'lucide-react';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
-import { TITLE_OPTIONS, ADDRESS_ASSOCIATION_OPTIONS } from '@/constants/signatory-options';
-import { ROUTES } from '@/constants/routes';
-import { EMAIL_REGEX, PHONE_REGEX } from '@/constants/validation';
-
-const OWNER_ONLY_OPTIONS = ADDRESS_ASSOCIATION_OPTIONS.filter((o) => o.value === 'Owner');
+import type { AddressAssociation } from '@/hooks/queries/use-matter-details';
 
 /**
  * AddAuthorizedSign component displays the form for adding authorized signatory information
- * Used for the "My name is not listed" flow from confirm-name
  * @returns ReactNode
  */
 export function AddAuthorizedSign(): ReactNode {
-  const [formValue, setFormValue] = useState<SignatoryDetailsFormValue>({
-    title: '',
-    firstName: '',
-    lastName: '',
-    addressAssociation: '',
-    email: '',
-    confirmEmail: '',
-    mobile: null,
-    addressLine1: '',
-    addressLine2: '',
-    addressLine3: '',
-    town: '',
-    county: '',
-    postcode: '',
-  });
+  const [title, setTitle] = useState<string>('');
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [addressAssociation, setAddressAssociation] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [confirmEmail, setConfirmEmail] = useState<string>('');
+  const [mobile, setMobile] = useState<string>('');
+  const [addressLine1, setAddressLine1] = useState<string>('');
+  const [addressLine2, setAddressLine2] = useState<string>('');
+  const [addressLine3, setAddressLine3] = useState<string>('');
+  const [city, setCity] = useState<string>('');
+  const [county, setCounty] = useState<string>('');
+  const [postcode, setPostcode] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const { addAuthorizedSignPage: t, signatoryDetailsForm: tForm } = translations;
+  const { addAuthorizedSignPage: t } = translations;
   const router = useRouter();
 
-  const handleFormChange = useCallback((field: keyof SignatoryDetailsFormValue, value: string): void => {
-    setFormValue((prev) => ({ ...prev, [field]: value }));
-  }, []);
+  const titleOptions = [
+    { value: 'Mr', label: 'Mr' },
+    { value: 'Mrs', label: 'Mrs' },
+    { value: 'Miss', label: 'Miss' },
+    { value: 'Ms', label: 'Ms' },
+    { value: 'Dr', label: 'Dr' },
+  ];
+
+  const addressAssociationOptions = [
+    { value: 'Owner' as AddressAssociation, label: 'Owner' },
+  ];
 
   const handleBackClick = (): void => {
-    router.push(ROUTES.CONFIRM_NAME);
+    router.push('/confirm-name');
   };
 
   const validateForm = (): boolean => {
-    const { title, firstName, lastName, addressAssociation, email, confirmEmail, mobile, addressLine1, town, postcode } = formValue;
-
-    if (!title || !firstName || !lastName || !addressAssociation || !email || !confirmEmail || !addressLine1 || !town || !postcode) {
-      setErrorMessage(tForm.requiredFieldsError);
-      return false;
-    }
-
-    if (!EMAIL_REGEX.test(email)) {
-      setErrorMessage(tForm.invalidEmailError);
+    if (
+      !title ||
+      !firstName ||
+      !lastName ||
+      !addressAssociation ||
+      !email ||
+      !confirmEmail ||
+      !addressLine1 ||
+      !city ||
+      !postcode
+    ) {
+      setErrorMessage(t.requiredFieldsError);
       return false;
     }
 
     if (email !== confirmEmail) {
-      setErrorMessage(tForm.emailMismatchError);
-      return false;
-    }
-
-    if (mobile && !PHONE_REGEX.test(mobile)) {
-      setErrorMessage(tForm.invalidMobileError);
+      setErrorMessage(t.emailMismatchError);
       return false;
     }
 
@@ -92,7 +88,20 @@ export function AddAuthorizedSign(): ReactNode {
     }
 
     // TODO: Submit form data - navigation to next step TBD
-    console.warn('Form submitted successfully', formValue);
+    console.warn('Form submitted successfully', {
+      title,
+      firstName,
+      lastName,
+      addressAssociation,
+      email,
+      mobile,
+      addressLine1,
+      addressLine2,
+      addressLine3,
+      city,
+      county,
+      postcode,
+    });
   };
 
   return (
@@ -111,7 +120,7 @@ export function AddAuthorizedSign(): ReactNode {
 
           <div
             className={cn(
-              'flex-1 rounded-2xl px-4 py-5',
+              'flex-1 rounded-2xl px-8 py-10',
               'bg-[var(--login-card-bg)] backdrop-blur-sm'
             )}
           >
@@ -126,13 +135,114 @@ export function AddAuthorizedSign(): ReactNode {
               {t.signatoryDetailsHeading}
             </h3>
 
-            <SignatoryDetailsForm
-              value={formValue}
-              onChange={handleFormChange}
-              config={SIGNATORY_FORM_CONFIG.addAuthorizedSign}
-              titleOptions={TITLE_OPTIONS}
-              addressAssociationOptions={OWNER_ONLY_OPTIONS}
-            />
+            <div className="space-y-5">
+              <Select
+                label={t.titleLabel}
+                placeholder={t.titlePlaceholder}
+                options={titleOptions}
+                value={title}
+                onChange={setTitle}
+              />
+
+              <Input
+                label={t.firstNameLabel}
+                placeholder={t.firstNamePlaceholder}
+                value={firstName}
+                onChange={setFirstName}
+              />
+
+              <Input
+                label={t.lastNameLabel}
+                placeholder={t.lastNamePlaceholder}
+                value={lastName}
+                onChange={setLastName}
+              />
+
+              <Select
+                label={t.addressAssociationLabel}
+                placeholder={t.addressAssociationPlaceholder}
+                options={addressAssociationOptions}
+                value={addressAssociation}
+                onChange={setAddressAssociation}
+              />
+
+              <Input
+                label={t.emailLabel}
+                type="email"
+                placeholder={t.emailPlaceholder}
+                value={email}
+                onChange={setEmail}
+              />
+
+              <Input
+                label={t.confirmEmailLabel}
+                type="email"
+                placeholder={t.confirmEmailPlaceholder}
+                value={confirmEmail}
+                onChange={setConfirmEmail}
+              />
+
+              <Input
+                label={t.mobileLabel}
+                type="tel"
+                placeholder={t.mobilePlaceholder}
+                value={mobile}
+                onChange={setMobile}
+              />
+
+              <div className="flex flex-col gap-2">
+                <label className="text-xs text-white">{t.correspondenceAddressLabel}</label>
+                <div className="space-y-2">
+                  <Input
+                    label=""
+                    placeholder={t.addressLine1Placeholder}
+                    value={addressLine1}
+                    onChange={setAddressLine1}
+                    className="gap-0"
+                  />
+
+                  <Input
+                    label=""
+                    placeholder={t.addressLine2Placeholder}
+                    value={addressLine2}
+                    onChange={setAddressLine2}
+                    className="gap-0"
+                  />
+
+                  <Input
+                    label=""
+                    placeholder={t.addressLine3Placeholder}
+                    value={addressLine3}
+                    onChange={setAddressLine3}
+                    className="gap-0"
+                  />
+
+                  <Input
+                    label=""
+                    placeholder={t.cityPlaceholder}
+                    value={city}
+                    onChange={setCity}
+                    className="gap-0"
+                  />
+
+                  <Input
+                    label=""
+                    placeholder={t.countyPlaceholder}
+                    value={county}
+                    onChange={setCounty}
+                    className="gap-0"
+                  />
+
+                  <Input
+                    label=""
+                    placeholder={t.postcodePlaceholder}
+                    value={postcode}
+                    onChange={setPostcode}
+                    className="gap-0"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <p className="text-xs text-white text-center leading-[18px]">

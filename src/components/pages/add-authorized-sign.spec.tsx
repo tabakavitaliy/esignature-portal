@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/navigation';
@@ -268,11 +268,12 @@ describe('AddAuthorizedSign', () => {
       const mrOption = await screen.findByText('Mr');
       await user.click(mrOption);
 
-      const firstNameInput = screen.getByPlaceholderText(t.firstNamePlaceholder);
-      await user.type(firstNameInput, 'John');
-
-      const lastNameInput = screen.getByPlaceholderText(t.lastNamePlaceholder);
-      await user.type(lastNameInput, 'Doe');
+      fireEvent.change(screen.getByPlaceholderText(t.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(t.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
       await user.click(addressAssociationSelect!);
@@ -280,17 +281,18 @@ describe('AddAuthorizedSign', () => {
       await user.click(ownerOption);
 
       const emailInputs = screen.getAllByPlaceholderText(t.emailPlaceholder);
-      await user.type(emailInputs[0]!, 'john@example.com');
-      await user.type(emailInputs[1]!, 'different@example.com');
+      fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
+      fireEvent.change(emailInputs[1]!, { target: { value: 'different@example.com' } });
 
-      const addressLine1 = screen.getByPlaceholderText(t.addressLine1Placeholder);
-      await user.type(addressLine1, '123 Main St');
-
-      const cityInput = screen.getByPlaceholderText(t.cityPlaceholder);
-      await user.type(cityInput, 'London');
-
-      const postcodeInput = screen.getByPlaceholderText(t.postcodePlaceholder);
-      await user.type(postcodeInput, 'SW1A 1AA');
+      fireEvent.change(screen.getByPlaceholderText(t.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(t.cityPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(t.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
 
       const submitButton = screen.getByRole('button', { name: t.submitButton });
       await user.click(submitButton);
@@ -375,11 +377,12 @@ describe('AddAuthorizedSign', () => {
       const mrOption = await screen.findByText('Mr');
       await user.click(mrOption);
 
-      const firstNameInput = screen.getByPlaceholderText(t.firstNamePlaceholder);
-      await user.type(firstNameInput, 'John');
-
-      const lastNameInput = screen.getByPlaceholderText(t.lastNamePlaceholder);
-      await user.type(lastNameInput, 'Doe');
+      fireEvent.change(screen.getByPlaceholderText(t.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(t.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
       await user.click(addressAssociationSelect!);
@@ -387,17 +390,18 @@ describe('AddAuthorizedSign', () => {
       await user.click(ownerOption);
 
       const emailInputs = screen.getAllByPlaceholderText(t.emailPlaceholder);
-      await user.type(emailInputs[0]!, 'john@example.com');
-      await user.type(emailInputs[1]!, 'john@example.com');
+      fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
+      fireEvent.change(emailInputs[1]!, { target: { value: 'john@example.com' } });
 
-      const addressLine1 = screen.getByPlaceholderText(t.addressLine1Placeholder);
-      await user.type(addressLine1, '123 Main St');
-
-      const cityInput = screen.getByPlaceholderText(t.cityPlaceholder);
-      await user.type(cityInput, 'London');
-
-      const postcodeInput = screen.getByPlaceholderText(t.postcodePlaceholder);
-      await user.type(postcodeInput, 'SW1A 1AA');
+      fireEvent.change(screen.getByPlaceholderText(t.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(t.cityPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(t.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
 
       await user.click(submitButton);
 
@@ -523,11 +527,12 @@ describe('AddAuthorizedSign', () => {
       const mrOption = await screen.findByText('Mr');
       await user.click(mrOption);
 
-      const firstNameInput = screen.getByPlaceholderText(t.firstNamePlaceholder);
-      await user.type(firstNameInput, 'John');
-
-      const lastNameInput = screen.getByPlaceholderText(t.lastNamePlaceholder);
-      await user.type(lastNameInput, 'Doe');
+      fireEvent.change(screen.getByPlaceholderText(t.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(t.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
       await user.click(addressAssociationSelect!);
@@ -535,17 +540,18 @@ describe('AddAuthorizedSign', () => {
       await user.click(ownerOption);
 
       const emailInputs = screen.getAllByPlaceholderText(t.emailPlaceholder);
-      await user.type(emailInputs[0]!, 'john@example.com');
-      await user.type(emailInputs[1]!, 'john@example.com');
+      fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
+      fireEvent.change(emailInputs[1]!, { target: { value: 'john@example.com' } });
 
-      const addressLine1 = screen.getByPlaceholderText(t.addressLine1Placeholder);
-      await user.type(addressLine1, '123 Main St');
-
-      const cityInput = screen.getByPlaceholderText(t.cityPlaceholder);
-      await user.type(cityInput, 'London');
-
-      const postcodeInput = screen.getByPlaceholderText(t.postcodePlaceholder);
-      await user.type(postcodeInput, 'SW1A 1AA');
+      fireEvent.change(screen.getByPlaceholderText(t.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(t.cityPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(t.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
 
       const submitButton = screen.getByRole('button', { name: t.submitButton });
       await user.click(submitButton);
@@ -571,11 +577,12 @@ describe('AddAuthorizedSign', () => {
       const mrOption = await screen.findByText('Mr');
       await user.click(mrOption);
 
-      const firstNameInput = screen.getByPlaceholderText(t.firstNamePlaceholder);
-      await user.type(firstNameInput, 'John');
-
-      const lastNameInput = screen.getByPlaceholderText(t.lastNamePlaceholder);
-      await user.type(lastNameInput, 'Doe');
+      fireEvent.change(screen.getByPlaceholderText(t.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(t.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
       await user.click(addressAssociationSelect!);
@@ -583,17 +590,18 @@ describe('AddAuthorizedSign', () => {
       await user.click(ownerOption);
 
       const emailInputs = screen.getAllByPlaceholderText(t.emailPlaceholder);
-      await user.type(emailInputs[0]!, 'john@example.com');
-      await user.type(emailInputs[1]!, 'john@example.com');
+      fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
+      fireEvent.change(emailInputs[1]!, { target: { value: 'john@example.com' } });
 
-      const addressLine1 = screen.getByPlaceholderText(t.addressLine1Placeholder);
-      await user.type(addressLine1, '123 Main St');
-
-      const cityInput = screen.getByPlaceholderText(t.cityPlaceholder);
-      await user.type(cityInput, 'London');
-
-      const postcodeInput = screen.getByPlaceholderText(t.postcodePlaceholder);
-      await user.type(postcodeInput, 'SW1A 1AA');
+      fireEvent.change(screen.getByPlaceholderText(t.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(t.cityPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(t.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
 
       const submitButton = screen.getByRole('button', { name: t.submitButton });
       await user.click(submitButton);
@@ -624,16 +632,14 @@ describe('AddAuthorizedSign', () => {
       expect(mobileInput).toHaveValue('');
     });
 
-    it('maintains independent state for all form fields', async () => {
-      const user = userEvent.setup();
-
+    it('maintains independent state for all form fields', () => {
       render(<AddAuthorizedSign />);
 
       const firstNameInput = screen.getByPlaceholderText(t.firstNamePlaceholder);
-      await user.type(firstNameInput, 'John');
-
       const lastNameInput = screen.getByPlaceholderText(t.lastNamePlaceholder);
-      await user.type(lastNameInput, 'Doe');
+
+      fireEvent.change(firstNameInput, { target: { value: 'John' } });
+      fireEvent.change(lastNameInput, { target: { value: 'Doe' } });
 
       expect(firstNameInput).toHaveValue('John');
       expect(lastNameInput).toHaveValue('Doe');

@@ -16,6 +16,7 @@ import translations from '@/i18n/en.json';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useMatterDetails } from '@/hooks/queries/use-matter-details';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
+import { ROUTES } from '@/constants/routes';
 
 /**
  * ConfirmName component displays the name selection page
@@ -43,7 +44,7 @@ const [selectedOption, setSelectedOption] = useState<string>('');
   }, [data]);
 
   const handleBackClick = (): void => {
-    router.push('/');
+    router.push(ROUTES.HOME);
   };
 
   const handleNextClick = (): void => {
@@ -55,13 +56,13 @@ const [selectedOption, setSelectedOption] = useState<string>('');
     }
     
     if (selectedOption === 'no-name-exists') {
-      router.push('/add-new-name');
+      router.push(ROUTES.ADD_NEW_NAME);
       return;
     }
     
     if (isConfirmed) {
       sessionStorage.setItem('selectedSignatoryId', selectedOption);
-      router.push('/confirm-details');
+      router.push(ROUTES.CONFIRM_DETAILS);
     } else {
       setErrorMessage(t.confirmNameError);
     }

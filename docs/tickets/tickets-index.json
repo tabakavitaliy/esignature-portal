@@ -1,6 +1,37 @@
 {
   "tickets": [
     {
+      "id": "WEP-33",
+      "title": "\"Not Authorized to Sign\" Flow",
+      "description": "Add authorized signatory form + thank-you screen when user has no signing authority",
+      "status": "done",
+      "progress": "100%",
+      "jiraUrl": "https://jdc.eleks.com/browse/WEP-33",
+      "ticketFile": "docs/tickets/WEP-33.md",
+      "relatedFeatures": ["signatory-flow"],
+      "relatedFiles": [
+        "src/components/common/signatory-details-form.tsx",
+        "src/components/pages/not-authorized-signatory.tsx",
+        "src/components/pages/thank-you.tsx",
+        "src/components/pages/confirm-details.tsx",
+        "src/components/pages/add-authorized-sign.tsx",
+        "src/components/pages/confirm-signatory.tsx",
+        "src/app/not-authorized-signatory/page.tsx",
+        "src/app/preview-agreement/page.tsx",
+        "src/app/thank-you/page.tsx",
+        "src/components/pages/not-authorized-signatory.spec.tsx",
+        "src/components/pages/thank-you.spec.tsx",
+        "src/components/pages/confirm-signatory.spec.tsx",
+        "src/components/pages/confirm-details.spec.tsx",
+        "src/components/pages/add-authorized-sign.spec.tsx",
+        "src/app/not-authorized-signatory/page.spec.tsx",
+        "src/app/preview-agreement/page.spec.tsx",
+        "src/app/thank-you/page.spec.tsx",
+        "src/hooks/queries/use-matter-details.ts",
+        "src/i18n/en.json"
+      ]
+    },
+    {
       "id": "WEP-16",
       "title": "Consent and Analytics Scaffolding (GA4 gated by OneTrust)",
       "description": "Consent hook, GA4 conditional loader, analytics utility, page tracker -- Phase 2 of WEP-6",
@@ -36,6 +67,6 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-02-20"
+    "lastUpdated": "2026-02-24"
   }
 }

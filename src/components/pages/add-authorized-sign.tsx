@@ -72,7 +72,7 @@ export function AddAuthorizedSign(): ReactNode {
   const validateForm = (): boolean => {
     const { title, firstName, lastName, addressAssociation, email, confirmEmail, mobile, addressLine1, town, postcode } = formValue;
 
-    if (!title || !firstName || !lastName || !addressAssociation || !email || !confirmEmail || !addressLine1 || !town || !postcode) {
+    if (!title || !firstName || !lastName || !addressAssociation || !email || !confirmEmail || !mobile || !addressLine1 || !town || !postcode) {
       setErrorMessage(tForm.requiredFieldsError);
       return false;
     }
@@ -87,7 +87,7 @@ export function AddAuthorizedSign(): ReactNode {
       return false;
     }
 
-    if (mobile && !PHONE_REGEX.test(mobile)) {
+    if (!PHONE_REGEX.test(mobile)) {
       setErrorMessage(tForm.invalidMobileError);
       return false;
     }

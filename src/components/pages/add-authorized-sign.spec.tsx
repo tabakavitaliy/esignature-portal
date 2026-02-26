@@ -25,6 +25,14 @@ describe('AddAuthorizedSign', () => {
   const mockPush = vi.fn();
   const mockAddSignatory = vi.fn();
 
+  const selectOption = async (user: ReturnType<typeof userEvent.setup>, selectElement: HTMLElement, optionText: string): Promise<void> => {
+    await user.click(selectElement);
+    await waitFor(async () => {
+      const option = await screen.findByRole('option', { name: optionText });
+      await user.click(option);
+    });
+  };
+
   const mockSignatory = {
     signatoryId: 'signatory-123',
     envelopeId: 'envelope-456',
@@ -326,8 +334,7 @@ describe('AddAuthorizedSign', () => {
       render(<AddAuthorizedSign />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
-      await user.click(titleSelect!);
-      await user.click(await screen.findByText('Mr'));
+      await selectOption(user, titleSelect!, 'Mr');
 
       await user.type(screen.getByPlaceholderText(tForm.lastNamePlaceholder), 'Doe');
 
@@ -342,8 +349,7 @@ describe('AddAuthorizedSign', () => {
       render(<AddAuthorizedSign />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
-      await user.click(titleSelect!);
-      await user.click(await screen.findByText('Mr'));
+      await selectOption(user, titleSelect!, 'Mr');
 
       await user.type(screen.getByPlaceholderText(tForm.firstNamePlaceholder), 'John');
 
@@ -358,15 +364,13 @@ describe('AddAuthorizedSign', () => {
       render(<AddAuthorizedSign />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
-      await user.click(titleSelect!);
-      await user.click(await screen.findByText('Mr'));
+      await selectOption(user, titleSelect!, 'Mr');
 
       fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
-      await user.click(addressAssociationSelect!);
-      await user.click(await screen.findByText('Owner'));
+      await selectOption(user, addressAssociationSelect!, 'Owner');
 
       const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
       fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
@@ -388,15 +392,13 @@ describe('AddAuthorizedSign', () => {
       render(<AddAuthorizedSign />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
-      await user.click(titleSelect!);
-      await user.click(await screen.findByText('Mr'));
+      await selectOption(user, titleSelect!, 'Mr');
 
       fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
-      await user.click(addressAssociationSelect!);
-      await user.click(await screen.findByText('Owner'));
+      await selectOption(user, addressAssociationSelect!, 'Owner');
 
       const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
       fireEvent.change(emailInputs[0]!, { target: { value: 'not-a-valid-email' } });
@@ -419,15 +421,13 @@ describe('AddAuthorizedSign', () => {
       render(<AddAuthorizedSign />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
-      await user.click(titleSelect!);
-      await user.click(await screen.findByText('Mr'));
+      await selectOption(user, titleSelect!, 'Mr');
 
       fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
-      await user.click(addressAssociationSelect!);
-      await user.click(await screen.findByText('Owner'));
+      await selectOption(user, addressAssociationSelect!, 'Owner');
 
       const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
       fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
@@ -450,15 +450,13 @@ describe('AddAuthorizedSign', () => {
       render(<AddAuthorizedSign />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
-      await user.click(titleSelect!);
-      await user.click(await screen.findByText('Mr'));
+      await selectOption(user, titleSelect!, 'Mr');
 
       fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
-      await user.click(addressAssociationSelect!);
-      await user.click(await screen.findByText('Owner'));
+      await selectOption(user, addressAssociationSelect!, 'Owner');
 
       const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
       fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
@@ -484,8 +482,7 @@ describe('AddAuthorizedSign', () => {
       expect(screen.getByText(tForm.requiredFieldsError)).toBeInTheDocument();
 
       const titleSelect = screen.getAllByRole('combobox')[0];
-      await user.click(titleSelect!);
-      await user.click(await screen.findByText('Mr'));
+      await selectOption(user, titleSelect!, 'Mr');
 
       await user.click(screen.getByRole('button', { name: t.submitButton }));
 
@@ -494,17 +491,15 @@ describe('AddAuthorizedSign', () => {
   });
 
   describe('API submission', () => {
-    const fillValidForm = async (user: ReturnType<typeof userEvent.setup>) => {
+    const fillValidForm = async (user: ReturnType<typeof userEvent.setup>): Promise<void> => {
       const titleSelect = screen.getAllByRole('combobox')[0];
-      await user.click(titleSelect!);
-      await user.click(await screen.findByText('Mr'));
+      await selectOption(user, titleSelect!, 'Mr');
 
       fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
-      await user.click(addressAssociationSelect!);
-      await user.click(await screen.findByText('Owner'));
+      await selectOption(user, addressAssociationSelect!, 'Owner');
 
       const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
       fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
@@ -548,7 +543,7 @@ describe('AddAuthorizedSign', () => {
       });
     });
 
-    it('navigates to /preview-agreement on successful submission', async () => {
+    it('navigates to /confirm-signatory on successful submission', async () => {
       const user = userEvent.setup();
       mockAddSignatory.mockResolvedValue({ success: true });
 
@@ -558,7 +553,7 @@ describe('AddAuthorizedSign', () => {
       await user.click(screen.getByRole('button', { name: t.submitButton }));
 
       await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith('/preview-agreement');
+        expect(mockPush).toHaveBeenCalledWith('/confirm-signatory');
       });
     });
 
@@ -609,10 +604,9 @@ describe('AddAuthorizedSign', () => {
       render(<AddAuthorizedSign />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
-      await user.click(titleSelect!);
-      await user.click(await screen.findByText('Mr'));
+      await selectOption(user, titleSelect!, 'Mr');
 
-      expect(screen.getByText('Mr')).toBeInTheDocument();
+      expect(screen.getAllByText('Mr').length).toBeGreaterThan(0);
     });
 
     it('updates first name input', async () => {
@@ -703,15 +697,13 @@ describe('AddAuthorizedSign', () => {
       render(<AddAuthorizedSign />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
-      await user.click(titleSelect!);
-      await user.click(await screen.findByText('Mr'));
+      await selectOption(user, titleSelect!, 'Mr');
 
       fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
-      await user.click(addressAssociationSelect!);
-      await user.click(await screen.findByText('Owner'));
+      await selectOption(user, addressAssociationSelect!, 'Owner');
 
       const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
       fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });

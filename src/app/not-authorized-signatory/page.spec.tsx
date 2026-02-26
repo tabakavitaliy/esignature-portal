@@ -296,7 +296,7 @@ describe('NotAuthorizedSignatoryPage', () => {
       fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
 
       await vi.waitFor(() => {
-        expect(mockAddSignatory).toHaveBeenCalled();
+        expect(mockUpdateSignatory).toHaveBeenCalled();
       });
 
       await vi.waitFor(() => {
@@ -307,7 +307,7 @@ describe('NotAuthorizedSignatoryPage', () => {
     it('handles submission error and displays error message', async () => {
       const user = userEvent.setup();
       const errorMessage = 'Submission failed';
-      mockAddSignatory.mockRejectedValueOnce(new Error(errorMessage));
+      mockUpdateSignatory.mockRejectedValueOnce(new Error(errorMessage));
 
       (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
         data: {
@@ -376,7 +376,7 @@ describe('NotAuthorizedSignatoryPage', () => {
 
     it('handles non-Error submission failure', async () => {
       const user = userEvent.setup();
-      mockAddSignatory.mockRejectedValueOnce('Non-Error failure');
+      mockUpdateSignatory.mockRejectedValueOnce('Non-Error failure');
 
       (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
         data: {

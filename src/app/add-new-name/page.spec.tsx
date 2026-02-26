@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import AddNewNamePage from './page';
 import * as useMatterDetailsModule from '@/hooks/queries/use-matter-details';
+import * as useAddNewSignatoryModule from '@/hooks/queries/use-add-new-signatory';
 import type { MatterDetails } from '@/hooks/queries/use-matter-details';
 
 vi.mock('next/navigation', () => ({
@@ -13,6 +14,10 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@/hooks/queries/use-matter-details', () => ({
   useMatterDetails: vi.fn(),
+}));
+
+vi.mock('@/hooks/queries/use-add-new-signatory', () => ({
+  useAddNewSignatory: vi.fn(),
 }));
 
 describe('AddNewNamePage', () => {
@@ -33,6 +38,13 @@ describe('AddNewNamePage', () => {
       data: mockMatterDetails,
       isLoading: false,
       error: null,
+    });
+    (useAddNewSignatoryModule.useAddNewSignatory as ReturnType<typeof vi.fn>).mockReturnValue({
+      addNewSignatory: vi.fn(),
+      isPending: false,
+      isError: false,
+      error: null,
+      isSuccess: false,
     });
   });
 

@@ -61,7 +61,7 @@ export function SignatoryDetailsForm({
   const t = translations.signatoryDetailsForm;
 
   return (
-    <div className="space-y-5">
+    <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
       <Select
         label={t.titleLabel}
         placeholder={t.titlePlaceholder}
@@ -189,7 +189,7 @@ export function SignatoryDetailsForm({
           />
         </div>
       </div>
-    </div>
+    </form>
   );
 }
 

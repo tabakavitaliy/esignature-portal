@@ -3,16 +3,16 @@ import { apiClient } from '@/lib/api';
 import { useToken } from './use-token';
 import { useMatterDetails, type Signatory } from './use-matter-details';
 
-export interface AddSignatoryBody {
+export interface UpdateSignatoryBody {
   signatory: Signatory;
 }
 
-interface AddSignatoryResponse {
+interface UpdateSignatoryResponse {
   success: boolean;
 }
 
 interface UseAddSignatoryReturn {
-  addSignatory: (body: AddSignatoryBody) => Promise<AddSignatoryResponse>;
+  addSignatory: (body: UpdateSignatoryBody) => Promise<UpdateSignatoryResponse>;
   isPending: boolean;
   isError: boolean;
   error: Error | null;
@@ -24,18 +24,23 @@ export function useAddSignatory(): UseAddSignatoryReturn {
   const { data: matterData } = useMatterDetails();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<AddSignatoryResponse, Error, AddSignatoryBody>({
-    mutationFn: async (body: AddSignatoryBody) => {
+  const mutation = useMutation<UpdateSignatoryResponse, Error, UpdateSignatoryBody>({
+    mutationFn: async (body: UpdateSignatoryBody) => {
       const matterId = matterData?.matterId;
+      const signatoryId = body.signatory.signatoryId;
 
       if (!matterId) {
         throw new Error('Matter ID is not available');
       }
 
-      return apiClient<AddSignatoryResponse>(
-        `/api/lb/matter/${matterId}/addSignatory`,
+      if (!signatoryId) {
+        throw new Error('Signatory ID is not available');
+      }
+
+      return apiClient<UpdateSignatoryResponse>(
+        `/api/lb/matter/${matterId}/signatory/${signatoryId}/updateSignatory`,
         {
-          method: 'POST',
+          method: 'PUT',
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -118,7 +118,7 @@ export function NotAuthorizedSignatory(): ReactNode {
           surname: lastName,
           addressAssociation: addressAssociation as AddressAssociation,
           emailAddress: email,
-          mobile: mobile ?? '',
+          mobile,
           agreementShareMethod: 'Unspecified',
           correspondenceAddress: {
             addressLine1,

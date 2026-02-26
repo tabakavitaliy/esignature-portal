@@ -2,7 +2,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { ReactNode } from 'react';
-import { useAddSignatory, type AddSignatoryBody } from './use-add-signatory';
+import { useAddSignatory, type UpdateSignatoryBody } from './use-add-signatory';
 import * as useTokenModule from './use-token';
 import * as useMatterDetailsModule from './use-matter-details';
 import type { MatterDetails } from './use-matter-details';
@@ -36,9 +36,11 @@ describe('useAddSignatory', () => {
     signatories: [],
   };
 
-  const mockAddSignatoryBody: AddSignatoryBody = {
+  const mockSignatoryId = 'signatory-456';
+
+  const mockAddSignatoryBody: UpdateSignatoryBody = {
     signatory: {
-      signatoryId: '',
+      signatoryId: mockSignatoryId,
       envelopeId: 'envelope-123',
       title: 'Mr',
       firstname: 'Jane',
@@ -95,9 +97,9 @@ describe('useAddSignatory', () => {
 
     expect(response).toEqual(mockResponse);
     expect(mockFetch).toHaveBeenCalledWith(
-      `https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/api/lb/matter/${mockMatterId}/addSignatory`,
+      `https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/api/lb/matter/${mockMatterId}/signatory/${mockSignatoryId}/updateSignatory`,
       expect.objectContaining({
-        method: 'POST',
+        method: 'PUT',
         headers: expect.objectContaining({
           Authorization: `Bearer ${mockToken}`,
           'Content-Type': 'application/json',

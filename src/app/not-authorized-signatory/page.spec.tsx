@@ -86,7 +86,8 @@ describe('NotAuthorizedSignatoryPage', () => {
 
       const options = ['Owner', 'Landlord', 'Property Manager', 'Solicitor', 'Executor', 'Director', 'Other'];
       for (const option of options) {
-        expect(await screen.findByText(option)).toBeInTheDocument();
+        const elements = await screen.findAllByText(option);
+        expect(elements.length).toBeGreaterThan(0);
       }
     });
   });
@@ -114,7 +115,8 @@ describe('NotAuthorizedSignatoryPage', () => {
 
       const combos = screen.getAllByRole('combobox');
       await user.click(combos[0]!);
-      await user.click(await screen.findByText('Mr'));
+      const mrOptions = await screen.findAllByText('Mr');
+      await user.click(mrOptions[mrOptions.length - 1]!);
 
       fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
         target: { value: 'John' },
@@ -124,7 +126,8 @@ describe('NotAuthorizedSignatoryPage', () => {
       });
 
       await user.click(combos[1]!);
-      await user.click(await screen.findByText('Owner'));
+      const ownerOptions = await screen.findAllByText('Owner');
+      await user.click(ownerOptions[ownerOptions.length - 1]!);
 
       const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
       fireEvent.change(emailInputs[0]!, { target: { value: 'test@example.com' } });

@@ -1245,8 +1245,32 @@ describe('ConfirmDetails', () => {
       expect(screen.getByText(t.mobileLabel)).toBeInTheDocument();
       expect(screen.getByText(t.correspondenceAddressLabel)).toBeInTheDocument();
       expect(screen.getByText(t.confirmCheckboxLabel)).toBeInTheDocument();
+      expect(screen.getByText(t.dataHandlingText)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: t.nextButton })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: t.backButtonLabel })).toBeInTheDocument();
+    });
+  });
+
+  describe('data handling text', () => {
+    it('renders data handling text', () => {
+      render(<ConfirmDetails />);
+      expect(screen.getByText(t.dataHandlingText)).toBeInTheDocument();
+    });
+
+    it('data handling text uses translation', () => {
+      render(<ConfirmDetails />);
+      const dataHandlingText = screen.getByText(t.dataHandlingText);
+      expect(dataHandlingText.textContent).toBe(
+        "Your data will be handled in accordance with our customer's privacy notice"
+      );
+    });
+
+    it('data handling text has correct styling', () => {
+      render(<ConfirmDetails />);
+      const dataHandlingText = screen.getByText(t.dataHandlingText);
+      expect(dataHandlingText).toHaveClass('text-xs');
+      expect(dataHandlingText).toHaveClass('text-center');
+      expect(dataHandlingText).toHaveClass('pt-4');
     });
   });
 

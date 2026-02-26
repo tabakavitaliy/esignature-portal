@@ -48,6 +48,7 @@
     --checkbox-checked-icon: 250 58% 37%;
     --privacy-notice-bg: rgba(17, 17, 17, 0.4);
     --privacy-notice-text: 0 0% 80%;
+    --data-handling-text: 0 0% 100% / 0.8;
   }
 
   .dark {

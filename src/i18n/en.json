@@ -54,7 +54,8 @@
     "confirmDetailsError": "Please confirm your details are correct",
     "requiredFieldsError": "Please fill in all required fields",
     "invalidEmailError": "Please enter a valid email address",
-    "emailMismatchError": "Email addresses do not match"
+    "emailMismatchError": "Email addresses do not match",
+    "dataHandlingText": "Your data will be handled in accordance with our customer's privacy notice"
   },
   "addAuthorizedSignPage": {
     "headerText": "Confirm signatory details",

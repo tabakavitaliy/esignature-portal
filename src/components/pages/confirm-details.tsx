@@ -378,6 +378,10 @@ export function ConfirmDetails(): ReactNode {
               disabled={isPending}
             />
           </div>
+
+          <p className="text-xs text-center text-[hsl(var(--data-handling-text))] pt-4">
+            {t.dataHandlingText}
+          </p>
         </ContentWrapper>
       </main>
       <CustomerPrivacy />

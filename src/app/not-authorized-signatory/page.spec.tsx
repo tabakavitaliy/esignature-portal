@@ -150,5 +150,314 @@ describe('NotAuthorizedSignatoryPage', () => {
 
       expect(screen.getByText(tForm.emailMismatchError)).toBeInTheDocument();
     });
+
+    it('shows invalid email error when email format is incorrect', async () => {
+      const user = userEvent.setup();
+      render(<NotAuthorizedSignatoryPage />);
+
+      const combos = screen.getAllByRole('combobox');
+      await user.click(combos[0]!);
+      const mrOptions = await screen.findAllByText('Mr');
+      await user.click(mrOptions[mrOptions.length - 1]!);
+
+      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
+
+      await user.click(combos[1]!);
+      const ownerOptions = await screen.findAllByText('Owner');
+      await user.click(ownerOptions[ownerOptions.length - 1]!);
+
+      const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
+      fireEvent.change(emailInputs[0]!, { target: { value: 'invalid-email' } });
+      fireEvent.change(emailInputs[1]!, { target: { value: 'invalid-email' } });
+
+      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
+
+      expect(screen.getByText(tForm.invalidEmailError)).toBeInTheDocument();
+    });
+
+    it('shows invalid mobile error when mobile format is incorrect', async () => {
+      const user = userEvent.setup();
+      render(<NotAuthorizedSignatoryPage />);
+
+      const combos = screen.getAllByRole('combobox');
+      await user.click(combos[0]!);
+      const mrOptions = await screen.findAllByText('Mr');
+      await user.click(mrOptions[mrOptions.length - 1]!);
+
+      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
+
+      await user.click(combos[1]!);
+      const ownerOptions = await screen.findAllByText('Owner');
+      await user.click(ownerOptions[ownerOptions.length - 1]!);
+
+      const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
+      fireEvent.change(emailInputs[0]!, { target: { value: 'test@example.com' } });
+      fireEvent.change(emailInputs[1]!, { target: { value: 'test@example.com' } });
+
+      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), {
+        target: { value: 'invalid-phone' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
+
+      expect(screen.getByText(tForm.invalidMobileError)).toBeInTheDocument();
+    });
+  });
+
+  describe('form submission', () => {
+    it('successfully submits form with valid data and navigates to thank you page', async () => {
+      const user = userEvent.setup();
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: {
+          signatories: [
+            {
+              signatoryId: 'sig-123',
+              envelopeId: 'env-456',
+            },
+          ],
+        },
+        isLoading: false,
+        error: null,
+        refetch: vi.fn(),
+      });
+
+      // Mock sessionStorage
+      Object.defineProperty(window, 'sessionStorage', {
+        value: {
+          getItem: vi.fn(() => 'sig-123'),
+          setItem: vi.fn(),
+          removeItem: vi.fn(),
+          clear: vi.fn(),
+        },
+        writable: true,
+      });
+
+      render(<NotAuthorizedSignatoryPage />);
+
+      const combos = screen.getAllByRole('combobox');
+      await user.click(combos[0]!);
+      const mrOptions = await screen.findAllByText('Mr');
+      await user.click(mrOptions[mrOptions.length - 1]!);
+
+      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
+
+      await user.click(combos[1]!);
+      const ownerOptions = await screen.findAllByText('Owner');
+      await user.click(ownerOptions[ownerOptions.length - 1]!);
+
+      const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
+      fireEvent.change(emailInputs[0]!, { target: { value: 'test@example.com' } });
+      fireEvent.change(emailInputs[1]!, { target: { value: 'test@example.com' } });
+
+      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
+
+      await vi.waitFor(() => {
+        expect(mockAddSignatory).toHaveBeenCalled();
+      });
+
+      await vi.waitFor(() => {
+        expect(mockPush).toHaveBeenCalledWith('/thank-you');
+      });
+    });
+
+    it('handles submission error and displays error message', async () => {
+      const user = userEvent.setup();
+      const errorMessage = 'Submission failed';
+      mockAddSignatory.mockRejectedValueOnce(new Error(errorMessage));
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: {
+          signatories: [
+            {
+              signatoryId: 'sig-123',
+              envelopeId: 'env-456',
+            },
+          ],
+        },
+        isLoading: false,
+        error: null,
+        refetch: vi.fn(),
+      });
+
+      Object.defineProperty(window, 'sessionStorage', {
+        value: {
+          getItem: vi.fn(() => 'sig-123'),
+          setItem: vi.fn(),
+          removeItem: vi.fn(),
+          clear: vi.fn(),
+        },
+        writable: true,
+      });
+
+      render(<NotAuthorizedSignatoryPage />);
+
+      const combos = screen.getAllByRole('combobox');
+      await user.click(combos[0]!);
+      const mrOptions = await screen.findAllByText('Mr');
+      await user.click(mrOptions[mrOptions.length - 1]!);
+
+      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
+
+      await user.click(combos[1]!);
+      const ownerOptions = await screen.findAllByText('Owner');
+      await user.click(ownerOptions[ownerOptions.length - 1]!);
+
+      const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
+      fireEvent.change(emailInputs[0]!, { target: { value: 'test@example.com' } });
+      fireEvent.change(emailInputs[1]!, { target: { value: 'test@example.com' } });
+
+      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
+
+      await vi.waitFor(() => {
+        expect(screen.getByText(errorMessage)).toBeInTheDocument();
+      });
+
+      expect(mockPush).not.toHaveBeenCalledWith('/thank-you');
+    });
+
+    it('handles non-Error submission failure', async () => {
+      const user = userEvent.setup();
+      mockAddSignatory.mockRejectedValueOnce('Non-Error failure');
+
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: {
+          signatories: [
+            {
+              signatoryId: 'sig-123',
+              envelopeId: 'env-456',
+            },
+          ],
+        },
+        isLoading: false,
+        error: null,
+        refetch: vi.fn(),
+      });
+
+      Object.defineProperty(window, 'sessionStorage', {
+        value: {
+          getItem: vi.fn(() => 'sig-123'),
+          setItem: vi.fn(),
+          removeItem: vi.fn(),
+          clear: vi.fn(),
+        },
+        writable: true,
+      });
+
+      render(<NotAuthorizedSignatoryPage />);
+
+      const combos = screen.getAllByRole('combobox');
+      await user.click(combos[0]!);
+      const mrOptions = await screen.findAllByText('Mr');
+      await user.click(mrOptions[mrOptions.length - 1]!);
+
+      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
+
+      await user.click(combos[1]!);
+      const ownerOptions = await screen.findAllByText('Owner');
+      await user.click(ownerOptions[ownerOptions.length - 1]!);
+
+      const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
+      fireEvent.change(emailInputs[0]!, { target: { value: 'test@example.com' } });
+      fireEvent.change(emailInputs[1]!, { target: { value: 'test@example.com' } });
+
+      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
+
+      await vi.waitFor(() => {
+        expect(screen.getByText('An error occurred while adding signatory')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('sessionStorage', () => {
+    it('loads selectedSignatoryId from sessionStorage on mount', () => {
+      const mockGetItem = vi.fn(() => 'sig-789');
+      Object.defineProperty(window, 'sessionStorage', {
+        value: {
+          getItem: mockGetItem,
+          setItem: vi.fn(),
+          removeItem: vi.fn(),
+          clear: vi.fn(),
+        },
+        writable: true,
+      });
+
+      render(<NotAuthorizedSignatoryPage />);
+
+      expect(mockGetItem).toHaveBeenCalledWith('selectedSignatoryId');
+    });
   });
 });

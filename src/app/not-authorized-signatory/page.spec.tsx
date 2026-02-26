@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import NotAuthorizedSignatoryPage from './page';
 import translations from '@/i18n/en.json';
 import * as useMatterDetailsModule from '@/hooks/queries/use-matter-details';
-import * as useAddSignatoryModule from '@/hooks/queries/use-add-signatory';
+import * as useUpdateSignatoryModule from '@/hooks/queries/use-update-signatory';
 
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
@@ -15,15 +15,15 @@ vi.mock('@/hooks/queries/use-matter-details', () => ({
   useMatterDetails: vi.fn(),
 }));
 
-vi.mock('@/hooks/queries/use-add-signatory', () => ({
-  useAddSignatory: vi.fn(),
+vi.mock('@/hooks/queries/use-update-signatory', () => ({
+  useUpdateSignatory: vi.fn(),
 }));
 
 describe('NotAuthorizedSignatoryPage', () => {
   const { notAuthorizedSignatoryPage: t, signatoryDetailsForm: tForm } = translations;
   const mockPush = vi.fn();
 
-  const mockAddSignatory = vi.fn();
+  const mockUpdateSignatory = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -34,9 +34,9 @@ describe('NotAuthorizedSignatoryPage', () => {
       error: null,
       refetch: vi.fn(),
     });
-    mockAddSignatory.mockResolvedValue({ success: true });
-    (useAddSignatoryModule.useAddSignatory as ReturnType<typeof vi.fn>).mockReturnValue({
-      addSignatory: mockAddSignatory,
+    mockUpdateSignatory.mockResolvedValue({ success: true });
+    (useUpdateSignatoryModule.useUpdateSignatory as ReturnType<typeof vi.fn>).mockReturnValue({
+      updateSignatory: mockUpdateSignatory,
       isPending: false,
       isError: false,
       error: null,

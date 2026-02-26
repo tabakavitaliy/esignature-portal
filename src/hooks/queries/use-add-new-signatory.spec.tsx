@@ -2,7 +2,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { ReactNode } from 'react';
-import { useAddSignatory, type UpdateSignatoryBody } from './use-add-signatory';
+import { useAddNewSignatory, type AddNewSignatoryBody } from './use-add-new-signatory';
 import * as useTokenModule from './use-token';
 import * as useMatterDetailsModule from './use-matter-details';
 import type { MatterDetails } from './use-matter-details';
@@ -20,7 +20,7 @@ const createWrapper = () => {
   );
 };
 
-describe('useAddSignatory', () => {
+describe('useAddNewSignatory', () => {
   const mockFetch = vi.fn();
   const mockToken = 'test-token-123';
   const mockMatterId = 'matter-123';
@@ -36,11 +36,9 @@ describe('useAddSignatory', () => {
     signatories: [],
   };
 
-  const mockSignatoryId = 'signatory-456';
-
-  const mockAddSignatoryBody: UpdateSignatoryBody = {
+  const mockAddNewSignatoryBody: AddNewSignatoryBody = {
     signatory: {
-      signatoryId: mockSignatoryId,
+      signatoryId: 'signatory-456',
       envelopeId: 'envelope-123',
       title: 'Mr',
       firstname: 'Jane',
@@ -81,7 +79,7 @@ describe('useAddSignatory', () => {
     vi.restoreAllMocks();
   });
 
-  it('successfully adds signatory with correct request', async () => {
+  it('successfully adds new signatory with correct POST request', async () => {
     const mockResponse = { success: true };
 
     mockFetch.mockResolvedValue({
@@ -89,22 +87,22 @@ describe('useAddSignatory', () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useAddSignatory(), {
+    const { result } = renderHook(() => useAddNewSignatory(), {
       wrapper: createWrapper(),
     });
 
-    const response = await result.current.addSignatory(mockAddSignatoryBody);
+    const response = await result.current.addNewSignatory(mockAddNewSignatoryBody);
 
     expect(response).toEqual(mockResponse);
     expect(mockFetch).toHaveBeenCalledWith(
-      `https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/api/lb/matter/${mockMatterId}/signatory/${mockSignatoryId}/updateSignatory`,
+      `https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/api/lb/matter/${mockMatterId}/addSignatory`,
       expect.objectContaining({
-        method: 'PUT',
+        method: 'POST',
         headers: expect.objectContaining({
           Authorization: `Bearer ${mockToken}`,
           'Content-Type': 'application/json',
         }),
-        body: JSON.stringify(mockAddSignatoryBody),
+        body: JSON.stringify(mockAddNewSignatoryBody),
       })
     );
   });
@@ -116,11 +114,11 @@ describe('useAddSignatory', () => {
       statusText: 'Internal Server Error',
     });
 
-    const { result } = renderHook(() => useAddSignatory(), {
+    const { result } = renderHook(() => useAddNewSignatory(), {
       wrapper: createWrapper(),
     });
 
-    await expect(result.current.addSignatory(mockAddSignatoryBody)).rejects.toThrow(
+    await expect(result.current.addNewSignatory(mockAddNewSignatoryBody)).rejects.toThrow(
       'API Error: 500 Internal Server Error'
     );
 
@@ -138,11 +136,11 @@ describe('useAddSignatory', () => {
       refetch: vi.fn(),
     });
 
-    const { result } = renderHook(() => useAddSignatory(), {
+    const { result } = renderHook(() => useAddNewSignatory(), {
       wrapper: createWrapper(),
     });
 
-    await expect(result.current.addSignatory(mockAddSignatoryBody)).rejects.toThrow(
+    await expect(result.current.addNewSignatory(mockAddNewSignatoryBody)).rejects.toThrow(
       'Matter ID is not available'
     );
   });
@@ -159,11 +157,11 @@ describe('useAddSignatory', () => {
       json: async () => ({ success: true }),
     });
 
-    const { result } = renderHook(() => useAddSignatory(), {
+    const { result } = renderHook(() => useAddNewSignatory(), {
       wrapper: createWrapper(),
     });
 
-    await result.current.addSignatory(mockAddSignatoryBody);
+    await result.current.addNewSignatory(mockAddNewSignatoryBody);
 
     expect(mockFetch).toHaveBeenCalledWith(
       expect.any(String),
@@ -194,9 +192,9 @@ describe('useAddSignatory', () => {
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
 
-    const { result } = renderHook(() => useAddSignatory(), { wrapper });
+    const { result } = renderHook(() => useAddNewSignatory(), { wrapper });
 
-    await result.current.addSignatory(mockAddSignatoryBody);
+    await result.current.addNewSignatory(mockAddNewSignatoryBody);
 
     await waitFor(() => expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['matterDetails'] }));
   });
@@ -216,7 +214,7 @@ describe('useAddSignatory', () => {
         )
     );
 
-    const { result } = renderHook(() => useAddSignatory(), {
+    const { result } = renderHook(() => useAddNewSignatory(), {
       wrapper: createWrapper(),
     });
 
@@ -224,7 +222,7 @@ describe('useAddSignatory', () => {
     expect(result.current.isError).toBe(false);
     expect(result.current.isSuccess).toBe(false);
 
-    const promise = result.current.addSignatory(mockAddSignatoryBody);
+    const promise = result.current.addNewSignatory(mockAddNewSignatoryBody);
 
     await waitFor(() => expect(result.current.isPending).toBe(true));
 
@@ -240,11 +238,11 @@ describe('useAddSignatory', () => {
   it('handles network errors', async () => {
     mockFetch.mockRejectedValue(new Error('Network error'));
 
-    const { result } = renderHook(() => useAddSignatory(), {
+    const { result } = renderHook(() => useAddNewSignatory(), {
       wrapper: createWrapper(),
     });
 
-    await expect(result.current.addSignatory(mockAddSignatoryBody)).rejects.toThrow('Network error');
+    await expect(result.current.addNewSignatory(mockAddNewSignatoryBody)).rejects.toThrow('Network error');
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
@@ -263,11 +261,11 @@ describe('useAddSignatory', () => {
       json: async () => ({ success: true }),
     });
 
-    const { result } = renderHook(() => useAddSignatory(), {
+    const { result } = renderHook(() => useAddNewSignatory(), {
       wrapper: createWrapper(),
     });
 
-    await result.current.addSignatory(mockAddSignatoryBody);
+    await result.current.addNewSignatory(mockAddNewSignatoryBody);
 
     expect(mockFetch).toHaveBeenCalledWith(
       expect.any(String),

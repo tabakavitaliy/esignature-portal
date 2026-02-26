@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils';
 import { ContentWrapper } from '@/components/layout/content-wrapper';
 import { Header } from '@/components/common/header';
 import { ProgressStepper } from '@/components/common/progress-stepper';
-import { Button } from '@/components/common/button';
 import { ButtonErrorLabel } from '@/components/common/button-error-label';
 import { BackgroundPattern } from '@/components/common/background-pattern';
 import {
@@ -15,11 +14,12 @@ import {
   SIGNATORY_FORM_CONFIG,
   type SignatoryDetailsFormValue,
 } from '@/components/common/signatory-details-form';
+import { SignatoryFormCard } from '@/components/common/signatory-form-card';
+import { SignatoryFormActions } from '@/components/common/signatory-form-actions';
 import translations from '@/i18n/en.json';
-import { ArrowLeft } from 'lucide-react';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
 import { useMatterDetails, type AddressAssociation } from '@/hooks/queries/use-matter-details';
-import { useAddSignatory } from '@/hooks/queries/use-add-signatory';
+import { useUpdateSignatory } from '@/hooks/queries/use-update-signatory';
 import { TITLE_OPTIONS, ADDRESS_ASSOCIATION_OPTIONS } from '@/constants/signatory-options';
 import { ROUTES } from '@/constants/routes';
 import { EMAIL_REGEX, PHONE_REGEX } from '@/constants/validation';
@@ -53,7 +53,7 @@ export function NotAuthorizedSignatory(): ReactNode {
   const { notAuthorizedSignatoryPage: t, signatoryDetailsForm: tForm } = translations;
   const router = useRouter();
   const { data: matterData } = useMatterDetails();
-  const { addSignatory, isPending } = useAddSignatory();
+  const { updateSignatory, isPending } = useUpdateSignatory();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -109,7 +109,7 @@ export function NotAuthorizedSignatory(): ReactNode {
     const { title, firstName, lastName, addressAssociation, email, mobile, addressLine1, addressLine2, addressLine3, town, county, postcode } = formValue;
 
     try {
-      await addSignatory({
+      await updateSignatory({
         signatory: {
           signatoryId: currentSignatory?.signatoryId ?? '',
           envelopeId: currentSignatory?.envelopeId ?? '',
@@ -150,23 +150,11 @@ export function NotAuthorizedSignatory(): ReactNode {
         <ContentWrapper className="flex flex-1 flex-col gap-8">
           <ProgressStepper stepCount={4} currentStep={4} className="self-center" />
 
-          <div
-            className={cn(
-              'flex-1 rounded-2xl px-4 py-5',
-              'bg-[var(--login-card-bg)] backdrop-blur-sm'
-            )}
+          <SignatoryFormCard
+            heading={t.formHeading}
+            description={t.formDescription}
+            signatoryDetailsHeading={t.signatoryDetailsHeading}
           >
-            <div className="flex flex-col gap-2 mb-4">
-              <h2 className="text-base font-bold text-white">{t.formHeading}</h2>
-              <p className="text-sm text-white">{t.formDescription}</p>
-            </div>
-
-            <div className="h-px w-[24px] bg-white/20 mb-4 mx-auto" />
-
-            <h3 className="text-base font-bold text-white mb-6">
-              {t.signatoryDetailsHeading}
-            </h3>
-
             <SignatoryDetailsForm
               value={formValue}
               onChange={handleFormChange}
@@ -174,7 +162,7 @@ export function NotAuthorizedSignatory(): ReactNode {
               titleOptions={TITLE_OPTIONS}
               addressAssociationOptions={ADDRESS_ASSOCIATION_OPTIONS}
             />
-          </div>
+          </SignatoryFormCard>
 
           <p className="text-xs text-white text-center leading-[18px]">
             {t.legalBasisText}
@@ -182,22 +170,13 @@ export function NotAuthorizedSignatory(): ReactNode {
 
           {errorMessage && <ButtonErrorLabel message={errorMessage} />}
 
-          <div className="flex gap-4">
-            <Button
-              text=""
-              kind="secondary"
-              iconBefore={<ArrowLeft className="h-5 w-5" />}
-              onClick={handleBackClick}
-              aria-label={t.backButtonLabel}
-              className="w-auto px-6"
-            />
-            <Button
-              text={t.submitButton}
-              kind="primary"
-              onClick={handleSubmitClick}
-              disabled={isPending}
-            />
-          </div>
+          <SignatoryFormActions
+            backButtonLabel={t.backButtonLabel}
+            submitButtonText={t.submitButton}
+            onBackClick={handleBackClick}
+            onSubmitClick={handleSubmitClick}
+            isPending={isPending}
+          />
         </ContentWrapper>
       </main>
       <CustomerPrivacy />

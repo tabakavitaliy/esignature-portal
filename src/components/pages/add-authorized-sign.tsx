@@ -1,107 +1,140 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ContentWrapper } from '@/components/layout/content-wrapper';
 import { Header } from '@/components/common/header';
 import { ProgressStepper } from '@/components/common/progress-stepper';
-import { Select } from '@/components/common/select';
-import { Input } from '@/components/common/input';
-import { Button } from '@/components/common/button';
 import { ButtonErrorLabel } from '@/components/common/button-error-label';
 import { BackgroundPattern } from '@/components/common/background-pattern';
+import {
+  SignatoryDetailsForm,
+  SIGNATORY_FORM_CONFIG,
+  type SignatoryDetailsFormValue,
+} from '@/components/common/signatory-details-form';
+import { SignatoryFormCard } from '@/components/common/signatory-form-card';
+import { SignatoryFormActions } from '@/components/common/signatory-form-actions';
 import translations from '@/i18n/en.json';
-import { ArrowLeft } from 'lucide-react';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
-import type { AddressAssociation } from '@/hooks/queries/use-matter-details';
+import { useMatterDetails, type AddressAssociation } from '@/hooks/queries/use-matter-details';
+import { useAddNewSignatory } from '@/hooks/queries/use-add-new-signatory';
+import { TITLE_OPTIONS, ADDRESS_ASSOCIATION_OPTIONS } from '@/constants/signatory-options';
+import { ROUTES } from '@/constants/routes';
+import { EMAIL_REGEX, PHONE_REGEX } from '@/constants/validation';
+
+type RequiredFormValue = Required<Omit<SignatoryDetailsFormValue, 'mobile'>> & { mobile: string | null };
 
 /**
- * AddAuthorizedSign component displays the form for adding authorized signatory information
+ * AddAuthorizedSign page collects and submits details for an authorised signatory.
+ * Used when the logged-in user's name is not listed and they need to add a new signatory.
  * @returns ReactNode
  */
 export function AddAuthorizedSign(): ReactNode {
-  const [title, setTitle] = useState<string>('');
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
-  const [addressAssociation, setAddressAssociation] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [confirmEmail, setConfirmEmail] = useState<string>('');
-  const [mobile, setMobile] = useState<string>('');
-  const [addressLine1, setAddressLine1] = useState<string>('');
-  const [addressLine2, setAddressLine2] = useState<string>('');
-  const [addressLine3, setAddressLine3] = useState<string>('');
-  const [city, setCity] = useState<string>('');
-  const [county, setCounty] = useState<string>('');
-  const [postcode, setPostcode] = useState<string>('');
+  const [formValue, setFormValue] = useState<RequiredFormValue>({
+    title: '',
+    firstName: '',
+    lastName: '',
+    addressAssociation: '',
+    email: '',
+    confirmEmail: '',
+    mobile: null,
+    addressLine1: '',
+    addressLine2: '',
+    addressLine3: '',
+    town: '',
+    county: '',
+    postcode: '',
+  });
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [selectedSignatoryId, setSelectedSignatoryId] = useState<string | null>(null);
 
-  const { addAuthorizedSignPage: t } = translations;
+  const { addAuthorizedSignPage: t, signatoryDetailsForm: tForm } = translations;
   const router = useRouter();
+  const { data: matterData } = useMatterDetails();
+  const { addNewSignatory, isPending } = useAddNewSignatory();
 
-  const titleOptions = [
-    { value: 'Mr', label: 'Mr' },
-    { value: 'Mrs', label: 'Mrs' },
-    { value: 'Miss', label: 'Miss' },
-    { value: 'Ms', label: 'Ms' },
-    { value: 'Dr', label: 'Dr' },
-  ];
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setSelectedSignatoryId(sessionStorage.getItem('selectedSignatoryId'));
+    }
+  }, []);
 
-  const addressAssociationOptions = [
-    { value: 'Owner' as AddressAssociation, label: 'Owner' },
-  ];
+  const handleFormChange = useCallback((field: keyof RequiredFormValue, value: string): void => {
+    setFormValue((prev) => ({ ...prev, [field]: value }));
+  }, []);
 
   const handleBackClick = (): void => {
-    router.push('/confirm-name');
+    router.push(ROUTES.CONFIRM_NAME);
   };
 
   const validateForm = (): boolean => {
-    if (
-      !title ||
-      !firstName ||
-      !lastName ||
-      !addressAssociation ||
-      !email ||
-      !confirmEmail ||
-      !addressLine1 ||
-      !city ||
-      !postcode
-    ) {
-      setErrorMessage(t.requiredFieldsError);
+    const { title, firstName, lastName, addressAssociation, email, confirmEmail, mobile, addressLine1, town, postcode } = formValue;
+
+    if (!title || !firstName || !lastName || !addressAssociation || !email || !confirmEmail || !addressLine1 || !town || !postcode) {
+      setErrorMessage(tForm.requiredFieldsError);
+      return false;
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      setErrorMessage(tForm.invalidEmailError);
       return false;
     }
 
     if (email !== confirmEmail) {
-      setErrorMessage(t.emailMismatchError);
+      setErrorMessage(tForm.emailMismatchError);
+      return false;
+    }
+
+    if (mobile && !PHONE_REGEX.test(mobile)) {
+      setErrorMessage(tForm.invalidMobileError);
       return false;
     }
 
     return true;
   };
 
-  const handleSubmitClick = (): void => {
+  const handleSubmitClick = async (): Promise<void> => {
     setErrorMessage('');
 
     if (!validateForm()) {
       return;
     }
 
-    // TODO: Submit form data - navigation to next step TBD
-    console.warn('Form submitted successfully', {
-      title,
-      firstName,
-      lastName,
-      addressAssociation,
-      email,
-      mobile,
-      addressLine1,
-      addressLine2,
-      addressLine3,
-      city,
-      county,
-      postcode,
-    });
+    const currentSignatory = matterData?.signatories.find(
+      (s) => s.signatoryId === selectedSignatoryId
+    );
+
+    const { title, firstName, lastName, addressAssociation, email, mobile, addressLine1, addressLine2, addressLine3, town, county, postcode } = formValue;
+
+    try {
+      await addNewSignatory({
+        signatory: {
+          signatoryId: currentSignatory?.signatoryId ?? '',
+          envelopeId: currentSignatory?.envelopeId ?? '',
+          title,
+          firstname: firstName,
+          surname: lastName,
+          addressAssociation: addressAssociation as AddressAssociation,
+          emailAddress: email,
+          mobile,
+          agreementShareMethod: 'Unspecified',
+          correspondenceAddress: {
+            addressLine1,
+            addressLine2,
+            addressLine3,
+            addressLine4: '',
+            town,
+            county,
+            postcode,
+          },
+        },
+      });
+      router.push(ROUTES.CONFIRM_SIGNATORY);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'An error occurred while adding signatory');
+    }
   };
 
   return (
@@ -118,132 +151,19 @@ export function AddAuthorizedSign(): ReactNode {
         <ContentWrapper className="flex flex-1 flex-col gap-8">
           <ProgressStepper stepCount={4} currentStep={2} className="self-center" />
 
-          <div
-            className={cn(
-              'flex-1 rounded-2xl px-8 py-10',
-              'bg-[var(--login-card-bg)] backdrop-blur-sm'
-            )}
+          <SignatoryFormCard
+            heading={t.formHeading}
+            description={t.formDescription}
+            signatoryDetailsHeading={t.signatoryDetailsHeading}
           >
-            <div className="flex flex-col gap-2 mb-6">
-              <h2 className="text-base font-bold text-white">{t.formHeading}</h2>
-              <p className="text-sm text-white">{t.formDescription}</p>
-            </div>
-
-            <div className="h-px w-[24px] bg-white/20 mb-6 mx-auto" />
-
-            <h3 className="text-base font-bold text-white mb-6">
-              {t.signatoryDetailsHeading}
-            </h3>
-
-            <div className="space-y-5">
-              <Select
-                label={t.titleLabel}
-                placeholder={t.titlePlaceholder}
-                options={titleOptions}
-                value={title}
-                onChange={setTitle}
-              />
-
-              <Input
-                label={t.firstNameLabel}
-                placeholder={t.firstNamePlaceholder}
-                value={firstName}
-                onChange={setFirstName}
-              />
-
-              <Input
-                label={t.lastNameLabel}
-                placeholder={t.lastNamePlaceholder}
-                value={lastName}
-                onChange={setLastName}
-              />
-
-              <Select
-                label={t.addressAssociationLabel}
-                placeholder={t.addressAssociationPlaceholder}
-                options={addressAssociationOptions}
-                value={addressAssociation}
-                onChange={setAddressAssociation}
-              />
-
-              <Input
-                label={t.emailLabel}
-                type="email"
-                placeholder={t.emailPlaceholder}
-                value={email}
-                onChange={setEmail}
-              />
-
-              <Input
-                label={t.confirmEmailLabel}
-                type="email"
-                placeholder={t.confirmEmailPlaceholder}
-                value={confirmEmail}
-                onChange={setConfirmEmail}
-              />
-
-              <Input
-                label={t.mobileLabel}
-                type="tel"
-                placeholder={t.mobilePlaceholder}
-                value={mobile}
-                onChange={setMobile}
-              />
-
-              <div className="flex flex-col gap-2">
-                <label className="text-xs text-white">{t.correspondenceAddressLabel}</label>
-                <div className="space-y-2">
-                  <Input
-                    label=""
-                    placeholder={t.addressLine1Placeholder}
-                    value={addressLine1}
-                    onChange={setAddressLine1}
-                    className="gap-0"
-                  />
-
-                  <Input
-                    label=""
-                    placeholder={t.addressLine2Placeholder}
-                    value={addressLine2}
-                    onChange={setAddressLine2}
-                    className="gap-0"
-                  />
-
-                  <Input
-                    label=""
-                    placeholder={t.addressLine3Placeholder}
-                    value={addressLine3}
-                    onChange={setAddressLine3}
-                    className="gap-0"
-                  />
-
-                  <Input
-                    label=""
-                    placeholder={t.cityPlaceholder}
-                    value={city}
-                    onChange={setCity}
-                    className="gap-0"
-                  />
-
-                  <Input
-                    label=""
-                    placeholder={t.countyPlaceholder}
-                    value={county}
-                    onChange={setCounty}
-                    className="gap-0"
-                  />
-
-                  <Input
-                    label=""
-                    placeholder={t.postcodePlaceholder}
-                    value={postcode}
-                    onChange={setPostcode}
-                    className="gap-0"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+            <SignatoryDetailsForm
+              value={formValue}
+              onChange={handleFormChange}
+              config={SIGNATORY_FORM_CONFIG.addAuthorizedSign}
+              titleOptions={TITLE_OPTIONS}
+              addressAssociationOptions={ADDRESS_ASSOCIATION_OPTIONS}
+            />
+          </SignatoryFormCard>
 
           <p className="text-xs text-white text-center leading-[18px]">
             {t.legalBasisText}
@@ -251,25 +171,14 @@ export function AddAuthorizedSign(): ReactNode {
 
           {errorMessage && <ButtonErrorLabel message={errorMessage} />}
 
-          <div className="flex gap-4">
-            <Button
-              text=""
-              kind="secondary"
-              iconBefore={<ArrowLeft className="h-5 w-5" />}
-              onClick={handleBackClick}
-              aria-label={t.backButtonLabel}
-              className="w-auto px-6"
-            />
-            <Button
-              text={t.submitButton}
-              kind="primary"
-              onClick={handleSubmitClick}
-            />
-          </div>
-
-          <p className="text-xs text-center text-white/80 pt-4">
-            {t.dataHandlingText}
-          </p>
+          <SignatoryFormActions
+            backButtonLabel={t.backButtonLabel}
+            submitButtonText={t.submitButton}
+            onBackClick={handleBackClick}
+            onSubmitClick={handleSubmitClick}
+            isPending={isPending}
+            dataHandlingText={t.dataHandlingText}
+          />
         </ContentWrapper>
       </main>
       <CustomerPrivacy />

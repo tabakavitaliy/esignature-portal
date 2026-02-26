@@ -3,44 +3,39 @@ import { apiClient } from '@/lib/api';
 import { useToken } from './use-token';
 import { useMatterDetails, type Signatory } from './use-matter-details';
 
-export interface UpdateSignatoryBody {
+export interface AddNewSignatoryBody {
   signatory: Signatory;
 }
 
-interface UpdateSignatoryResponse {
+interface AddNewSignatoryResponse {
   success: boolean;
 }
 
-interface UseAddSignatoryReturn {
-  addSignatory: (body: UpdateSignatoryBody) => Promise<UpdateSignatoryResponse>;
+interface UseAddNewSignatoryReturn {
+  addNewSignatory: (body: AddNewSignatoryBody) => Promise<AddNewSignatoryResponse>;
   isPending: boolean;
   isError: boolean;
   error: Error | null;
   isSuccess: boolean;
 }
 
-export function useAddSignatory(): UseAddSignatoryReturn {
+export function useAddNewSignatory(): UseAddNewSignatoryReturn {
   const { token } = useToken();
   const { data: matterData } = useMatterDetails();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<UpdateSignatoryResponse, Error, UpdateSignatoryBody>({
-    mutationFn: async (body: UpdateSignatoryBody) => {
+  const mutation = useMutation<AddNewSignatoryResponse, Error, AddNewSignatoryBody>({
+    mutationFn: async (body: AddNewSignatoryBody) => {
       const matterId = matterData?.matterId;
-      const signatoryId = body.signatory.signatoryId;
 
       if (!matterId) {
         throw new Error('Matter ID is not available');
       }
 
-      if (!signatoryId) {
-        throw new Error('Signatory ID is not available');
-      }
-
-      return apiClient<UpdateSignatoryResponse>(
-        `/api/lb/matter/${matterId}/signatory/${signatoryId}/updateSignatory`,
+      return apiClient<AddNewSignatoryResponse>(
+        `/api/lb/matter/${matterId}/addSignatory`,
         {
-          method: 'PUT',
+          method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -54,7 +49,7 @@ export function useAddSignatory(): UseAddSignatoryReturn {
   });
 
   return {
-    addSignatory: mutation.mutateAsync,
+    addNewSignatory: mutation.mutateAsync,
     isPending: mutation.isPending,
     isError: mutation.isError,
     error: mutation.error,

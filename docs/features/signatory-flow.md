@@ -1,8 +1,8 @@
 # Feature: Signatory Flow
 
 **Status**: in-progress  
-**Related Tickets**: [WEP-33](https://jdc.eleks.com/browse/WEP-33)  
-**Progress**: 40% (confirm-name, confirm-details, confirm-signatory, add-authorized-sign pages exist; not-authorized and thank-you pending)
+**Related Tickets**: [WEP-33](https://jdc.eleks.com/browse/WEP-33), [WEP-31](https://jdc.eleks.com/browse/WEP-31)  
+**Progress**: 100% (all pages implemented; post-submit route for add-authorized-sign pending PO confirmation)
 
 ---
 
@@ -54,11 +54,6 @@ Two alternative branches exist within the wizard:
 | `/confirm-details` | `ConfirmDetails` | `src/components/pages/confirm-details.tsx` |
 | `/confirm-signatory` | `ConfirmSignatory` | `src/components/pages/confirm-signatory.tsx` |
 | `/add-new-name` | `AddAuthorizedSign` | `src/components/pages/add-authorized-sign.tsx` |
-
-### Pending (WEP-33)
-
-| Route | Component | File |
-|-------|-----------|------|
 | `/not-authorized-signatory` | `NotAuthorizedSignatory` | `src/components/pages/not-authorized-signatory.tsx` |
 | `/thank-you` | `ThankYou` | `src/components/pages/thank-you.tsx` |
 | `/preview-agreement` | `PreviewAgreement` | `src/app/preview-agreement/page.tsx` (placeholder) |
@@ -68,7 +63,7 @@ Two alternative branches exist within the wizard:
 ## Shared Component: `SignatoryDetailsForm`
 
 **Location:** `src/components/common/signatory-details-form.tsx`  
-**Status:** pending (WEP-33)
+**Status:** done (WEP-33, WEP-31)
 
 A reusable form component that renders signatory detail fields. Used in three locations with different configurations:
 
@@ -99,8 +94,10 @@ interface SignatoryDetailsFormProps {
 
 | Hook | File | Used by |
 |------|------|---------|
-| `useMatterDetails` | `src/hooks/queries/use-matter-details.ts` | confirm-name, confirm-details, confirm-signatory |
+| `useMatterDetails` | `src/hooks/queries/use-matter-details.ts` | confirm-name, confirm-details, confirm-signatory, add-authorized-sign, not-authorized-signatory |
 | `useUpdateSignatory` | `src/hooks/queries/use-update-signatory.ts` | confirm-details (edit mode) |
+| `useAddSignatory` | `src/hooks/queries/use-add-signatory.ts` | not-authorized-signatory |
+| `useAddNewSignatory` | `src/hooks/queries/use-add-new-signatory.ts` | add-authorized-sign (`POST /addSignatory`) |
 
 ### Key Types (`use-matter-details.ts`)
 
@@ -128,9 +125,9 @@ export interface MatterDetails { ... }
 | `confirmDetailsPage` | Step 2 strings |
 | `confirmSignatoryPage` | Step 3 strings |
 | `addAuthorizedSignPage` | Alt Step 2 strings |
-| `signatoryDetailsForm` | Shared field labels/placeholders/errors *(pending WEP-33)* |
-| `notAuthorizedSignatoryPage` | Alt Step 3 strings *(pending WEP-33)* |
-| `thankYouPage` | Thank-you screen strings *(pending WEP-33)* |
+| `signatoryDetailsForm` | Shared field labels/placeholders/errors |
+| `notAuthorizedSignatoryPage` | Alt Step 3 strings |
+| `thankYouPage` | Thank-you screen strings |
 
 ---
 
@@ -164,11 +161,5 @@ All pages share the same full-screen layout shell:
 
 ## Open Items
 
-- [ ] WEP-33: Wire `confirm-signatory.tsx` Yes/No navigation
-- [ ] WEP-33: Create `SignatoryDetailsForm` shared component
-- [ ] WEP-33: Refactor `confirm-details.tsx` and `add-authorized-sign.tsx` to use shared component
-- [ ] WEP-33: Create `/not-authorized-signatory` page + tests
-- [ ] WEP-33: Create `/thank-you` page + tests
-- [ ] WEP-33: Add `/preview-agreement` placeholder route
-- [ ] Future: Implement actual submit API call for add-signatory forms
-- [ ] Future: Implement actual preview/signing logic for Step 4
+- [ ] Confirm post-submit navigation route for `add-authorized-sign.tsx` with PO (currently `ROUTES.PREVIEW_AGREEMENT` as placeholder — WEP-31)
+- [ ] Future: Implement actual preview/signing logic for Step 4 (`/preview-agreement`)

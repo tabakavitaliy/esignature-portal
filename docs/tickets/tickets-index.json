@@ -1,6 +1,28 @@
 {
   "tickets": [
     {
+      "id": "WEP-31",
+      "title": "Refactor AddAuthorizedSign to Use Reusable Form",
+      "description": "Refactor add-authorized-sign.tsx: unified state, SignatoryDetailsForm, useAddSignatory, regex validation",
+      "status": "done",
+      "progress": "100%",
+      "jiraUrl": "https://jdc.eleks.com/browse/WEP-31",
+      "ticketFile": "docs/tickets/WEP-31.md",
+      "relatedFeatures": ["signatory-flow"],
+      "relatedFiles": [
+        "src/components/pages/add-authorized-sign.tsx",
+        "src/components/pages/add-authorized-sign.spec.tsx",
+        "src/components/common/signatory-details-form.tsx",
+        "src/hooks/queries/use-add-new-signatory.ts",
+        "src/hooks/queries/use-add-new-signatory.spec.tsx",
+        "src/hooks/queries/use-matter-details.ts",
+        "src/constants/signatory-options.ts",
+        "src/constants/routes.ts",
+        "src/constants/validation.ts",
+        "src/i18n/en.json"
+      ]
+    },
+    {
       "id": "WEP-33",
       "title": "\"Not Authorized to Sign\" Flow",
       "description": "Add authorized signatory form + thank-you screen when user has no signing authority",
@@ -67,6 +89,6 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-02-24"
+    "lastUpdated": "2026-02-26"
   }
 }

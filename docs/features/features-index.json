@@ -5,9 +5,9 @@
       "title": "Signatory Flow (4-step wizard)",
       "description": "4-step wizard guiding users through identity confirmation, detail verification, authority check, and signing",
       "status": "in-progress",
-      "progress": "95%",
+      "progress": "100%",
       "featureFile": "docs/features/signatory-flow.md",
-      "relatedTickets": ["WEP-33"],
+      "relatedTickets": ["WEP-33", "WEP-31"],
       "relatedFiles": [
         "src/components/pages/confirm-name.tsx",
         "src/components/pages/confirm-details.tsx",
@@ -17,7 +17,10 @@
         "src/components/pages/thank-you.tsx",
         "src/components/common/signatory-details-form.tsx",
         "src/hooks/queries/use-matter-details.ts",
+        "src/hooks/queries/use-add-new-signatory.ts",
         "src/hooks/queries/use-update-signatory.ts",
+        "src/constants/signatory-options.ts",
+        "src/constants/validation.ts",
         "src/i18n/en.json"
       ]
     },
@@ -54,6 +57,6 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-02-24"
+    "lastUpdated": "2026-02-26"
   }
 }

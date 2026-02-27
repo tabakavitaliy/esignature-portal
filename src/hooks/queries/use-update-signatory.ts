@@ -40,9 +40,9 @@ export function useUpdateSignatory(): UseUpdateSignatoryReturn {
       }
 
       return apiClient<UpdateSignatoryResponse>(
-        `/api/lb/matter/${matterId}/signatory/${signatoryId}/updateSignatory`,
+        `/api/lb/matter/${matterId}/signatoryToChange/${signatoryId}/changeSignatory`,
         {
-          method: 'PUT',
+          method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`
           },

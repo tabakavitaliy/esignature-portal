@@ -118,9 +118,9 @@ describe('useUpdateSignatory', () => {
 
     expect(response).toEqual(mockResponse);
     expect(mockFetch).toHaveBeenCalledWith(
-      `https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/api/lb/matter/${mockMatterId}/signatory/${mockSignatoryId}/updateSignatory`,
+      `https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/api/lb/matter/${mockMatterId}/signatoryToChange/${mockSignatoryId}/changeSignatory`,
       expect.objectContaining({
-        method: 'PUT',
+        method: 'POST',
         headers: expect.objectContaining({
           Authorization: `Bearer ${mockToken}`,
           'Content-Type': 'application/json',

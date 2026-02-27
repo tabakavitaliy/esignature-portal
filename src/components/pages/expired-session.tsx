@@ -43,7 +43,7 @@ export function ExpiredSession(): ReactNode {
               'bg-[var(--login-card-bg)] backdrop-blur-sm'
             )}
           >
-            <ClockIcon size={48} />
+            <ClockIcon size={48} stroke={'var(--expired-session-icon-stroke)'}/>
             <p className="text-base leading-[22px] font-medium text-white">
               {t.message}
             </p>

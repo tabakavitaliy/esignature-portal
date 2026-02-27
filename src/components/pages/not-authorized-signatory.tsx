@@ -148,7 +148,7 @@ export function NotAuthorizedSignatory(): ReactNode {
 
       <main className={cn('flex flex-1 flex-col px-6 py-12')}>
         <ContentWrapper className="flex flex-1 flex-col gap-8">
-          <ProgressStepper stepCount={4} currentStep={4} className="self-center" />
+          <ProgressStepper stepCount={4} currentStep={2} className="self-center" />
 
           <SignatoryFormCard
             heading={t.formHeading}
@@ -176,6 +176,7 @@ export function NotAuthorizedSignatory(): ReactNode {
             onBackClick={handleBackClick}
             onSubmitClick={handleSubmitClick}
             isPending={isPending}
+            dataHandlingText={t.dataHandlingText}
           />
         </ContentWrapper>
       </main>

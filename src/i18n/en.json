@@ -58,9 +58,9 @@
     "dataHandlingText": "Your data will be handled in accordance with our customer's privacy notice"
   },
   "addAuthorizedSignPage": {
-    "headerText": "Confirm signatory details",
-    "formHeading": "Add authorised signatory information",
-    "formDescription": "Share the details of the authorised signatory who can legally sign this wayleave agreement.",
+    "headerText": "Confirm your details",
+    "formHeading": "Enter your details",
+    "formDescription": "Please share your details that we can use to create the agreement.",
     "signatoryDetailsHeading": "Signatory details",
     "legalBasisText": "By clicking Submit, I confirm I have a legal basis to provide the details of the authorised signatory/party",
     "submitButton": "Submit",
@@ -86,7 +86,7 @@
     "addressLine1Placeholder": "Address line 1",
     "addressLine2Placeholder": "Address line 2 (optional)",
     "addressLine3Placeholder": "Address line 3 (optional)",
-    "townPlaceholder": "Town or city",
+    "townPlaceholder": "City",
     "countyPlaceholder": "County (optional)",
     "postcodePlaceholder": "Postcode",
     "requiredFieldsError": "Please fill in all required fields",
@@ -97,11 +97,12 @@
   "notAuthorizedSignatoryPage": {
     "headerText": "Confirm signatory details",
     "formHeading": "Add authorised signatory information",
-    "formDescription": "Share the details of the authorised signatory so that they can progress the wayleave agreement.",
+    "formDescription": "Share the details of the authorised signatory who can legally sign this wayleave agreement.",
     "signatoryDetailsHeading": "Signatory details",
-    "legalBasisText": "By clicking 'Submit' I confirm I have a legal basis to provide the details of the authorised signatory/party",
+    "legalBasisText": "By clicking 'Submit', I confirm I have a legal basis to provide the details of the authorised signatory/party",
     "submitButton": "Submit",
-    "backButtonLabel": "Go back"
+    "backButtonLabel": "Go back",
+    "dataHandlingText": "Your data will be handled in accordance with our customer's privacy notice"
   },
   "thankYouPage": {
     "headerText": "Signature Portal",

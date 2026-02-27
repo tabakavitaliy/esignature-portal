@@ -49,9 +49,9 @@ describe('useAddNewSignatory', () => {
       agreementShareMethod: 'Unspecified',
       correspondenceAddress: {
         addressLine1: '456 High St',
-        addressLine2: '',
-        addressLine3: '',
-        addressLine4: '',
+        addressLine2: null,
+        addressLine3: null,
+        addressLine4: null,
         town: 'Manchester',
         county: 'Greater Manchester',
         postcode: 'M1 1AA',

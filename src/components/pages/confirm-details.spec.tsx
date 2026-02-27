@@ -39,8 +39,8 @@ describe('ConfirmDetails', () => {
     correspondenceAddress: {
       addressLine1: '123 Main St',
       addressLine2: 'Apt 4B',
-      addressLine3: '',
-      addressLine4: '',
+      addressLine3: null,
+      addressLine4: null,
       town: 'London',
       county: 'Greater London',
       postcode: 'SW1A 1AA',
@@ -482,7 +482,7 @@ describe('ConfirmDetails', () => {
         ...mockData,
         signatories: [{
           ...mockSignatory,
-          mobile: '',
+          mobile: null,
         }],
       };
 
@@ -514,7 +514,7 @@ describe('ConfirmDetails', () => {
         ...mockData,
         signatories: [{
           ...mockSignatory,
-          mobile: '',
+          mobile: null,
         }],
       };
 
@@ -543,13 +543,13 @@ describe('ConfirmDetails', () => {
         signatories: [{
           ...mockSignatory,
           correspondenceAddress: {
-            addressLine1: '',
-            addressLine2: '',
-            addressLine3: '',
-            addressLine4: '',
-            town: '',
-            county: '',
-            postcode: '',
+            addressLine1: null,
+            addressLine2: null,
+            addressLine3: null,
+            addressLine4: null,
+            town: null,
+            county: null,
+            postcode: null,
           },
         }],
       };
@@ -575,13 +575,13 @@ describe('ConfirmDetails', () => {
         signatories: [{
           ...mockSignatory,
           correspondenceAddress: {
-            addressLine1: '',
-            addressLine2: '',
-            addressLine3: '',
-            addressLine4: '',
-            town: '',
-            county: '',
-            postcode: '',
+            addressLine1: null,
+            addressLine2: null,
+            addressLine3: null,
+            addressLine4: null,
+            town: null,
+            county: null,
+            postcode: null,
           },
         }],
       };
@@ -612,7 +612,7 @@ describe('ConfirmDetails', () => {
           ...mockSignatory,
           correspondenceAddress: {
             ...mockSignatory.correspondenceAddress,
-            addressLine2: '',
+            addressLine2: null,
           },
         }],
       };
@@ -833,7 +833,7 @@ describe('ConfirmDetails', () => {
       await waitFor(() => {
         expect(mockUpdateSignatory).toHaveBeenCalledWith({
           signatory: expect.objectContaining({
-            mobile: '',
+            mobile: null,
           }),
         });
       });
@@ -1394,8 +1394,8 @@ describe('ConfirmDetails', () => {
             correspondenceAddress: {
               addressLine1: '123 Main St',
               addressLine2: 'Apt 4B',
-              addressLine3: '',
-              addressLine4: '',
+              addressLine3: null,
+              addressLine4: null,
               town: 'London',
               county: 'Greater London',
               postcode: 'SW1A 1AA',

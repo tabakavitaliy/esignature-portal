@@ -38,7 +38,7 @@ export function Radio({
         className={cn(
           'h-5 w-5 rounded-full border-2',
           'border-white bg-transparent',
-          'data-[state=checked]:bg-white data-[state=checked]:border-white',
+          'data-[state=checked]:border-white',
           'focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent'
         )}
       />

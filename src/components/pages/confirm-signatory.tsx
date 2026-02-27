@@ -115,7 +115,7 @@ export function ConfirmSignatory(): ReactNode {
                 <div key={index}>
                   <p className="text-sm text-[#1a1a1a]">{address}</p>
                   {index < addresses.length - 1 && (
-                    <div className="h-px bg-gray-200 my-4" />
+                    <div className="h-px bg-gray-200 my-4 -mx-6" />
                   )}
                 </div>
               ))}

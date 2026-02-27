@@ -34,13 +34,13 @@ export function ConfirmDetails(): ReactNode {
   const [lastName, setLastName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [confirmEmail, setConfirmEmail] = useState<string>('');
-  const [mobile, setMobile] = useState<string>('');
-  const [addressLine1, setAddressLine1] = useState<string>('');
-  const [addressLine2, setAddressLine2] = useState<string>('');
-  const [addressLine3, setAddressLine3] = useState<string>('');
-  const [town, setTown] = useState<string>('');
-  const [county, setCounty] = useState<string>('');
-  const [postcode, setPostcode] = useState<string>('');
+  const [mobile, setMobile] = useState<string | null>(null);
+  const [addressLine1, setAddressLine1] = useState<string | null>(null);
+  const [addressLine2, setAddressLine2] = useState<string | null>(null);
+  const [addressLine3, setAddressLine3] = useState<string | null>(null);
+  const [town, setTown] = useState<string | null>(null);
+  const [county, setCounty] = useState<string | null>(null);
+  const [postcode, setPostcode] = useState<string | null>(null);
 
   const { confirmDetailsPage: t } = translations;
   const router = useRouter();
@@ -83,13 +83,13 @@ export function ConfirmDetails(): ReactNode {
         setLastName(signatory.surname);
         setEmail(signatory.emailAddress);
         setConfirmEmail(signatory.emailAddress);
-        setMobile(signatory.mobile || '');
-        setAddressLine1(signatory.correspondenceAddress?.addressLine1 || '');
-        setAddressLine2(signatory.correspondenceAddress?.addressLine2 || '');
-        setAddressLine3(signatory.correspondenceAddress?.addressLine3 || '');
-        setTown(signatory.correspondenceAddress?.town || '');
-        setCounty(signatory.correspondenceAddress?.county || '');
-        setPostcode(signatory.correspondenceAddress?.postcode || '');
+        setMobile(signatory.mobile ?? null);
+        setAddressLine1(signatory.correspondenceAddress?.addressLine1 ?? null);
+        setAddressLine2(signatory.correspondenceAddress?.addressLine2 ?? null);
+        setAddressLine3(signatory.correspondenceAddress?.addressLine3 ?? null);
+        setTown(signatory.correspondenceAddress?.town ?? null);
+        setCounty(signatory.correspondenceAddress?.county ?? null);
+        setPostcode(signatory.correspondenceAddress?.postcode ?? null);
       }
     }
   }, [selectedSignatoryId, data]);
@@ -154,7 +154,7 @@ export function ConfirmDetails(): ReactNode {
           addressLine1,
           addressLine2,
           addressLine3,
-          addressLine4: currentSignatory.correspondenceAddress?.addressLine4 ?? '',
+          addressLine4: currentSignatory.correspondenceAddress?.addressLine4 ?? null,
           town,
           county,
           postcode,
@@ -271,8 +271,8 @@ export function ConfirmDetails(): ReactNode {
                   label={t.mobileLabel}
                   type="tel"
                   placeholder={t.mobileLabel}
-                  value={mobile}
-                  onChange={setMobile}
+                  value={mobile ?? ''}
+                  onChange={(v) => setMobile(v || null)}
                   disabled={!isEditMode}
                 />
               )}
@@ -285,8 +285,8 @@ export function ConfirmDetails(): ReactNode {
                       <Input
                         label=""
                         placeholder={t.addressLine1Label}
-                        value={addressLine1}
-                        onChange={setAddressLine1}
+                        value={addressLine1 ?? ''}
+                        onChange={(v) => setAddressLine1(v || null)}
                         disabled={!isEditMode}
                         className="gap-0"
                       />
@@ -296,8 +296,8 @@ export function ConfirmDetails(): ReactNode {
                       <Input
                         label=""
                         placeholder={t.addressLine2Label}
-                        value={addressLine2}
-                        onChange={setAddressLine2}
+                        value={addressLine2 ?? ''}
+                        onChange={(v) => setAddressLine2(v || null)}
                         disabled={!isEditMode}
                         className="gap-0"
                       />
@@ -307,8 +307,8 @@ export function ConfirmDetails(): ReactNode {
                       <Input
                         label=""
                         placeholder={t.addressLine3Label}
-                        value={addressLine3}
-                        onChange={setAddressLine3}
+                        value={addressLine3 ?? ''}
+                        onChange={(v) => setAddressLine3(v || null)}
                         disabled={!isEditMode}
                         className="gap-0"
                       />
@@ -318,8 +318,8 @@ export function ConfirmDetails(): ReactNode {
                       <Input
                         label=""
                         placeholder={t.townLabel}
-                        value={town}
-                        onChange={setTown}
+                        value={town ?? ''}
+                        onChange={(v) => setTown(v || null)}
                         disabled={!isEditMode}
                         className="gap-0"
                       />
@@ -329,8 +329,8 @@ export function ConfirmDetails(): ReactNode {
                       <Input
                         label=""
                         placeholder={t.countyLabel}
-                        value={county}
-                        onChange={setCounty}
+                        value={county ?? ''}
+                        onChange={(v) => setCounty(v || null)}
                         disabled={!isEditMode}
                         className="gap-0"
                       />
@@ -340,8 +340,8 @@ export function ConfirmDetails(): ReactNode {
                       <Input
                         label=""
                         placeholder={t.postcodeLabel}
-                        value={postcode}
-                        onChange={setPostcode}
+                        value={postcode ?? ''}
+                        onChange={(v) => setPostcode(v || null)}
                         disabled={!isEditMode}
                         className="gap-0"
                       />

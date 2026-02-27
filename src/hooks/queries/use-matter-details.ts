@@ -3,13 +3,13 @@ import { apiClient } from '@/lib/api';
 import { useToken } from './use-token';
 
 export interface Address {
-  addressLine1: string;
-  addressLine2: string;
-  addressLine3: string;
-  addressLine4?: string;
-  town: string;
-  county: string;
-  postcode: string;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  addressLine3: string | null;
+  addressLine4?: string | null;
+  town: string | null;
+  county: string | null;
+  postcode: string | null;
 }
 
 export type AddressAssociation =

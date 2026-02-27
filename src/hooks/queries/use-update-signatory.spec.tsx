@@ -58,8 +58,8 @@ describe('useUpdateSignatory', () => {
       correspondenceAddress: {
         addressLine1: '123 Main St',
         addressLine2: 'Apt 4',
-        addressLine3: '',
-        addressLine4: '',
+        addressLine3: null,
+        addressLine4: null,
         town: 'London',
         county: 'Greater London',
         postcode: 'SW1A 1AA',

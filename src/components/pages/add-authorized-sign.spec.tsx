@@ -45,10 +45,10 @@ describe('AddAuthorizedSign', () => {
     agreementShareMethod: 'Unspecified' as const,
     correspondenceAddress: {
       addressLine1: '1 Test St',
-      addressLine2: '',
-      addressLine3: '',
+      addressLine2: null,
+      addressLine3: null,
       town: 'London',
-      county: '',
+      county: null,
       postcode: 'SW1A 1AA',
     },
   };
@@ -534,7 +534,7 @@ describe('AddAuthorizedSign', () => {
             agreementShareMethod: 'Unspecified',
             correspondenceAddress: expect.objectContaining({
               addressLine1: '123 Main St',
-              addressLine4: '',
+              addressLine4: null,
               town: 'London',
               postcode: 'SW1A 1AA',
             }),
@@ -720,10 +720,10 @@ describe('AddAuthorizedSign', () => {
         expect(mockAddSignatory).toHaveBeenCalledWith({
           signatory: expect.objectContaining({
             correspondenceAddress: expect.objectContaining({
-              addressLine2: '',
-              addressLine3: '',
-              addressLine4: '',
-              county: '',
+              addressLine2: null,
+              addressLine3: null,
+              addressLine4: null,
+              county: null,
             }),
           }),
         });

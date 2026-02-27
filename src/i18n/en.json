@@ -123,5 +123,16 @@
     "nextButtonNoAuth": "Next",
     "backButtonLabel": "Go back",
     "selectAuthorityError": "You need to select an authority option to proceed"
+  },
+  "inactivityWarning": {
+    "message": "Are you still there? Your session will expire soon due to inactivity",
+    "imHereButton": "I'm here",
+    "logOffButton": "Log off"
+  },
+  "expiredSessionPage": {
+    "headerText": "Signature Portal",
+    "subtitle": "Powered by Liberty Blume",
+    "message": "Your session has expired due to inactivity. Use the eSignature credential to login again",
+    "loginButton": "Login"
   }
 }

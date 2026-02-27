@@ -63,6 +63,16 @@ const config: Config = {
           'checked-bg': 'hsl(var(--checkbox-checked-bg))',
           'checked-icon': 'hsl(var(--checkbox-checked-icon))',
         },
+        timer: {
+          'badge-bg': 'var(--timer-badge-bg)',
+          'badge-border': 'var(--timer-badge-border)',
+        },
+        modal: {
+          overlay: 'var(--modal-overlay-bg)',
+        },
+        brand: {
+          primary: 'var(--brand-primary)',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

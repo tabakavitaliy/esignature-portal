@@ -49,6 +49,10 @@
     --privacy-notice-bg: rgba(17, 17, 17, 0.4);
     --privacy-notice-text: 0 0% 80%;
     --data-handling-text: 0 0% 100% / 0.8;
+    --timer-badge-bg: #f0edfa;
+    --timer-badge-border: #b9afdb;
+    --modal-overlay-bg: rgba(17, 17, 17, 0.4);
+    --brand-primary: #3A238C;
   }
 
   .dark {

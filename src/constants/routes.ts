@@ -7,4 +7,5 @@ export const ROUTES = {
   NOT_AUTHORIZED_SIGNATORY: '/not-authorized-signatory',
   PREVIEW_AGREEMENT: '/preview-agreement',
   THANK_YOU: '/thank-you',
+  EXPIRED_SESSION: '/expired-session',
 } as const;

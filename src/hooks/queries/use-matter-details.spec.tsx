@@ -28,6 +28,7 @@ describe('useMatterDetails', () => {
     vi.spyOn(useTokenModule, 'useToken').mockReturnValue({
       token: mockToken,
       setToken: vi.fn(),
+      clearToken: vi.fn(),
     });
     vi.clearAllMocks();
   });
@@ -140,6 +141,7 @@ describe('useMatterDetails', () => {
     vi.spyOn(useTokenModule, 'useToken').mockReturnValue({
       token: null,
       setToken: vi.fn(),
+      clearToken: vi.fn(),
     });
 
     const { result } = renderHook(() => useMatterDetails(), {

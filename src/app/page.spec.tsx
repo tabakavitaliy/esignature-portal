@@ -10,7 +10,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 vi.mock('@/hooks/queries/use-token', () => ({
-  useToken: vi.fn(() => ({ token: null, setToken: vi.fn() })),
+  useToken: vi.fn(() => ({ token: null, setToken: vi.fn(), clearToken: vi.fn() })),
 }));
 
 describe('HomePage', () => {

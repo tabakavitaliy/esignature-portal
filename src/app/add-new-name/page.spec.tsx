@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import AddNewNamePage from './page';
+import translations from '@/i18n/en.json';
 import * as useMatterDetailsModule from '@/hooks/queries/use-matter-details';
 import * as useAddNewSignatoryModule from '@/hooks/queries/use-add-new-signatory';
 import type { MatterDetails } from '@/hooks/queries/use-matter-details';
@@ -58,7 +59,8 @@ describe('AddNewNamePage', () => {
   });
 
   it('renders the AddAuthorizedSign component', () => {
+    const { addAuthorizedSignPage: t } = translations;
     render(<AddNewNamePage />);
-    expect(screen.getByText('Enter your details')).toBeInTheDocument();
+    expect(screen.getByText(t.headerText)).toBeInTheDocument();
   });
 });

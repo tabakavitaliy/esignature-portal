@@ -2,10 +2,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/navigation';
-import { AddAuthorizedSign } from './add-authorized-sign';
+import { NotAuthorizedSignatory } from './not-authorized-signatory';
 import translations from '@/i18n/en.json';
 import * as useMatterDetailsModule from '@/hooks/queries/use-matter-details';
-import * as useAddNewSignatoryModule from '@/hooks/queries/use-add-new-signatory';
+import * as useChangeSignatoryModule from '@/hooks/queries/use-change-signatory';
 import type { MatterDetails } from '@/hooks/queries/use-matter-details';
 
 vi.mock('next/navigation', () => ({
@@ -16,14 +16,14 @@ vi.mock('@/hooks/queries/use-matter-details', () => ({
   useMatterDetails: vi.fn(),
 }));
 
-vi.mock('@/hooks/queries/use-add-new-signatory', () => ({
-  useAddNewSignatory: vi.fn(),
+vi.mock('@/hooks/queries/use-change-signatory', () => ({
+  useChangeSignatory: vi.fn(),
 }));
 
-describe('AddAuthorizedSign', () => {
-  const { addAuthorizedSignPage: t, signatoryDetailsForm: tForm } = translations;
+describe('NotAuthorizedSignatory', () => {
+  const { notAuthorizedSignatoryPage: t, signatoryDetailsForm: tForm } = translations;
   const mockPush = vi.fn();
-  const mockAddSignatory = vi.fn();
+  const mockChangeSignatory = vi.fn();
 
   const selectOption = async (_user: ReturnType<typeof userEvent.setup>, selectElement: HTMLElement, optionText: string): Promise<void> => {
     fireEvent.pointerDown(selectElement, { button: 0, ctrlKey: false, pointerType: 'mouse' });
@@ -73,8 +73,8 @@ describe('AddAuthorizedSign', () => {
       isLoading: false,
       error: null,
     });
-    (useAddNewSignatoryModule.useAddNewSignatory as ReturnType<typeof vi.fn>).mockReturnValue({
-      addNewSignatory: mockAddSignatory,
+    (useChangeSignatoryModule.useChangeSignatory as ReturnType<typeof vi.fn>).mockReturnValue({
+      changeSignatory: mockChangeSignatory,
       isPending: false,
       isError: false,
       error: null,
@@ -83,20 +83,20 @@ describe('AddAuthorizedSign', () => {
   });
 
   it('renders without crashing', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const heading = screen.getByRole('heading', { name: t.headerText });
     expect(heading).toBeInTheDocument();
   });
 
   it('renders Header with correct text', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const heading = screen.getByRole('heading', { name: t.headerText });
     expect(heading).toBeInTheDocument();
     expect(heading.tagName).toBe('H1');
   });
 
   it('renders ProgressStepper with 4 steps', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const nav = screen.getByRole('navigation', { name: 'Progress' });
     expect(nav).toBeInTheDocument();
 
@@ -105,20 +105,20 @@ describe('AddAuthorizedSign', () => {
   });
 
   it('ProgressStepper shows step 2 as current', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const currentStep = screen.getByLabelText('Step 2 current');
     expect(currentStep).toBeInTheDocument();
     expect(currentStep).toHaveClass('bg-stepper-current');
   });
 
   it('ProgressStepper shows step 1 as completed', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const completedStep = screen.getByLabelText('Step 1 completed');
     expect(completedStep).toBeInTheDocument();
   });
 
   it('ProgressStepper shows steps 3-4 as upcoming', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
 
     const upcomingStep3 = screen.getByLabelText('Step 3 upcoming');
     expect(upcomingStep3).toBeInTheDocument();
@@ -128,18 +128,18 @@ describe('AddAuthorizedSign', () => {
   });
 
   it('renders form heading and description', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     expect(screen.getByText(t.formHeading)).toBeInTheDocument();
     expect(screen.getByText(t.formDescription)).toBeInTheDocument();
   });
 
   it('renders signatory details heading', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     expect(screen.getByText(t.signatoryDetailsHeading)).toBeInTheDocument();
   });
 
   it('renders all required form fields', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
 
     expect(screen.getByText(tForm.titleLabel)).toBeInTheDocument();
     expect(screen.getByText(tForm.firstNameLabel)).toBeInTheDocument();
@@ -152,7 +152,7 @@ describe('AddAuthorizedSign', () => {
   });
 
   it('renders all form field placeholders', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
 
     const selectPlaceholders = screen.getAllByText(tForm.titlePlaceholder);
     expect(selectPlaceholders.length).toBeGreaterThanOrEqual(2);
@@ -169,23 +169,23 @@ describe('AddAuthorizedSign', () => {
   });
 
   it('renders legal basis text', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     expect(screen.getByText(t.legalBasisText)).toBeInTheDocument();
   });
 
   it('renders data handling text', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     expect(screen.getByText(t.dataHandlingText)).toBeInTheDocument();
   });
 
-  it('renders Back button with arrow icon', () => {
-    render(<AddAuthorizedSign />);
+  it('renders Back button', () => {
+    render(<NotAuthorizedSignatory />);
     const backButton = screen.getByRole('button', { name: t.backButtonLabel });
     expect(backButton).toBeInTheDocument();
   });
 
   it('Back button has secondary styling', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const backButton = screen.getByRole('button', { name: t.backButtonLabel });
     expect(backButton).toHaveClass('bg-transparent');
     expect(backButton).toHaveClass('border-2');
@@ -193,68 +193,68 @@ describe('AddAuthorizedSign', () => {
   });
 
   it('renders Submit button with correct text', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const submitButton = screen.getByRole('button', { name: t.submitButton });
     expect(submitButton).toBeInTheDocument();
   });
 
   it('Submit button has primary styling', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const submitButton = screen.getByRole('button', { name: t.submitButton });
     expect(submitButton).toHaveClass('bg-white');
   });
 
   it('has gradient background styling', () => {
-    const { container } = render(<AddAuthorizedSign />);
+    const { container } = render(<NotAuthorizedSignatory />);
     const wrapper = container.firstChild;
     expect(wrapper).toHaveClass('bg-gradient-to-b');
   });
 
   it('has full-screen height', () => {
-    const { container } = render(<AddAuthorizedSign />);
+    const { container } = render(<NotAuthorizedSignatory />);
     const wrapper = container.firstChild;
     expect(wrapper).toHaveClass('min-h-screen');
   });
 
   it('main has semantic main element for accessibility', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const main = screen.getByRole('main');
     expect(main).toBeInTheDocument();
   });
 
   it('header has semantic header element for accessibility', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const header = screen.getByRole('banner');
     expect(header).toBeInTheDocument();
   });
 
-  it('navigates to /confirm-name when Back button is clicked', async () => {
+  it('navigates to /confirm-signatory when Back button is clicked', async () => {
     const user = userEvent.setup();
 
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const backButton = screen.getByRole('button', { name: t.backButtonLabel });
 
     await user.click(backButton);
 
-    expect(mockPush).toHaveBeenCalledWith('/confirm-name');
+    expect(mockPush).toHaveBeenCalledWith('/confirm-signatory');
     expect(mockPush).toHaveBeenCalledTimes(1);
   });
 
   it('title select has combobox role for accessibility', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const selects = screen.getAllByRole('combobox');
     expect(selects.length).toBeGreaterThanOrEqual(2);
   });
 
   it('card has rounded corners and backdrop blur', () => {
-    const { container } = render(<AddAuthorizedSign />);
+    const { container } = render(<NotAuthorizedSignatory />);
     const card = container.querySelector('.rounded-2xl');
     expect(card).toBeInTheDocument();
     expect(card).toHaveClass('backdrop-blur-sm');
   });
 
   it('buttons are in a flex container with gap', () => {
-    const { container } = render(<AddAuthorizedSign />);
+    const { container } = render(<NotAuthorizedSignatory />);
     const buttonContainer = container.querySelector('.flex.gap-4');
     expect(buttonContainer).toBeInTheDocument();
 
@@ -263,7 +263,7 @@ describe('AddAuthorizedSign', () => {
   });
 
   it('Back button is narrower than Submit button', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const backButton = screen.getByRole('button', { name: t.backButtonLabel });
     const submitButton = screen.getByRole('button', { name: t.submitButton });
 
@@ -272,7 +272,7 @@ describe('AddAuthorizedSign', () => {
   });
 
   it('all page-level text comes from translations', () => {
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
 
     expect(screen.getByText(t.headerText)).toBeInTheDocument();
     expect(screen.getByText(t.formHeading)).toBeInTheDocument();
@@ -285,15 +285,15 @@ describe('AddAuthorizedSign', () => {
   });
 
   it('Submit button is disabled when isPending', () => {
-    (useAddNewSignatoryModule.useAddNewSignatory as ReturnType<typeof vi.fn>).mockReturnValue({
-      addNewSignatory: mockAddSignatory,
+    (useChangeSignatoryModule.useChangeSignatory as ReturnType<typeof vi.fn>).mockReturnValue({
+      changeSignatory: mockChangeSignatory,
       isPending: true,
       isError: false,
       error: null,
       isSuccess: false,
     });
 
-    render(<AddAuthorizedSign />);
+    render(<NotAuthorizedSignatory />);
     const submitButton = screen.getByRole('button', { name: t.submitButton });
     expect(submitButton).toBeDisabled();
   });
@@ -302,7 +302,7 @@ describe('AddAuthorizedSign', () => {
     it('shows requiredFieldsError when submitting empty form', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
       const submitButton = screen.getByRole('button', { name: t.submitButton });
 
       await user.click(submitButton);
@@ -315,10 +315,10 @@ describe('AddAuthorizedSign', () => {
     it('shows requiredFieldsError when title is missing', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
-      await user.type(screen.getByPlaceholderText(tForm.firstNamePlaceholder), 'John');
-      await user.type(screen.getByPlaceholderText(tForm.lastNamePlaceholder), 'Doe');
+      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
 
       const submitButton = screen.getByRole('button', { name: t.submitButton });
       await user.click(submitButton);
@@ -329,14 +329,14 @@ describe('AddAuthorizedSign', () => {
     it('shows requiredFieldsError when first name is missing', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
       await selectOption(user, titleSelect!, 'Mr');
 
       fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
 
-      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
+      await user.click(screen.getByRole('button', { name: t.submitButton }));
 
       expect(screen.getByText(tForm.requiredFieldsError)).toBeInTheDocument();
     });
@@ -344,51 +344,22 @@ describe('AddAuthorizedSign', () => {
     it('shows requiredFieldsError when last name is missing', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
       await selectOption(user, titleSelect!, 'Mr');
 
-      await user.type(screen.getByPlaceholderText(tForm.firstNamePlaceholder), 'John');
+      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
 
       await user.click(screen.getByRole('button', { name: t.submitButton }));
 
       expect(screen.getByText(tForm.requiredFieldsError)).toBeInTheDocument();
     });
 
-    it('allows submission when mobile is missing (optional field)', async () => {
-      const user = userEvent.setup();
-      mockAddSignatory.mockResolvedValue({ success: true });
-
-      render(<AddAuthorizedSign />);
-
-      const titleSelect = screen.getAllByRole('combobox')[0];
-      await selectOption(user, titleSelect!, 'Mr');
-
-      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
-
-      const addressAssociationSelect = screen.getAllByRole('combobox')[1];
-      await selectOption(user, addressAssociationSelect!, 'Owner');
-
-      const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
-      fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
-      fireEvent.change(emailInputs[1]!, { target: { value: 'john@example.com' } });
-
-      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), { target: { value: '123 Main St' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), { target: { value: 'London' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), { target: { value: 'SW1A 1AA' } });
-
-      await user.click(screen.getByRole('button', { name: t.submitButton }));
-
-      expect(screen.queryByText(tForm.requiredFieldsError)).not.toBeInTheDocument();
-      expect(mockAddSignatory).toHaveBeenCalled();
-    });
-
     it('shows invalidEmailError when email format is invalid', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
       await selectOption(user, titleSelect!, 'Mr');
@@ -403,7 +374,6 @@ describe('AddAuthorizedSign', () => {
       fireEvent.change(emailInputs[0]!, { target: { value: 'not-a-valid-email' } });
       fireEvent.change(emailInputs[1]!, { target: { value: 'not-a-valid-email' } });
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), { target: { value: '07700900000' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), { target: { value: '123 Main St' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), { target: { value: 'London' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), { target: { value: 'SW1A 1AA' } });
@@ -411,13 +381,13 @@ describe('AddAuthorizedSign', () => {
       await user.click(screen.getByRole('button', { name: t.submitButton }));
 
       expect(screen.getByText(tForm.invalidEmailError)).toBeInTheDocument();
-      expect(mockAddSignatory).not.toHaveBeenCalled();
+      expect(mockChangeSignatory).not.toHaveBeenCalled();
     });
 
     it('shows emailMismatchError when emails do not match', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
       await selectOption(user, titleSelect!, 'Mr');
@@ -432,21 +402,20 @@ describe('AddAuthorizedSign', () => {
       fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
       fireEvent.change(emailInputs[1]!, { target: { value: 'different@example.com' } });
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), { target: { value: '07700900000' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), { target: { value: '123 Main St' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), { target: { value: 'London' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), { target: { value: 'SW1A 1AA' } });
 
-      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
+      await user.click(screen.getByRole('button', { name: t.submitButton }));
 
       expect(screen.getByText(tForm.emailMismatchError)).toBeInTheDocument();
-      expect(mockAddSignatory).not.toHaveBeenCalled();
+      expect(mockChangeSignatory).not.toHaveBeenCalled();
     });
 
     it('shows invalidMobileError when mobile format is invalid', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
       await selectOption(user, titleSelect!, 'Mr');
@@ -466,26 +435,22 @@ describe('AddAuthorizedSign', () => {
       fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), { target: { value: 'London' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), { target: { value: 'SW1A 1AA' } });
 
-      await user.click(screen.getByRole('button', { name: t.submitButton }));
+      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
 
       expect(screen.getByText(tForm.invalidMobileError)).toBeInTheDocument();
-      expect(mockAddSignatory).not.toHaveBeenCalled();
+      expect(mockChangeSignatory).not.toHaveBeenCalled();
     });
 
     it('clears error message on next submit attempt', async () => {
-      const user = userEvent.setup();
+      render(<NotAuthorizedSignatory />);
 
-      render(<AddAuthorizedSign />);
-
-      await user.click(screen.getByRole('button', { name: t.submitButton }));
+      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
       expect(screen.getByText(tForm.requiredFieldsError)).toBeInTheDocument();
 
-      const titleSelect = screen.getAllByRole('combobox')[0];
-      await selectOption(user, titleSelect!, 'Mr');
-
-      await user.click(screen.getByRole('button', { name: t.submitButton }));
+      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
 
       expect(screen.queryByText(tForm.emailMismatchError)).not.toBeInTheDocument();
+      expect(screen.getByText(tForm.requiredFieldsError)).toBeInTheDocument();
     });
   });
 
@@ -504,23 +469,22 @@ describe('AddAuthorizedSign', () => {
       fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
       fireEvent.change(emailInputs[1]!, { target: { value: 'john@example.com' } });
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), { target: { value: '07700900000' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), { target: { value: '123 Main St' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), { target: { value: 'London' } });
       fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), { target: { value: 'SW1A 1AA' } });
     };
 
-    it('calls addSignatory with correct payload on valid submission', async () => {
+    it('calls changeSignatory with correct payload on valid submission', async () => {
       const user = userEvent.setup();
-      mockAddSignatory.mockResolvedValue({ success: true });
+      mockChangeSignatory.mockResolvedValue({ success: true });
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
       await fillValidForm(user);
 
-      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
+      await user.click(screen.getByRole('button', { name: t.submitButton }));
 
       await waitFor(() => {
-        expect(mockAddSignatory).toHaveBeenCalledWith({
+        expect(mockChangeSignatory).toHaveBeenCalledWith({
           signatory: expect.objectContaining({
             signatoryId: 'signatory-123',
             envelopeId: 'envelope-456',
@@ -529,11 +493,10 @@ describe('AddAuthorizedSign', () => {
             surname: 'Doe',
             addressAssociation: 'Owner',
             emailAddress: 'john@example.com',
-            mobile: '07700900000',
+            mobile: null,
             agreementShareMethod: 'Unspecified',
             correspondenceAddress: expect.objectContaining({
               addressLine1: '123 Main St',
-              addressLine4: null,
               town: 'London',
               postcode: 'SW1A 1AA',
             }),
@@ -542,28 +505,48 @@ describe('AddAuthorizedSign', () => {
       });
     });
 
-    it('navigates to /confirm-signatory on successful submission', async () => {
+    it('calls changeSignatory with mobile when provided', async () => {
       const user = userEvent.setup();
-      mockAddSignatory.mockResolvedValue({ success: true });
+      mockChangeSignatory.mockResolvedValue({ success: true });
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
+      await fillValidForm(user);
+
+      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), { target: { value: '07700900000' } });
+
+      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
+
+      await waitFor(() => {
+        expect(mockChangeSignatory).toHaveBeenCalledWith({
+          signatory: expect.objectContaining({
+            mobile: '07700900000',
+          }),
+        });
+      }, { timeout: 10000 });
+    }, 10000);
+
+    it('navigates to /thank-you on successful submission', async () => {
+      const user = userEvent.setup();
+      mockChangeSignatory.mockResolvedValue({ success: true });
+
+      render(<NotAuthorizedSignatory />);
       await fillValidForm(user);
 
       await user.click(screen.getByRole('button', { name: t.submitButton }));
 
       await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith('/confirm-signatory');
+        expect(mockPush).toHaveBeenCalledWith('/thank-you');
       });
     });
 
     it('shows error message when API call fails', async () => {
       const user = userEvent.setup();
-      mockAddSignatory.mockRejectedValue(new Error('Network error'));
+      mockChangeSignatory.mockRejectedValue(new Error('Network error'));
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
       await fillValidForm(user);
 
-      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
+      await user.click(screen.getByRole('button', { name: t.submitButton }));
 
       await waitFor(() => {
         expect(screen.getByText('Network error')).toBeInTheDocument();
@@ -573,26 +556,63 @@ describe('AddAuthorizedSign', () => {
 
     it('shows fallback error message when API throws non-Error', async () => {
       const user = userEvent.setup();
-      mockAddSignatory.mockRejectedValue('unknown error');
+      mockChangeSignatory.mockRejectedValue('unknown error');
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
       await fillValidForm(user);
 
-      await user.click(screen.getByRole('button', { name: t.submitButton }));
+      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
 
       await waitFor(() => {
         expect(screen.getByText('An error occurred while adding signatory')).toBeInTheDocument();
       });
     });
 
-    it('does not navigate when validation fails', async () => {
+    it('does not call changeSignatory when validation fails', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
       await user.click(screen.getByRole('button', { name: t.submitButton }));
 
-      expect(mockAddSignatory).not.toHaveBeenCalled();
+      expect(mockChangeSignatory).not.toHaveBeenCalled();
       expect(mockPush).not.toHaveBeenCalled();
+    });
+
+    it('allows submission without mobile number', async () => {
+      const user = userEvent.setup();
+      mockChangeSignatory.mockResolvedValue({ success: true });
+
+      render(<NotAuthorizedSignatory />);
+      await fillValidForm(user);
+
+      await user.click(screen.getByRole('button', { name: t.submitButton }));
+
+      await waitFor(() => {
+        expect(mockChangeSignatory).toHaveBeenCalled();
+        expect(mockPush).toHaveBeenCalledWith('/thank-you');
+      });
+    });
+
+    it('sends null for empty optional address fields', async () => {
+      const user = userEvent.setup();
+      mockChangeSignatory.mockResolvedValue({ success: true });
+
+      render(<NotAuthorizedSignatory />);
+      await fillValidForm(user);
+
+      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
+
+      await waitFor(() => {
+        expect(mockChangeSignatory).toHaveBeenCalledWith({
+          signatory: expect.objectContaining({
+            correspondenceAddress: expect.objectContaining({
+              addressLine2: null,
+              addressLine3: null,
+              county: null,
+            }),
+          }),
+        });
+      });
     });
   });
 
@@ -600,7 +620,7 @@ describe('AddAuthorizedSign', () => {
     it('updates title when selected', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const titleSelect = screen.getAllByRole('combobox')[0];
       await selectOption(user, titleSelect!, 'Mr');
@@ -611,7 +631,7 @@ describe('AddAuthorizedSign', () => {
     it('updates first name input', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const firstNameInput = screen.getByPlaceholderText(tForm.firstNamePlaceholder);
       await user.type(firstNameInput, 'John');
@@ -622,7 +642,7 @@ describe('AddAuthorizedSign', () => {
     it('updates last name input', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const lastNameInput = screen.getByPlaceholderText(tForm.lastNamePlaceholder);
       await user.type(lastNameInput, 'Doe');
@@ -631,7 +651,7 @@ describe('AddAuthorizedSign', () => {
     });
 
     it('updates email inputs', () => {
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
       fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
@@ -642,7 +662,7 @@ describe('AddAuthorizedSign', () => {
     });
 
     it('updates mobile input', () => {
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const mobileInput = screen.getByPlaceholderText(tForm.mobilePlaceholder);
       fireEvent.change(mobileInput, { target: { value: '07700900000' } });
@@ -653,7 +673,7 @@ describe('AddAuthorizedSign', () => {
     it('updates address line 1 input', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const addressLine1 = screen.getByPlaceholderText(tForm.addressLine1Placeholder);
       await user.type(addressLine1, '123 Main St');
@@ -664,7 +684,7 @@ describe('AddAuthorizedSign', () => {
     it('updates town input', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const townInput = screen.getByPlaceholderText(tForm.townPlaceholder);
       await user.type(townInput, 'London');
@@ -675,7 +695,7 @@ describe('AddAuthorizedSign', () => {
     it('updates postcode input', async () => {
       const user = userEvent.setup();
 
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const postcodeInput = screen.getByPlaceholderText(tForm.postcodePlaceholder);
       await user.type(postcodeInput, 'SW1A 1AA');
@@ -684,51 +704,9 @@ describe('AddAuthorizedSign', () => {
     });
   });
 
-  describe('optional address fields', () => {
-    it('allows submission without address line 2, 3, and county', async () => {
-      const user = userEvent.setup();
-      mockAddSignatory.mockResolvedValue({ success: true });
-
-      render(<AddAuthorizedSign />);
-
-      const titleSelect = screen.getAllByRole('combobox')[0];
-      await selectOption(user, titleSelect!, 'Mr');
-
-      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
-
-      const addressAssociationSelect = screen.getAllByRole('combobox')[1];
-      await selectOption(user, addressAssociationSelect!, 'Owner');
-
-      const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
-      fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
-      fireEvent.change(emailInputs[1]!, { target: { value: 'john@example.com' } });
-
-      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), { target: { value: '07700900000' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), { target: { value: '123 Main St' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), { target: { value: 'London' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), { target: { value: 'SW1A 1AA' } });
-
-      fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
-
-      await waitFor(() => {
-        expect(mockAddSignatory).toHaveBeenCalledWith({
-          signatory: expect.objectContaining({
-            correspondenceAddress: expect.objectContaining({
-              addressLine2: null,
-              addressLine3: null,
-              addressLine4: null,
-              county: null,
-            }),
-          }),
-        });
-      });
-    });
-  });
-
   describe('state management', () => {
     it('initializes all form fields as empty strings', () => {
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const firstNameInput = screen.getByPlaceholderText(tForm.firstNamePlaceholder);
       const lastNameInput = screen.getByPlaceholderText(tForm.lastNamePlaceholder);
@@ -740,7 +718,7 @@ describe('AddAuthorizedSign', () => {
     });
 
     it('maintains independent state for all form fields', () => {
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const firstNameInput = screen.getByPlaceholderText(tForm.firstNamePlaceholder);
       const lastNameInput = screen.getByPlaceholderText(tForm.lastNamePlaceholder);
@@ -755,7 +733,7 @@ describe('AddAuthorizedSign', () => {
 
   describe('accessibility', () => {
     it('has proper ARIA labels on buttons', () => {
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const backButton = screen.getByRole('button', { name: t.backButtonLabel });
       const submitButton = screen.getByRole('button', { name: t.submitButton });
@@ -765,7 +743,7 @@ describe('AddAuthorizedSign', () => {
     });
 
     it('form inputs are associated with their labels', () => {
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
 
       const firstNameLabel = screen.getByText(tForm.firstNameLabel);
       const firstNameInput = screen.getByPlaceholderText(tForm.firstNamePlaceholder);
@@ -779,26 +757,26 @@ describe('AddAuthorizedSign', () => {
 
   describe('layout and styling', () => {
     it('ContentWrapper centers content with max width', () => {
-      const { container } = render(<AddAuthorizedSign />);
+      const { container } = render(<NotAuthorizedSignatory />);
       const wrapper = container.querySelector('.max-w-\\[600px\\]');
       expect(wrapper).toBeInTheDocument();
       expect(wrapper).toHaveClass('mx-auto');
     });
 
     it('main content area uses column layout', () => {
-      render(<AddAuthorizedSign />);
+      render(<NotAuthorizedSignatory />);
       const main = screen.getByRole('main');
       expect(main).toHaveClass('flex-col');
     });
 
     it('card expands to fill available vertical space', () => {
-      const { container } = render(<AddAuthorizedSign />);
+      const { container } = render(<NotAuthorizedSignatory />);
       const card = container.querySelector('.rounded-2xl');
       expect(card).toHaveClass('flex-1');
     });
 
     it('has divider line between heading and form', () => {
-      const { container } = render(<AddAuthorizedSign />);
+      const { container } = render(<NotAuthorizedSignatory />);
       const divider = container.querySelector('.h-px.w-\\[24px\\]');
       expect(divider).toBeInTheDocument();
     });

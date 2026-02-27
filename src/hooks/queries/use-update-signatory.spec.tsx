@@ -7,6 +7,11 @@ import * as useTokenModule from './use-token';
 import * as useMatterDetailsModule from './use-matter-details';
 import type { MatterDetails } from './use-matter-details';
 
+const mockGetToken = vi.fn();
+vi.mock('@/hooks/common/use-recaptcha', () => ({
+  useRecaptcha: () => ({ getToken: mockGetToken }),
+}));
+
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -29,6 +34,7 @@ describe('useUpdateSignatory', () => {
   const mockToken = 'test-token-123';
   const mockMatterId = 'matter-123';
   const mockSignatoryId = 'signatory-456';
+  const mockRecaptchaToken = 'mock-recaptcha-token';
   const mockGetItem = vi.fn();
   const mockSetItem = vi.fn();
   const mockRemoveItem = vi.fn();
@@ -95,7 +101,9 @@ describe('useUpdateSignatory', () => {
     });
 
     mockGetItem.mockReturnValue(mockSignatoryId);
-    vi.clearAllMocks();
+    mockFetch.mockClear();
+    mockGetToken.mockClear();
+    mockGetToken.mockResolvedValue(mockRecaptchaToken);
   });
 
   afterEach(() => {
@@ -117,6 +125,7 @@ describe('useUpdateSignatory', () => {
     const response = await result.current.updateSignatory(mockSignatoryBody);
 
     expect(response).toEqual(mockResponse);
+    expect(mockGetToken).toHaveBeenCalledWith('updateSignatory');
     expect(mockFetch).toHaveBeenCalledWith(
       `https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/api/lb/matter/${mockMatterId}/signatory/${mockSignatoryId}/updateSignatory`,
       expect.objectContaining({
@@ -124,10 +133,29 @@ describe('useUpdateSignatory', () => {
         headers: expect.objectContaining({
           Authorization: `Bearer ${mockToken}`,
           'Content-Type': 'application/json',
+          'X-ReCaptcha-Token': mockRecaptchaToken,
         }),
         body: JSON.stringify(mockSignatoryBody),
       })
     );
+  });
+
+  it('blocks request and throws when reCAPTCHA token generation fails (fail-closed)', async () => {
+    mockGetToken.mockRejectedValue(new Error('reCAPTCHA Enterprise script has not loaded yet.'));
+
+    const { result } = renderHook(() => useUpdateSignatory(), {
+      wrapper: createWrapper(),
+    });
+
+    await expect(result.current.updateSignatory(mockSignatoryBody)).rejects.toThrow(
+      'reCAPTCHA Enterprise script has not loaded yet.'
+    );
+
+    expect(mockFetch).not.toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+    });
   });
 
   it('returns error on failed request', async () => {

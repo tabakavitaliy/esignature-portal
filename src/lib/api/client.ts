@@ -9,6 +9,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://lb-signatureapi
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string>;
+  recaptchaToken?: string;
 }
 
 /**
@@ -18,8 +19,8 @@ interface RequestOptions extends RequestInit {
  * @returns Promise with the response data
  */
 export async function apiClient<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-  const { params, ...fetchOptions } = options;
-
+  const { params, recaptchaToken, ...fetchOptions } = options;
+console.log(recaptchaToken);
   let url = `${API_BASE_URL}${endpoint}`;
 
   if (params) {
@@ -31,6 +32,7 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
     ...fetchOptions,
     headers: {
       'Content-Type': 'application/json',
+      ...(recaptchaToken && { 'X-ReCaptcha-Token': recaptchaToken }),
       ...fetchOptions.headers,
     },
   });

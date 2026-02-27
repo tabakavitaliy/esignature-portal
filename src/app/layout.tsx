@@ -6,6 +6,7 @@ import { ConsentMode } from '@/components/common/consent-mode';
 import { OneTrust } from '@/components/common/one-trust';
 import { GA4 } from '@/components/common/ga4';
 import { PageTracker } from '@/components/common/page-tracker';
+import { RecaptchaEnterprise } from '@/components/common/recaptcha-enterprise';
 import './globals.css';
 
 const inter = Inter({
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: RootLayoutProps): ReactNode {
         <QueryProvider>{children}</QueryProvider>
         <GA4 />
         <PageTracker />
+        <RecaptchaEnterprise />
       </body>
     </html>
   );

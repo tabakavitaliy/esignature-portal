@@ -15,11 +15,7 @@ export interface Address {
 export type AddressAssociation =
   | 'Owner'
   | 'Landlord'
-  | 'Property Manager'
-  | 'Solicitor'
-  | 'Executor'
-  | 'Director'
-  | 'Other';
+  | 'LegalTenant';
 export type AgreementShareMethod = 'Unspecified';
 
 export interface Signatory {

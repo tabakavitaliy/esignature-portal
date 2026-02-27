@@ -76,7 +76,7 @@ describe('NotAuthorizedSignatoryPage', () => {
       expect(screen.getByRole('main')).toBeInTheDocument();
     });
 
-    it('renders all 7 address association options when select is opened', async () => {
+    it('renders all address association options when select is opened', async () => {
       const user = userEvent.setup();
       render(<NotAuthorizedSignatoryPage />);
 
@@ -84,7 +84,7 @@ describe('NotAuthorizedSignatoryPage', () => {
       const addressAssociationSelect = combos[1]!;
       await user.click(addressAssociationSelect);
 
-      const options = ['Owner', 'Landlord', 'Property Manager', 'Solicitor', 'Executor', 'Director', 'Other'];
+      const options = ['Owner', 'Landlord', 'Legal Tenant'];
       for (const option of options) {
         const elements = await screen.findAllByText(option);
         expect(elements.length).toBeGreaterThan(0);

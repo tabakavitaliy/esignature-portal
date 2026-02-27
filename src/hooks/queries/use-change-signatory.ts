@@ -3,31 +3,31 @@ import { apiClient } from '@/lib/api';
 import { useToken } from './use-token';
 import { useMatterDetails, type Signatory } from './use-matter-details';
 
-export interface UpdateSignatoryBody {
+export interface ChangeSignatoryBody {
   signatory: Signatory;
 }
 
-interface UpdateSignatoryResponse {
+interface ChangeSignatoryResponse {
   success: boolean;
 }
 
-interface UseUpdateSignatoryReturn {
-  updateSignatory: (body: UpdateSignatoryBody) => Promise<UpdateSignatoryResponse>;
+interface UseChangeSignatoryReturn {
+  changeSignatory: (body: ChangeSignatoryBody) => Promise<ChangeSignatoryResponse>;
   isPending: boolean;
   isError: boolean;
   error: Error | null;
   isSuccess: boolean;
 }
 
-export function useUpdateSignatory(): UseUpdateSignatoryReturn {
+export function useChangeSignatory(): UseChangeSignatoryReturn {
   const { token } = useToken();
   const { data: matterData } = useMatterDetails();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<UpdateSignatoryResponse, Error, UpdateSignatoryBody>({
-    mutationFn: async (body: UpdateSignatoryBody) => {
+  const mutation = useMutation<ChangeSignatoryResponse, Error, ChangeSignatoryBody>({
+    mutationFn: async (body: ChangeSignatoryBody) => {
       const matterId = matterData?.matterId;
-      const signatoryId = typeof window !== 'undefined' 
+      const signatoryToChangeId = typeof window !== 'undefined'
         ? sessionStorage.getItem('selectedSignatoryId')
         : null;
 
@@ -35,16 +35,16 @@ export function useUpdateSignatory(): UseUpdateSignatoryReturn {
         throw new Error('Matter ID is not available');
       }
 
-      if (!signatoryId) {
-        throw new Error('Signatory ID is not available');
+      if (!signatoryToChangeId) {
+        throw new Error('Signatory to change ID is not available');
       }
 
-      return apiClient<UpdateSignatoryResponse>(
-       `/api/lb/matter/${matterId}/signatory/${signatoryId}/updateSignatory`,
+      return apiClient<ChangeSignatoryResponse>(
+        `/api/lb/matter/${matterId}/signatoryToChange/${signatoryToChangeId}/changeSignatory`,
         {
-          method: 'PUT',
+          method: 'POST',
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(body),
         }
@@ -56,7 +56,7 @@ export function useUpdateSignatory(): UseUpdateSignatoryReturn {
   });
 
   return {
-    updateSignatory: mutation.mutateAsync,
+    changeSignatory: mutation.mutateAsync,
     isPending: mutation.isPending,
     isError: mutation.isError,
     error: mutation.error,

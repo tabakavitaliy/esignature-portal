@@ -19,7 +19,7 @@ import { SignatoryFormActions } from '@/components/common/signatory-form-actions
 import translations from '@/i18n/en.json';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
 import { useMatterDetails, type AddressAssociation } from '@/hooks/queries/use-matter-details';
-import { useUpdateSignatory } from '@/hooks/queries/use-update-signatory';
+import { useChangeSignatory } from '@/hooks/queries/use-change-signatory';
 import { TITLE_OPTIONS, ADDRESS_ASSOCIATION_OPTIONS } from '@/constants/signatory-options';
 import { ROUTES } from '@/constants/routes';
 import { EMAIL_REGEX, PHONE_REGEX } from '@/constants/validation';
@@ -53,7 +53,7 @@ export function NotAuthorizedSignatory(): ReactNode {
   const { notAuthorizedSignatoryPage: t, signatoryDetailsForm: tForm } = translations;
   const router = useRouter();
   const { data: matterData } = useMatterDetails();
-  const { updateSignatory, isPending } = useUpdateSignatory();
+  const { changeSignatory, isPending } = useChangeSignatory();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -109,7 +109,7 @@ export function NotAuthorizedSignatory(): ReactNode {
     const { title, firstName, lastName, addressAssociation, email, mobile, addressLine1, addressLine2, addressLine3, town, county, postcode } = formValue;
 
     try {
-      await updateSignatory({
+      await changeSignatory({
         signatory: {
           signatoryId: currentSignatory?.signatoryId ?? '',
           envelopeId: currentSignatory?.envelopeId ?? '',
@@ -118,7 +118,7 @@ export function NotAuthorizedSignatory(): ReactNode {
           surname: lastName,
           addressAssociation: addressAssociation as AddressAssociation,
           emailAddress: email,
-          mobile,
+          mobile: mobile || null,
           agreementShareMethod: 'Unspecified',
           correspondenceAddress: {
             addressLine1: addressLine1 || null,

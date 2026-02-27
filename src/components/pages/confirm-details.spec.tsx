@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/navigation';
@@ -743,15 +743,14 @@ describe('ConfirmDetails', () => {
       );
       
       if (confirmEmailInput) {
-        await user.clear(confirmEmailInput);
-        await user.type(confirmEmailInput, 'different@example.com');
+        fireEvent.change(confirmEmailInput, { target: { value: 'different@example.com' } });
       }
 
       const checkbox = screen.getByRole('checkbox');
-      await user.click(checkbox);
+      fireEvent.click(checkbox);
 
       const saveButton = screen.getByRole('button', { name: t.saveAndNextButton });
-      await user.click(saveButton);
+      fireEvent.click(saveButton);
 
       const errorMessage = await screen.findByText(t.emailMismatchError);
       expect(errorMessage).toBeInTheDocument();
@@ -980,8 +979,7 @@ describe('ConfirmDetails', () => {
       );
       
       if (emailInput) {
-        await user.clear(emailInput);
-        await user.type(emailInput, 'jane.doe@example.com');
+        fireEvent.change(emailInput, { target: { value: 'jane.doe@example.com' } });
         expect(emailInput).toHaveValue('jane.doe@example.com');
       }
     });
@@ -1058,12 +1056,17 @@ describe('ConfirmDetails', () => {
       expect(errorMessage).toBeInTheDocument();
 
       const checkbox = screen.getByRole('checkbox');
-      await user.click(checkbox);
+      fireEvent.click(checkbox);
+
+      await waitFor(() => {
+        expect(checkbox).toHaveAttribute('data-state', 'checked');
+      });
       
       await user.click(nextButton);
       
-      const errorAfter = screen.queryByText(t.confirmDetailsError);
-      expect(errorAfter).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.queryByText(t.confirmDetailsError)).not.toBeInTheDocument();
+      });
     });
 
     it('clears error message when clicking Save and Next again in edit mode', async () => {

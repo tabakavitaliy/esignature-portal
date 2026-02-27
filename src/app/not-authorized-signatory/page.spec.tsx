@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import NotAuthorizedSignatoryPage from './page';
 import translations from '@/i18n/en.json';
 import * as useMatterDetailsModule from '@/hooks/queries/use-matter-details';
-import * as useUpdateSignatoryModule from '@/hooks/queries/use-update-signatory';
+import * as useChangeSignatoryModule from '@/hooks/queries/use-change-signatory';
 
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
@@ -15,15 +15,15 @@ vi.mock('@/hooks/queries/use-matter-details', () => ({
   useMatterDetails: vi.fn(),
 }));
 
-vi.mock('@/hooks/queries/use-update-signatory', () => ({
-  useUpdateSignatory: vi.fn(),
+vi.mock('@/hooks/queries/use-change-signatory', () => ({
+  useChangeSignatory: vi.fn(),
 }));
 
 describe('NotAuthorizedSignatoryPage', () => {
   const { notAuthorizedSignatoryPage: t, signatoryDetailsForm: tForm } = translations;
   const mockPush = vi.fn();
 
-  const mockUpdateSignatory = vi.fn();
+  const mockChangeSignatory = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -34,9 +34,9 @@ describe('NotAuthorizedSignatoryPage', () => {
       error: null,
       refetch: vi.fn(),
     });
-    mockUpdateSignatory.mockResolvedValue({ success: true });
-    (useUpdateSignatoryModule.useUpdateSignatory as ReturnType<typeof vi.fn>).mockReturnValue({
-      updateSignatory: mockUpdateSignatory,
+    mockChangeSignatory.mockResolvedValue({ success: true });
+    (useChangeSignatoryModule.useChangeSignatory as ReturnType<typeof vi.fn>).mockReturnValue({
+      changeSignatory: mockChangeSignatory,
       isPending: false,
       isError: false,
       error: null,
@@ -116,7 +116,7 @@ describe('NotAuthorizedSignatoryPage', () => {
       const combos = screen.getAllByRole('combobox');
       await user.click(combos[0]!);
       const mrOptions = await screen.findAllByText('Mr');
-      await user.click(mrOptions[mrOptions.length - 1]!);
+      fireEvent.click(mrOptions[mrOptions.length - 1]!);
 
       fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
         target: { value: 'John' },
@@ -127,7 +127,7 @@ describe('NotAuthorizedSignatoryPage', () => {
 
       await user.click(combos[1]!);
       const ownerOptions = await screen.findAllByText('Owner');
-      await user.click(ownerOptions[ownerOptions.length - 1]!);
+      fireEvent.click(ownerOptions[ownerOptions.length - 1]!);
 
       const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
       fireEvent.change(emailInputs[0]!, { target: { value: 'test@example.com' } });
@@ -158,7 +158,7 @@ describe('NotAuthorizedSignatoryPage', () => {
       const combos = screen.getAllByRole('combobox');
       await user.click(combos[0]!);
       const mrOptions = await screen.findAllByText('Mr');
-      await user.click(mrOptions[mrOptions.length - 1]!);
+      fireEvent.click(mrOptions[mrOptions.length - 1]!);
 
       fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
         target: { value: 'John' },
@@ -169,7 +169,7 @@ describe('NotAuthorizedSignatoryPage', () => {
 
       await user.click(combos[1]!);
       const ownerOptions = await screen.findAllByText('Owner');
-      await user.click(ownerOptions[ownerOptions.length - 1]!);
+      fireEvent.click(ownerOptions[ownerOptions.length - 1]!);
 
       const emailInputs = screen.getAllByPlaceholderText(tForm.emailPlaceholder);
       fireEvent.change(emailInputs[0]!, { target: { value: 'invalid-email' } });
@@ -296,7 +296,7 @@ describe('NotAuthorizedSignatoryPage', () => {
       fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
 
       await vi.waitFor(() => {
-        expect(mockUpdateSignatory).toHaveBeenCalled();
+        expect(mockChangeSignatory).toHaveBeenCalled();
       });
 
       await vi.waitFor(() => {
@@ -307,7 +307,7 @@ describe('NotAuthorizedSignatoryPage', () => {
     it('handles submission error and displays error message', async () => {
       const user = userEvent.setup();
       const errorMessage = 'Submission failed';
-      mockUpdateSignatory.mockRejectedValueOnce(new Error(errorMessage));
+      mockChangeSignatory.mockRejectedValueOnce(new Error(errorMessage));
 
       (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
         data: {
@@ -376,7 +376,7 @@ describe('NotAuthorizedSignatoryPage', () => {
 
     it('handles non-Error submission failure', async () => {
       const user = userEvent.setup();
-      mockUpdateSignatory.mockRejectedValueOnce('Non-Error failure');
+      mockChangeSignatory.mockRejectedValueOnce('Non-Error failure');
 
       (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
         data: {

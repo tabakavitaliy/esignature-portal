@@ -2,7 +2,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { ReactNode } from 'react';
-import { useUpdateSignatory, type UpdateSignatoryBody } from './use-update-signatory';
+import { useChangeSignatory, type ChangeSignatoryBody } from './use-change-signatory';
 import * as useTokenModule from './use-token';
 import * as useMatterDetailsModule from './use-matter-details';
 import type { MatterDetails } from './use-matter-details';
@@ -24,11 +24,11 @@ const createWrapper = () => {
   );
 };
 
-describe('useUpdateSignatory', () => {
+describe('useChangeSignatory', () => {
   const mockFetch = vi.fn();
   const mockToken = 'test-token-123';
   const mockMatterId = 'matter-123';
-  const mockSignatoryId = 'signatory-456';
+  const mockSignatoryToChangeId = 'signatory-456';
   const mockGetItem = vi.fn();
   const mockSetItem = vi.fn();
   const mockRemoveItem = vi.fn();
@@ -44,9 +44,9 @@ describe('useUpdateSignatory', () => {
     signatories: [],
   };
 
-  const mockSignatoryBody: UpdateSignatoryBody = {
+  const mockChangeSignatoryBody: ChangeSignatoryBody = {
     signatory: {
-      signatoryId: mockSignatoryId,
+      signatoryId: mockSignatoryToChangeId,
       envelopeId: 'envelope-123',
       title: 'Mr',
       firstname: 'John',
@@ -69,7 +69,7 @@ describe('useUpdateSignatory', () => {
 
   beforeEach(() => {
     global.fetch = mockFetch;
-    
+
     vi.spyOn(useTokenModule, 'useToken').mockReturnValue({
       token: mockToken,
       setToken: vi.fn(),
@@ -94,7 +94,7 @@ describe('useUpdateSignatory', () => {
       writable: true,
     });
 
-    mockGetItem.mockReturnValue(mockSignatoryId);
+    mockGetItem.mockReturnValue(mockSignatoryToChangeId);
     vi.clearAllMocks();
   });
 
@@ -102,7 +102,7 @@ describe('useUpdateSignatory', () => {
     vi.restoreAllMocks();
   });
 
-  it('successfully updates signatory with correct request', async () => {
+  it('successfully changes signatory with correct request', async () => {
     const mockResponse = { success: true };
 
     mockFetch.mockResolvedValue({
@@ -110,22 +110,22 @@ describe('useUpdateSignatory', () => {
       json: async () => mockResponse,
     });
 
-    const { result } = renderHook(() => useUpdateSignatory(), {
+    const { result } = renderHook(() => useChangeSignatory(), {
       wrapper: createWrapper(),
     });
 
-    const response = await result.current.updateSignatory(mockSignatoryBody);
+    const response = await result.current.changeSignatory(mockChangeSignatoryBody);
 
     expect(response).toEqual(mockResponse);
     expect(mockFetch).toHaveBeenCalledWith(
-      `https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/api/lb/matter/${mockMatterId}/signatory/${mockSignatoryId}/updateSignatory`,
+      `https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/api/lb/matter/${mockMatterId}/signatoryToChange/${mockSignatoryToChangeId}/changeSignatory`,
       expect.objectContaining({
-        method: 'PUT',
+        method: 'POST',
         headers: expect.objectContaining({
           Authorization: `Bearer ${mockToken}`,
           'Content-Type': 'application/json',
         }),
-        body: JSON.stringify(mockSignatoryBody),
+        body: JSON.stringify(mockChangeSignatoryBody),
       })
     );
   });
@@ -137,11 +137,11 @@ describe('useUpdateSignatory', () => {
       statusText: 'Internal Server Error',
     });
 
-    const { result } = renderHook(() => useUpdateSignatory(), {
+    const { result } = renderHook(() => useChangeSignatory(), {
       wrapper: createWrapper(),
     });
 
-    await expect(result.current.updateSignatory(mockSignatoryBody)).rejects.toThrow(
+    await expect(result.current.changeSignatory(mockChangeSignatoryBody)).rejects.toThrow(
       'API Error: 500 Internal Server Error'
     );
 
@@ -159,24 +159,24 @@ describe('useUpdateSignatory', () => {
       refetch: vi.fn(),
     });
 
-    const { result } = renderHook(() => useUpdateSignatory(), {
+    const { result } = renderHook(() => useChangeSignatory(), {
       wrapper: createWrapper(),
     });
 
-    await expect(result.current.updateSignatory(mockSignatoryBody)).rejects.toThrow(
+    await expect(result.current.changeSignatory(mockChangeSignatoryBody)).rejects.toThrow(
       'Matter ID is not available'
     );
   });
 
-  it('throws error when signatoryId is not available', async () => {
+  it('throws error when signatoryToChangeId is not available', async () => {
     mockGetItem.mockReturnValue(null);
 
-    const { result } = renderHook(() => useUpdateSignatory(), {
+    const { result } = renderHook(() => useChangeSignatory(), {
       wrapper: createWrapper(),
     });
 
-    await expect(result.current.updateSignatory(mockSignatoryBody)).rejects.toThrow(
-      'Signatory ID is not available'
+    await expect(result.current.changeSignatory(mockChangeSignatoryBody)).rejects.toThrow(
+      'Signatory to change ID is not available'
     );
   });
 
@@ -192,11 +192,11 @@ describe('useUpdateSignatory', () => {
       json: async () => ({ success: true }),
     });
 
-    const { result } = renderHook(() => useUpdateSignatory(), {
+    const { result } = renderHook(() => useChangeSignatory(), {
       wrapper: createWrapper(),
     });
 
-    await result.current.updateSignatory(mockSignatoryBody);
+    await result.current.changeSignatory(mockChangeSignatoryBody);
 
     expect(mockFetch).toHaveBeenCalledWith(
       expect.any(String),
@@ -227,9 +227,9 @@ describe('useUpdateSignatory', () => {
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
 
-    const { result } = renderHook(() => useUpdateSignatory(), { wrapper });
+    const { result } = renderHook(() => useChangeSignatory(), { wrapper });
 
-    await result.current.updateSignatory(mockSignatoryBody);
+    await result.current.changeSignatory(mockChangeSignatoryBody);
 
     await waitFor(() => expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['matterDetails'] }));
   });
@@ -249,7 +249,7 @@ describe('useUpdateSignatory', () => {
         )
     );
 
-    const { result } = renderHook(() => useUpdateSignatory(), {
+    const { result } = renderHook(() => useChangeSignatory(), {
       wrapper: createWrapper(),
     });
 
@@ -257,7 +257,7 @@ describe('useUpdateSignatory', () => {
     expect(result.current.isError).toBe(false);
     expect(result.current.isSuccess).toBe(false);
 
-    const promise = result.current.updateSignatory(mockSignatoryBody);
+    const promise = result.current.changeSignatory(mockChangeSignatoryBody);
 
     await waitFor(() => expect(result.current.isPending).toBe(true));
 
@@ -273,11 +273,11 @@ describe('useUpdateSignatory', () => {
   it('handles network errors', async () => {
     mockFetch.mockRejectedValue(new Error('Network error'));
 
-    const { result } = renderHook(() => useUpdateSignatory(), {
+    const { result } = renderHook(() => useChangeSignatory(), {
       wrapper: createWrapper(),
     });
 
-    await expect(result.current.updateSignatory(mockSignatoryBody)).rejects.toThrow('Network error');
+    await expect(result.current.changeSignatory(mockChangeSignatoryBody)).rejects.toThrow('Network error');
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
@@ -296,11 +296,11 @@ describe('useUpdateSignatory', () => {
       json: async () => ({ success: true }),
     });
 
-    const { result } = renderHook(() => useUpdateSignatory(), {
+    const { result } = renderHook(() => useChangeSignatory(), {
       wrapper: createWrapper(),
     });
 
-    await result.current.updateSignatory(mockSignatoryBody);
+    await result.current.changeSignatory(mockChangeSignatoryBody);
 
     expect(mockFetch).toHaveBeenCalledWith(
       expect.any(String),
@@ -309,6 +309,47 @@ describe('useUpdateSignatory', () => {
           Authorization: 'Bearer null',
         }),
       })
+    );
+  });
+
+  it('uses POST method for the request', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
+
+    const { result } = renderHook(() => useChangeSignatory(), {
+      wrapper: createWrapper(),
+    });
+
+    await result.current.changeSignatory(mockChangeSignatoryBody);
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        method: 'POST',
+      })
+    );
+  });
+
+  it('includes signatoryToChangeId in URL path', async () => {
+    const customSignatoryId = 'custom-signatory-id';
+    mockGetItem.mockReturnValue(customSignatoryId);
+
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
+
+    const { result } = renderHook(() => useChangeSignatory(), {
+      wrapper: createWrapper(),
+    });
+
+    await result.current.changeSignatory(mockChangeSignatoryBody);
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining(`/signatoryToChange/${customSignatoryId}/changeSignatory`),
+      expect.any(Object)
     );
   });
 });

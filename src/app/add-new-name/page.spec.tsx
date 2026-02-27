@@ -10,6 +10,7 @@ vi.mock('next/navigation', () => ({
     push: vi.fn(),
     back: vi.fn(),
   })),
+  usePathname: vi.fn(() => '/add-new-name'),
 }));
 
 vi.mock('@/hooks/queries/use-matter-details', () => ({
@@ -18,6 +19,14 @@ vi.mock('@/hooks/queries/use-matter-details', () => ({
 
 vi.mock('@/hooks/queries/use-add-new-signatory', () => ({
   useAddNewSignatory: vi.fn(),
+}));
+
+vi.mock('@/hooks/queries/use-token', () => ({
+  useToken: vi.fn(() => ({
+    token: 'test-token',
+    setToken: vi.fn(),
+    clearToken: vi.fn(),
+  })),
 }));
 
 describe('AddNewNamePage', () => {
@@ -50,6 +59,6 @@ describe('AddNewNamePage', () => {
 
   it('renders the AddAuthorizedSign component', () => {
     render(<AddNewNamePage />);
-    expect(screen.getByText('Add authorised signatory information')).toBeInTheDocument();
+    expect(screen.getByText('Enter your details')).toBeInTheDocument();
   });
 });

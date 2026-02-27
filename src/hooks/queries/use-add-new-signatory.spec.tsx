@@ -65,6 +65,7 @@ describe('useAddNewSignatory', () => {
     vi.spyOn(useTokenModule, 'useToken').mockReturnValue({
       token: mockToken,
       setToken: vi.fn(),
+      clearToken: vi.fn(),
     });
 
     vi.spyOn(useMatterDetailsModule, 'useMatterDetails').mockReturnValue({
@@ -150,6 +151,7 @@ describe('useAddNewSignatory', () => {
     vi.spyOn(useTokenModule, 'useToken').mockReturnValue({
       token: customToken,
       setToken: vi.fn(),
+      clearToken: vi.fn(),
     });
 
     mockFetch.mockResolvedValue({
@@ -254,6 +256,7 @@ describe('useAddNewSignatory', () => {
     vi.spyOn(useTokenModule, 'useToken').mockReturnValue({
       token: null,
       setToken: vi.fn(),
+      clearToken: vi.fn(),
     });
 
     mockFetch.mockResolvedValue({

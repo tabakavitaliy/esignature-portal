@@ -33,6 +33,7 @@ describe('LoginPage', () => {
     (useToken as ReturnType<typeof vi.fn>).mockReturnValue({
       token: null,
       setToken: mockSetToken,
+      clearToken: vi.fn(),
     });
   });
 
@@ -519,6 +520,7 @@ describe('LoginPage', () => {
       (useToken as ReturnType<typeof vi.fn>).mockReturnValue({
         token: existingToken,
         setToken: mockSetToken,
+        clearToken: vi.fn(),
       });
 
       render(<LoginPage />);
@@ -548,6 +550,7 @@ describe('LoginPage', () => {
       (useToken as ReturnType<typeof vi.fn>).mockReturnValue({
         token: existingToken,
         setToken: mockSetToken,
+        clearToken: vi.fn(),
       });
 
       render(<LoginPage />);

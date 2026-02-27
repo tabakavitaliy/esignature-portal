@@ -51,4 +51,31 @@ describe('useToken', () => {
 
     expect(setItemSpy).toHaveBeenCalledWith('token', testToken);
   });
+
+  it('clearToken removes the token from sessionStorage', () => {
+    const testToken = 'test-token-123';
+    sessionStorage.setItem('token', testToken);
+
+    const { result } = renderHook(() => useToken());
+
+    expect(result.current.token).toBe(testToken);
+
+    act(() => {
+      result.current.clearToken();
+    });
+
+    expect(sessionStorage.getItem('token')).toBeNull();
+    expect(result.current.token).toBeNull();
+  });
+
+  it('calls sessionStorage.removeItem with the correct key', () => {
+    const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
+    const { result } = renderHook(() => useToken());
+
+    act(() => {
+      result.current.clearToken();
+    });
+
+    expect(removeItemSpy).toHaveBeenCalledWith('token');
+  });
 });

@@ -146,7 +146,7 @@ export function Input({
         placeholder={placeholder}
         className={cn(
           'bg-white text-gray-900 placeholder:text-gray-400 text-sm placeholder:text-sm',
-          'disabled:bg-[#F5F5F5] disabled:text-[#CCCCCC] disabled:placeholder:text-[#CCCCCC] disabled:opacity-100',
+          'disabled:bg-[#F5F5F5] disabled:text-[#808080] disabled:placeholder:text-[#808080] disabled:opacity-100',
           inputClassName
         )}
         value={value}

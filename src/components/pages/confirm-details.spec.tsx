@@ -1162,7 +1162,7 @@ describe('ConfirmDetails', () => {
       const inputs = screen.getAllByRole('textbox');
       inputs.forEach((input) => {
         expect(input).toHaveClass('disabled:bg-[#F5F5F5]');
-        expect(input).toHaveClass('disabled:text-[#CCCCCC]');
+        expect(input).toHaveClass('disabled:text-[#808080]');
         expect(input).toHaveClass('disabled:opacity-100');
       });
     });
@@ -1174,7 +1174,7 @@ describe('ConfirmDetails', () => {
       
       const select = screen.getByRole('combobox');
       expect(select).toHaveClass('disabled:bg-[#F5F5F5]');
-      expect(select).toHaveClass('disabled:text-[#CCCCCC]');
+      expect(select).toHaveClass('disabled:text-[#808080]');
       expect(select).toHaveClass('disabled:opacity-100');
     });
   });

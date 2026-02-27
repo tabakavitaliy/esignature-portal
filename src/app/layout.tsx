@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Inter } from 'next/font/google';
 import { QueryProvider } from '@/providers';
+import { InactivityProvider } from '@/components/common/inactivity-provider';
 import { ConsentMode } from '@/components/common/consent-mode';
 import { OneTrust } from '@/components/common/one-trust';
 import { GA4 } from '@/components/common/ga4';
@@ -30,7 +31,11 @@ export default function RootLayout({ children }: RootLayoutProps): ReactNode {
         <OneTrust />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <InactivityProvider>
+            {children}
+          </InactivityProvider>
+        </QueryProvider>
         <GA4 />
         <PageTracker />
       </body>

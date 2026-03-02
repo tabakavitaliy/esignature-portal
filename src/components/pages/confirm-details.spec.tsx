@@ -102,7 +102,7 @@ describe('ConfirmDetails', () => {
     render(<ConfirmDetails />);
     const nav = screen.getByRole('navigation', { name: 'Progress' });
     expect(nav).toBeInTheDocument();
-    
+
     const listItems = screen.getAllByRole('listitem');
     expect(listItems).toHaveLength(4);
   });
@@ -135,7 +135,7 @@ describe('ConfirmDetails', () => {
   it('renders all form fields', () => {
     sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
     render(<ConfirmDetails />);
-    
+
     expect(screen.getByText(t.titleLabel)).toBeInTheDocument();
     expect(screen.getByText(t.firstNameLabel)).toBeInTheDocument();
     expect(screen.getByText(t.lastNameLabel)).toBeInTheDocument();
@@ -176,9 +176,10 @@ describe('ConfirmDetails', () => {
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const emailInput = inputs.find((input) => 
-          input.getAttribute('type') === 'email' || 
-          (input as HTMLInputElement).value === 'john.doe@example.com'
+        const emailInput = inputs.find(
+          (input) =>
+            input.getAttribute('type') === 'email' ||
+            (input as HTMLInputElement).value === 'john.doe@example.com'
         );
         expect(emailInput).toHaveValue('john.doe@example.com');
       });
@@ -186,7 +187,7 @@ describe('ConfirmDetails', () => {
 
     it('renders empty form when no selectedSignatoryId in sessionStorage', () => {
       render(<ConfirmDetails />);
-      
+
       const select = screen.getByRole('combobox');
       expect(select).toBeInTheDocument();
     });
@@ -195,7 +196,7 @@ describe('ConfirmDetails', () => {
       sessionStorage.setItem('selectedSignatoryId', 'non-existent-id');
 
       render(<ConfirmDetails />);
-      
+
       const select = screen.getByRole('combobox');
       expect(select).toBeInTheDocument();
     });
@@ -207,9 +208,7 @@ describe('ConfirmDetails', () => {
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const firstNameInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'John'
-        );
+        const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
         expect(firstNameInput).toHaveValue('John');
       });
     });
@@ -219,7 +218,7 @@ describe('ConfirmDetails', () => {
     it('does not render Confirm email field in view mode', () => {
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const confirmEmailLabel = screen.queryByText(t.confirmEmailLabel);
       expect(confirmEmailLabel).not.toBeInTheDocument();
     });
@@ -228,7 +227,7 @@ describe('ConfirmDetails', () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
@@ -240,14 +239,14 @@ describe('ConfirmDetails', () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const confirmEmailInput = inputs.find((input) => 
-          input.getAttribute('placeholder') === t.confirmEmailLabel
+        const confirmEmailInput = inputs.find(
+          (input) => input.getAttribute('placeholder') === t.confirmEmailLabel
         );
         expect(confirmEmailInput).toHaveValue('john.doe@example.com');
       });
@@ -264,7 +263,7 @@ describe('ConfirmDetails', () => {
     it('enters edit mode when Edit button is clicked', async () => {
       const user = userEvent.setup();
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
@@ -275,7 +274,7 @@ describe('ConfirmDetails', () => {
     it('hides Edit button in edit mode', async () => {
       const user = userEvent.setup();
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
@@ -286,7 +285,7 @@ describe('ConfirmDetails', () => {
     it('changes Next button to "Save and Next" in edit mode', async () => {
       const user = userEvent.setup();
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
@@ -297,7 +296,7 @@ describe('ConfirmDetails', () => {
     it('checkbox remains visible in edit mode', async () => {
       const user = userEvent.setup();
       render(<ConfirmDetails />);
-      
+
       const checkbox = screen.getByRole('checkbox');
       expect(checkbox).toBeInTheDocument();
 
@@ -312,12 +311,12 @@ describe('ConfirmDetails', () => {
   describe('form fields disabled state', () => {
     it('all form fields are disabled in view mode', () => {
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const select = screen.getByRole('combobox');
       expect(select).toBeDisabled();
-      
+
       const inputs = screen.getAllByRole('textbox');
       inputs.forEach((input) => {
         expect(input).toBeDisabled();
@@ -327,15 +326,15 @@ describe('ConfirmDetails', () => {
     it('all form fields are enabled in edit mode', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       const select = screen.getByRole('combobox');
       expect(select).not.toBeDisabled();
-      
+
       const inputs = screen.getAllByRole('textbox');
       inputs.forEach((input) => {
         expect(input).not.toBeDisabled();
@@ -346,24 +345,24 @@ describe('ConfirmDetails', () => {
   describe('navigation', () => {
     it('navigates to confirm-name when Back button is clicked', async () => {
       const user = userEvent.setup();
-      
+
       render(<ConfirmDetails />);
       const backButton = screen.getByRole('button', { name: t.backButtonLabel });
-      
+
       await user.click(backButton);
-      
+
       expect(mockPush).toHaveBeenCalledWith('/confirm-name');
       expect(mockPush).toHaveBeenCalledTimes(1);
     });
 
     it('shows error when Next clicked without confirmation in view mode', async () => {
       const user = userEvent.setup();
-      
+
       render(<ConfirmDetails />);
       const nextButton = screen.getByRole('button', { name: t.nextButton });
-      
+
       await user.click(nextButton);
-      
+
       const errorMessage = screen.getByText(t.confirmDetailsError);
       expect(errorMessage).toBeInTheDocument();
       expect(mockPush).not.toHaveBeenCalled();
@@ -371,15 +370,15 @@ describe('ConfirmDetails', () => {
 
     it('allows navigation when checkbox is confirmed in view mode', async () => {
       const user = userEvent.setup();
-      
+
       render(<ConfirmDetails />);
-      
+
       const checkbox = screen.getByRole('checkbox');
       await user.click(checkbox);
 
       const nextButton = screen.getByRole('button', { name: t.nextButton });
       await user.click(nextButton);
-      
+
       expect(mockPush).toHaveBeenCalledWith('/confirm-signatory');
       expect(mockPush).toHaveBeenCalledTimes(1);
     });
@@ -390,14 +389,14 @@ describe('ConfirmDetails', () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const addressLine3Input = inputs.find((input) => 
-          input.getAttribute('placeholder') === t.addressLine3Label
+        const addressLine3Input = inputs.find(
+          (input) => input.getAttribute('placeholder') === t.addressLine3Label
         );
         expect(addressLine3Input).toBeInTheDocument();
       });
@@ -407,14 +406,14 @@ describe('ConfirmDetails', () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const countyInput = inputs.find((input) => 
-          input.getAttribute('placeholder') === t.countyLabel
+        const countyInput = inputs.find(
+          (input) => input.getAttribute('placeholder') === t.countyLabel
         );
         expect(countyInput).toBeInTheDocument();
       });
@@ -424,23 +423,23 @@ describe('ConfirmDetails', () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const addressLine3Input = inputs.find((input) => 
-          input.getAttribute('placeholder') === t.addressLine3Label
+        const addressLine3Input = inputs.find(
+          (input) => input.getAttribute('placeholder') === t.addressLine3Label
         );
         expect(addressLine3Input).not.toBeDisabled();
       });
 
       const inputs = screen.getAllByRole('textbox');
-      const addressLine3Input = inputs.find((input) => 
-        input.getAttribute('placeholder') === t.addressLine3Label
+      const addressLine3Input = inputs.find(
+        (input) => input.getAttribute('placeholder') === t.addressLine3Label
       );
-      
+
       if (addressLine3Input) {
         await user.type(addressLine3Input, 'Building 5');
         expect(addressLine3Input).toHaveValue('Building 5');
@@ -451,23 +450,23 @@ describe('ConfirmDetails', () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const countyInput = inputs.find((input) => 
-          input.getAttribute('placeholder') === t.countyLabel
+        const countyInput = inputs.find(
+          (input) => input.getAttribute('placeholder') === t.countyLabel
         );
         expect(countyInput).not.toBeDisabled();
       });
 
       const inputs = screen.getAllByRole('textbox');
-      const countyInput = inputs.find((input) => 
-        input.getAttribute('placeholder') === t.countyLabel
+      const countyInput = inputs.find(
+        (input) => input.getAttribute('placeholder') === t.countyLabel
       );
-      
+
       if (countyInput) {
         await user.clear(countyInput);
         await user.type(countyInput, 'Surrey');
@@ -480,10 +479,12 @@ describe('ConfirmDetails', () => {
     it('hides mobile field when empty in view mode', () => {
       const mockDataWithoutMobile = {
         ...mockData,
-        signatories: [{
-          ...mockSignatory,
-          mobile: null,
-        }],
+        signatories: [
+          {
+            ...mockSignatory,
+            mobile: null,
+          },
+        ],
       };
 
       (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
@@ -495,7 +496,7 @@ describe('ConfirmDetails', () => {
 
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const mobileLabel = screen.queryByText(t.mobileLabel);
       expect(mobileLabel).not.toBeInTheDocument();
     });
@@ -503,7 +504,7 @@ describe('ConfirmDetails', () => {
     it('shows mobile field when not empty in view mode', () => {
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const mobileLabel = screen.getByText(t.mobileLabel);
       expect(mobileLabel).toBeInTheDocument();
     });
@@ -512,10 +513,12 @@ describe('ConfirmDetails', () => {
       const user = userEvent.setup();
       const mockDataWithoutMobile = {
         ...mockData,
-        signatories: [{
-          ...mockSignatory,
-          mobile: null,
-        }],
+        signatories: [
+          {
+            ...mockSignatory,
+            mobile: null,
+          },
+        ],
       };
 
       (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
@@ -527,7 +530,7 @@ describe('ConfirmDetails', () => {
 
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
@@ -540,18 +543,20 @@ describe('ConfirmDetails', () => {
     it('hides correspondence address section when all fields empty in view mode', () => {
       const mockDataWithoutAddress = {
         ...mockData,
-        signatories: [{
-          ...mockSignatory,
-          correspondenceAddress: {
-            addressLine1: null,
-            addressLine2: null,
-            addressLine3: null,
-            addressLine4: null,
-            town: null,
-            county: null,
-            postcode: null,
+        signatories: [
+          {
+            ...mockSignatory,
+            correspondenceAddress: {
+              addressLine1: null,
+              addressLine2: null,
+              addressLine3: null,
+              addressLine4: null,
+              town: null,
+              county: null,
+              postcode: null,
+            },
           },
-        }],
+        ],
       };
 
       (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
@@ -563,7 +568,7 @@ describe('ConfirmDetails', () => {
 
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const addressLabel = screen.queryByText(t.correspondenceAddressLabel);
       expect(addressLabel).not.toBeInTheDocument();
     });
@@ -572,18 +577,20 @@ describe('ConfirmDetails', () => {
       const user = userEvent.setup();
       const mockDataWithoutAddress = {
         ...mockData,
-        signatories: [{
-          ...mockSignatory,
-          correspondenceAddress: {
-            addressLine1: null,
-            addressLine2: null,
-            addressLine3: null,
-            addressLine4: null,
-            town: null,
-            county: null,
-            postcode: null,
+        signatories: [
+          {
+            ...mockSignatory,
+            correspondenceAddress: {
+              addressLine1: null,
+              addressLine2: null,
+              addressLine3: null,
+              addressLine4: null,
+              town: null,
+              county: null,
+              postcode: null,
+            },
           },
-        }],
+        ],
       };
 
       (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
@@ -595,7 +602,7 @@ describe('ConfirmDetails', () => {
 
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
@@ -608,13 +615,15 @@ describe('ConfirmDetails', () => {
     it('hides empty address line 2 in view mode', () => {
       const mockDataWithoutAddressLine2 = {
         ...mockData,
-        signatories: [{
-          ...mockSignatory,
-          correspondenceAddress: {
-            ...mockSignatory.correspondenceAddress,
-            addressLine2: null,
+        signatories: [
+          {
+            ...mockSignatory,
+            correspondenceAddress: {
+              ...mockSignatory.correspondenceAddress,
+              addressLine2: null,
+            },
           },
-        }],
+        ],
       };
 
       (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
@@ -626,10 +635,10 @@ describe('ConfirmDetails', () => {
 
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const inputs = screen.getAllByRole('textbox');
-      const addressLine2Input = inputs.find((input) => 
-        input.getAttribute('placeholder') === t.addressLine2Label
+      const addressLine2Input = inputs.find(
+        (input) => input.getAttribute('placeholder') === t.addressLine2Label
       );
       expect(addressLine2Input).toBeUndefined();
     });
@@ -638,14 +647,14 @@ describe('ConfirmDetails', () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const addressLine3Input = inputs.find((input) => 
-          input.getAttribute('placeholder') === t.addressLine3Label
+        const addressLine3Input = inputs.find(
+          (input) => input.getAttribute('placeholder') === t.addressLine3Label
         );
         expect(addressLine3Input).toBeInTheDocument();
       });
@@ -656,25 +665,21 @@ describe('ConfirmDetails', () => {
     it('shows error when required fields are empty', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const firstNameInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'John'
-        );
+        const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
         expect(firstNameInput).not.toBeDisabled();
       });
 
       const inputs = screen.getAllByRole('textbox');
-      const firstNameInput = inputs.find((input) => 
-        (input as HTMLInputElement).value === 'John'
-      );
-      
+      const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
+
       if (firstNameInput) {
         await user.clear(firstNameInput);
       }
@@ -686,28 +691,135 @@ describe('ConfirmDetails', () => {
       expect(errorMessage).toBeInTheDocument();
     });
 
-    it('shows error when email is invalid', async () => {
+    it('shows error when address line 1 is cleared', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const emailInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'john.doe@example.com'
+        const addressInput = inputs.find(
+          (input) => (input as HTMLInputElement).value === '123 Main St'
+        );
+        expect(addressInput).not.toBeDisabled();
+      });
+
+      const inputs = screen.getAllByRole('textbox');
+      const addressInput = inputs.find(
+        (input) => (input as HTMLInputElement).value === '123 Main St'
+      );
+
+      if (addressInput) {
+        await user.clear(addressInput);
+      }
+
+      const checkbox = screen.getByRole('checkbox');
+      await user.click(checkbox);
+
+      const saveButton = screen.getByRole('button', { name: t.saveAndNextButton });
+      await user.click(saveButton);
+
+      const errorMessage = await screen.findByText(t.requiredFieldsError);
+      expect(errorMessage).toBeInTheDocument();
+      expect(mockUpdateSignatory).not.toHaveBeenCalled();
+    });
+
+    it('shows error when town is cleared', async () => {
+      const user = userEvent.setup();
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+
+      render(<ConfirmDetails />);
+
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const townInput = inputs.find((input) => (input as HTMLInputElement).value === 'London');
+        expect(townInput).not.toBeDisabled();
+      });
+
+      const inputs = screen.getAllByRole('textbox');
+      const townInput = inputs.find((input) => (input as HTMLInputElement).value === 'London');
+
+      if (townInput) {
+        await user.clear(townInput);
+      }
+
+      const checkbox = screen.getByRole('checkbox');
+      await user.click(checkbox);
+
+      const saveButton = screen.getByRole('button', { name: t.saveAndNextButton });
+      await user.click(saveButton);
+
+      const errorMessage = await screen.findByText(t.requiredFieldsError);
+      expect(errorMessage).toBeInTheDocument();
+      expect(mockUpdateSignatory).not.toHaveBeenCalled();
+    });
+
+    it('shows error when postcode is cleared', async () => {
+      const user = userEvent.setup();
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+
+      render(<ConfirmDetails />);
+
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const postcodeInput = inputs.find(
+          (input) => (input as HTMLInputElement).value === 'SW1A 1AA'
+        );
+        expect(postcodeInput).not.toBeDisabled();
+      });
+
+      const inputs = screen.getAllByRole('textbox');
+      const postcodeInput = inputs.find(
+        (input) => (input as HTMLInputElement).value === 'SW1A 1AA'
+      );
+
+      if (postcodeInput) {
+        await user.clear(postcodeInput);
+      }
+
+      const checkbox = screen.getByRole('checkbox');
+      await user.click(checkbox);
+
+      const saveButton = screen.getByRole('button', { name: t.saveAndNextButton });
+      await user.click(saveButton);
+
+      const errorMessage = await screen.findByText(t.requiredFieldsError);
+      expect(errorMessage).toBeInTheDocument();
+      expect(mockUpdateSignatory).not.toHaveBeenCalled();
+    });
+
+    it('shows error when email is invalid', async () => {
+      const user = userEvent.setup();
+      sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
+
+      render(<ConfirmDetails />);
+
+      const editButton = screen.getByRole('button', { name: t.editButton });
+      await user.click(editButton);
+
+      await waitFor(() => {
+        const inputs = screen.getAllByRole('textbox');
+        const emailInput = inputs.find(
+          (input) => (input as HTMLInputElement).value === 'john.doe@example.com'
         );
         expect(emailInput).not.toBeDisabled();
       });
 
       const inputs = screen.getAllByRole('textbox');
-      const emailInput = inputs.find((input) => 
-        (input as HTMLInputElement).value === 'john.doe@example.com'
+      const emailInput = inputs.find(
+        (input) => (input as HTMLInputElement).value === 'john.doe@example.com'
       );
-      
+
       if (emailInput) {
         await user.clear(emailInput);
         await user.type(emailInput, 'invalid-email');
@@ -723,25 +835,25 @@ describe('ConfirmDetails', () => {
     it('shows error when emails do not match', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const confirmEmailInput = inputs.find((input) => 
-          input.getAttribute('placeholder') === t.confirmEmailLabel
+        const confirmEmailInput = inputs.find(
+          (input) => input.getAttribute('placeholder') === t.confirmEmailLabel
         );
         expect(confirmEmailInput).not.toBeDisabled();
       });
 
       const inputs = screen.getAllByRole('textbox');
-      const confirmEmailInput = inputs.find((input) => 
-        input.getAttribute('placeholder') === t.confirmEmailLabel
+      const confirmEmailInput = inputs.find(
+        (input) => input.getAttribute('placeholder') === t.confirmEmailLabel
       );
-      
+
       if (confirmEmailInput) {
         fireEvent.change(confirmEmailInput, { target: { value: 'different@example.com' } });
       }
@@ -760,17 +872,15 @@ describe('ConfirmDetails', () => {
     it('validates successfully with all required fields filled', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const firstNameInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'John'
-        );
+        const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
         expect(firstNameInput).not.toBeDisabled();
       });
 
@@ -800,25 +910,25 @@ describe('ConfirmDetails', () => {
     it('allows empty optional fields', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const mobileInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === '07700900000'
+        const mobileInput = inputs.find(
+          (input) => (input as HTMLInputElement).value === '07700900000'
         );
         expect(mobileInput).not.toBeDisabled();
       });
 
       const inputs = screen.getAllByRole('textbox');
-      const mobileInput = inputs.find((input) => 
-        (input as HTMLInputElement).value === '07700900000'
+      const mobileInput = inputs.find(
+        (input) => (input as HTMLInputElement).value === '07700900000'
       );
-      
+
       if (mobileInput) {
         await user.clear(mobileInput);
       }
@@ -862,7 +972,7 @@ describe('ConfirmDetails', () => {
     it('checkbox can be checked', async () => {
       const user = userEvent.setup();
       render(<ConfirmDetails />);
-      
+
       const checkbox = screen.getByRole('checkbox');
       await user.click(checkbox);
 
@@ -873,15 +983,15 @@ describe('ConfirmDetails', () => {
     it('checkbox can be toggled', async () => {
       const user = userEvent.setup();
       render(<ConfirmDetails />);
-      
+
       const checkbox = screen.getByRole('checkbox');
-      
+
       await user.click(checkbox);
       expect(checkbox).toHaveAttribute('aria-checked', 'true');
-      
+
       await user.click(checkbox);
       expect(checkbox).toHaveAttribute('aria-checked', 'false');
-      
+
       await user.click(checkbox);
       expect(checkbox).toHaveAttribute('aria-checked', 'true');
     });
@@ -889,7 +999,7 @@ describe('ConfirmDetails', () => {
     it('checkbox remains visible in edit mode', async () => {
       const user = userEvent.setup();
       render(<ConfirmDetails />);
-      
+
       const checkbox = screen.getByRole('checkbox');
       expect(checkbox).toBeInTheDocument();
 
@@ -905,9 +1015,9 @@ describe('ConfirmDetails', () => {
     it('can edit title in edit mode', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
@@ -918,7 +1028,7 @@ describe('ConfirmDetails', () => {
 
       const select = screen.getByRole('combobox');
       await user.click(select);
-      
+
       const msOption = await screen.findByText('Ms');
       await user.click(msOption);
 
@@ -930,25 +1040,21 @@ describe('ConfirmDetails', () => {
     it('can edit first name in edit mode', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const firstNameInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'John'
-        );
+        const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
         expect(firstNameInput).not.toBeDisabled();
       });
 
       const inputs = screen.getAllByRole('textbox');
-      const firstNameInput = inputs.find((input) => 
-        (input as HTMLInputElement).value === 'John'
-      );
-      
+      const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
+
       if (firstNameInput) {
         await user.clear(firstNameInput);
         await user.type(firstNameInput, 'Jane');
@@ -959,25 +1065,25 @@ describe('ConfirmDetails', () => {
     it('can edit email in edit mode', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const emailInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'john.doe@example.com'
+        const emailInput = inputs.find(
+          (input) => (input as HTMLInputElement).value === 'john.doe@example.com'
         );
         expect(emailInput).not.toBeDisabled();
       });
 
       const inputs = screen.getAllByRole('textbox');
-      const emailInput = inputs.find((input) => 
-        (input as HTMLInputElement).value === 'john.doe@example.com'
+      const emailInput = inputs.find(
+        (input) => (input as HTMLInputElement).value === 'john.doe@example.com'
       );
-      
+
       if (emailInput) {
         fireEvent.change(emailInput, { target: { value: 'jane.doe@example.com' } });
         expect(emailInput).toHaveValue('jane.doe@example.com');
@@ -987,25 +1093,25 @@ describe('ConfirmDetails', () => {
     it('can edit optional mobile field in edit mode', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const mobileInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === '07700900000'
+        const mobileInput = inputs.find(
+          (input) => (input as HTMLInputElement).value === '07700900000'
         );
         expect(mobileInput).not.toBeDisabled();
       });
 
       const inputs = screen.getAllByRole('textbox');
-      const mobileInput = inputs.find((input) => 
-        (input as HTMLInputElement).value === '07700900000'
+      const mobileInput = inputs.find(
+        (input) => (input as HTMLInputElement).value === '07700900000'
       );
-      
+
       if (mobileInput) {
         await user.clear(mobileInput);
         await user.type(mobileInput, '07700900999');
@@ -1016,25 +1122,25 @@ describe('ConfirmDetails', () => {
     it('can edit address fields in edit mode', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const addressInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === '123 Main St'
+        const addressInput = inputs.find(
+          (input) => (input as HTMLInputElement).value === '123 Main St'
         );
         expect(addressInput).not.toBeDisabled();
       });
 
       const inputs = screen.getAllByRole('textbox');
-      const addressInput = inputs.find((input) => 
-        (input as HTMLInputElement).value === '123 Main St'
+      const addressInput = inputs.find(
+        (input) => (input as HTMLInputElement).value === '123 Main St'
       );
-      
+
       if (addressInput) {
         await user.clear(addressInput);
         await user.type(addressInput, '456 Oak Ave');
@@ -1046,12 +1152,12 @@ describe('ConfirmDetails', () => {
   describe('error handling', () => {
     it('clears error message when clicking Next again after error', async () => {
       const user = userEvent.setup();
-      
+
       render(<ConfirmDetails />);
-      
+
       const nextButton = screen.getByRole('button', { name: t.nextButton });
       await user.click(nextButton);
-      
+
       const errorMessage = screen.getByText(t.confirmDetailsError);
       expect(errorMessage).toBeInTheDocument();
 
@@ -1061,9 +1167,9 @@ describe('ConfirmDetails', () => {
       await waitFor(() => {
         expect(checkbox).toHaveAttribute('data-state', 'checked');
       });
-      
+
       await user.click(nextButton);
-      
+
       await waitFor(() => {
         expect(screen.queryByText(t.confirmDetailsError)).not.toBeInTheDocument();
       });
@@ -1072,25 +1178,21 @@ describe('ConfirmDetails', () => {
     it('clears error message when clicking Save and Next again in edit mode', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const firstNameInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'John'
-        );
+        const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
         expect(firstNameInput).not.toBeDisabled();
       });
 
       const inputs = screen.getAllByRole('textbox');
-      const firstNameInput = inputs.find((input) => 
-        (input as HTMLInputElement).value === 'John'
-      );
-      
+      const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
+
       if (firstNameInput) {
         await user.clear(firstNameInput);
       }
@@ -1140,7 +1242,7 @@ describe('ConfirmDetails', () => {
       const { container } = render(<ConfirmDetails />);
       const buttonContainer = container.querySelector('.flex.gap-4');
       expect(buttonContainer).toBeInTheDocument();
-      
+
       const buttons = buttonContainer?.querySelectorAll('button');
       expect(buttons?.length).toBeGreaterThanOrEqual(2);
     });
@@ -1149,16 +1251,16 @@ describe('ConfirmDetails', () => {
       render(<ConfirmDetails />);
       const backButton = screen.getByRole('button', { name: t.backButtonLabel });
       const nextButton = screen.getByRole('button', { name: t.nextButton });
-      
+
       expect(backButton).toHaveClass('w-auto');
       expect(nextButton).toHaveClass('w-full');
     });
 
     it('disabled inputs have grey background and text color', () => {
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const inputs = screen.getAllByRole('textbox');
       inputs.forEach((input) => {
         expect(input).toHaveClass('disabled:bg-[#F5F5F5]');
@@ -1169,9 +1271,9 @@ describe('ConfirmDetails', () => {
 
     it('disabled select has grey background and text color', () => {
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const select = screen.getByRole('combobox');
       expect(select).toHaveClass('disabled:bg-[#F5F5F5]');
       expect(select).toHaveClass('disabled:text-[#808080]');
@@ -1236,7 +1338,7 @@ describe('ConfirmDetails', () => {
     it('uses translations for all visible text', () => {
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
       render(<ConfirmDetails />);
-      
+
       expect(screen.getByText(t.headerText)).toBeInTheDocument();
       expect(screen.getByText(t.description)).toBeInTheDocument();
       expect(screen.getByText(t.signatoryDetailsHeading)).toBeInTheDocument();
@@ -1334,14 +1436,12 @@ describe('ConfirmDetails', () => {
     it('maintains form state when toggling between modes', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const firstNameInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'John'
-        );
+        const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
         expect(firstNameInput).toHaveValue('John');
       });
 
@@ -1350,9 +1450,7 @@ describe('ConfirmDetails', () => {
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const firstNameInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'John'
-        );
+        const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
         expect(firstNameInput).toHaveValue('John');
       });
     });
@@ -1362,17 +1460,15 @@ describe('ConfirmDetails', () => {
     it('calls updateSignatory with correct body when Save and Next is clicked', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const firstNameInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'John'
-        );
+        const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
         expect(firstNameInput).not.toBeDisabled();
       });
 
@@ -1411,17 +1507,15 @@ describe('ConfirmDetails', () => {
     it('refetches data and navigates after successful update', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const firstNameInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'John'
-        );
+        const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
         expect(firstNameInput).not.toBeDisabled();
       });
 
@@ -1440,17 +1534,15 @@ describe('ConfirmDetails', () => {
     it('shows error when checkbox is not checked in edit mode', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const firstNameInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'John'
-        );
+        const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
         expect(firstNameInput).not.toBeDisabled();
       });
 
@@ -1467,17 +1559,15 @@ describe('ConfirmDetails', () => {
       const mockError = new Error('API update failed');
       mockUpdateSignatory.mockRejectedValue(mockError);
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const firstNameInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'John'
-        );
+        const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
         expect(firstNameInput).not.toBeDisabled();
       });
 
@@ -1498,7 +1588,7 @@ describe('ConfirmDetails', () => {
     it('disables Save and Next button while request is pending', async () => {
       const user = userEvent.setup();
       sessionStorage.setItem('selectedSignatoryId', 'signatory-1');
-      
+
       (useUpdateSignatoryModule.useUpdateSignatory as ReturnType<typeof vi.fn>).mockReturnValue({
         updateSignatory: mockUpdateSignatory,
         isPending: true,
@@ -1506,17 +1596,15 @@ describe('ConfirmDetails', () => {
         error: null,
         isSuccess: false,
       });
-      
+
       render(<ConfirmDetails />);
-      
+
       const editButton = screen.getByRole('button', { name: t.editButton });
       await user.click(editButton);
 
       await waitFor(() => {
         const inputs = screen.getAllByRole('textbox');
-        const firstNameInput = inputs.find((input) => 
-          (input as HTMLInputElement).value === 'John'
-        );
+        const firstNameInput = inputs.find((input) => (input as HTMLInputElement).value === 'John');
         expect(firstNameInput).not.toBeDisabled();
       });
 

@@ -206,9 +206,9 @@ export const SIGNATORY_FORM_CONFIG = {
       email: true,
       confirmEmail: false,
       mobile: false,
-      addressLine1: false,
-      town: false,
-      postcode: false,
+      addressLine1: true,
+      town: true,
+      postcode: true,
     },
   } satisfies SignatoryDetailsFormConfig,
 

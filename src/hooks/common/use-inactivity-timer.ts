@@ -23,6 +23,7 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const prevPathnameRef = useRef(pathname);
+  const lastActivityTimestampRef = useRef<number>(Date.now());
 
   const clearInactivityTimer = useCallback((): void => {
     if (inactivityTimerRef.current) {
@@ -65,12 +66,13 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
     }
   }, [isWarningVisible]);
 
-  const startInactivityTimer = useCallback((): void => {
+  const startInactivityTimer = useCallback((delay: number = INACTIVITY_TIMEOUT_MS): void => {
     clearInactivityTimer();
+    lastActivityTimestampRef.current = Date.now();
     
     inactivityTimerRef.current = setTimeout(() => {
       startCountdown();
-    }, INACTIVITY_TIMEOUT_MS);
+    }, delay);
   }, [clearInactivityTimer, startCountdown]);
 
   const resetTimer = useCallback((): void => {
@@ -78,11 +80,13 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
     clearCountdownInterval();
     setIsWarningVisible(false);
     setRemainingSeconds(COUNTDOWN_SECONDS);
+    lastActivityTimestampRef.current = Date.now();
     startInactivityTimer();
   }, [clearInactivityTimer, clearCountdownInterval, startInactivityTimer]);
 
   const handleActivity = useCallback((): void => {
     if (!isWarningVisible) {
+      lastActivityTimestampRef.current = Date.now();
       startInactivityTimer();
     }
   }, [isWarningVisible, startInactivityTimer]);
@@ -117,14 +121,50 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
 
     window.addEventListener('click', handleActivity);
     window.addEventListener('scroll', handleActivity);
+    window.addEventListener('touchstart', handleActivity, { passive: true });
 
     return () => {
       window.removeEventListener('click', handleActivity);
       window.removeEventListener('scroll', handleActivity);
+      window.removeEventListener('touchstart', handleActivity);
       clearInactivityTimer();
       clearCountdownInterval();
     };
   }, [token, pathname, resetTimer, startInactivityTimer, handleActivity, clearInactivityTimer, clearCountdownInterval]);
+
+  useEffect(() => {
+    const shouldMonitor = 
+      token && 
+      pathname !== ROUTES.HOME && 
+      pathname !== ROUTES.EXPIRED_SESSION;
+
+    if (!shouldMonitor) {
+      return;
+    }
+
+    const handleVisibilityChange = (): void => {
+      if (!document.hidden) {
+        const elapsed = Date.now() - lastActivityTimestampRef.current;
+        const fullTimeout = INACTIVITY_TIMEOUT_MS + COUNTDOWN_SECONDS * 1000;
+
+        if (elapsed >= fullTimeout) {
+          logOff();
+        } else if (elapsed >= INACTIVITY_TIMEOUT_MS) {
+          clearInactivityTimer();
+          startCountdown();
+        } else {
+          const remaining = INACTIVITY_TIMEOUT_MS - elapsed;
+          startInactivityTimer(remaining);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [token, pathname, logOff, clearInactivityTimer, startCountdown, startInactivityTimer]);
 
   return {
     isWarningVisible,

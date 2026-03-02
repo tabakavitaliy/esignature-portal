@@ -293,4 +293,155 @@ describe('useInactivityTimer', () => {
     expect(result.current.isWarningVisible).toBe(false);
     expect(result.current.remainingSeconds).toBe(COUNTDOWN_SECONDS);
   });
+
+  it('should reset timer on touchstart activity', () => {
+    const { result } = renderHook(() => useInactivityTimer());
+
+    act(() => {
+      vi.advanceTimersByTime(INACTIVITY_TIMEOUT_MS / 2);
+    });
+
+    act(() => {
+      window.dispatchEvent(new Event('touchstart'));
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(INACTIVITY_TIMEOUT_MS / 2);
+    });
+
+    expect(result.current.isWarningVisible).toBe(false);
+  });
+
+  describe('page visibility changes', () => {
+    let originalHidden: PropertyDescriptor | undefined;
+
+    beforeEach(() => {
+      originalHidden = Object.getOwnPropertyDescriptor(Document.prototype, 'hidden');
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: vi.fn(() => false),
+      });
+    });
+
+    afterEach(() => {
+      if (originalHidden) {
+        Object.defineProperty(Document.prototype, 'hidden', originalHidden);
+      }
+    });
+
+    it('should show warning when page becomes visible after inactivity timeout', () => {
+      const { result } = renderHook(() => useInactivityTimer());
+
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => true,
+      });
+
+      const initialTimestamp = Date.now();
+      vi.setSystemTime(initialTimestamp);
+
+      vi.setSystemTime(initialTimestamp + INACTIVITY_TIMEOUT_MS + 1000);
+
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => false,
+      });
+
+      act(() => {
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+
+      expect(result.current.isWarningVisible).toBe(true);
+    });
+
+    it('should log off when page becomes visible after full session timeout', () => {
+      renderHook(() => useInactivityTimer());
+
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => true,
+      });
+
+      const initialTimestamp = Date.now();
+      vi.setSystemTime(initialTimestamp);
+
+      const fullTimeout = INACTIVITY_TIMEOUT_MS + COUNTDOWN_SECONDS * 1000;
+      vi.setSystemTime(initialTimestamp + fullTimeout + 1000);
+
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => false,
+      });
+
+      act(() => {
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+
+      expect(mockClearToken).toHaveBeenCalled();
+      expect(mockPush).toHaveBeenCalledWith(ROUTES.EXPIRED_SESSION);
+    });
+
+    it('should restart timer with remaining time when page becomes visible before timeout', () => {
+      const { result } = renderHook(() => useInactivityTimer());
+
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => true,
+      });
+
+      const initialTimestamp = Date.now();
+      vi.setSystemTime(initialTimestamp);
+
+      const elapsedTime = INACTIVITY_TIMEOUT_MS / 2;
+      vi.setSystemTime(initialTimestamp + elapsedTime);
+
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => false,
+      });
+
+      act(() => {
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+
+      expect(result.current.isWarningVisible).toBe(false);
+
+      act(() => {
+        vi.advanceTimersByTime(INACTIVITY_TIMEOUT_MS / 2 - 1000);
+      });
+
+      expect(result.current.isWarningVisible).toBe(false);
+
+      act(() => {
+        vi.advanceTimersByTime(2000);
+      });
+
+      expect(result.current.isWarningVisible).toBe(true);
+    });
+
+    it('should not trigger visibility handler when page is not monitored', () => {
+      (usePathname as ReturnType<typeof vi.fn>).mockReturnValue(ROUTES.HOME);
+      renderHook(() => useInactivityTimer());
+
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => true,
+      });
+
+      const initialTimestamp = Date.now();
+      vi.setSystemTime(initialTimestamp);
+      vi.setSystemTime(initialTimestamp + INACTIVITY_TIMEOUT_MS + 1000);
+
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => false,
+      });
+
+      act(() => {
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+
+      expect(mockClearToken).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -294,26 +294,45 @@ describe('useInactivityTimer', () => {
     expect(result.current.remainingSeconds).toBe(COUNTDOWN_SECONDS);
   });
 
-  it('should reset timer on touchstart activity', () => {
-    const { result } = renderHook(() => useInactivityTimer());
+  describe('Android-specific behavior', () => {
+    let originalUserAgent: PropertyDescriptor | undefined;
 
-    act(() => {
-      vi.advanceTimersByTime(INACTIVITY_TIMEOUT_MS / 2);
+    beforeEach(() => {
+      originalUserAgent = Object.getOwnPropertyDescriptor(Navigator.prototype, 'userAgent');
+      Object.defineProperty(Navigator.prototype, 'userAgent', {
+        configurable: true,
+        get: () => 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36',
+      });
     });
 
-    act(() => {
-      window.dispatchEvent(new Event('touchstart'));
+    afterEach(() => {
+      if (originalUserAgent) {
+        Object.defineProperty(Navigator.prototype, 'userAgent', originalUserAgent);
+      }
     });
 
-    act(() => {
-      vi.advanceTimersByTime(INACTIVITY_TIMEOUT_MS / 2);
-    });
+    it('should reset timer on touchstart activity on Android', () => {
+      const { result } = renderHook(() => useInactivityTimer());
 
-    expect(result.current.isWarningVisible).toBe(false);
+      act(() => {
+        vi.advanceTimersByTime(INACTIVITY_TIMEOUT_MS / 2);
+      });
+
+      act(() => {
+        window.dispatchEvent(new Event('touchstart'));
+      });
+
+      act(() => {
+        vi.advanceTimersByTime(INACTIVITY_TIMEOUT_MS / 2);
+      });
+
+      expect(result.current.isWarningVisible).toBe(false);
+    });
   });
 
-  describe('page visibility changes', () => {
+  describe('page visibility changes on Android', () => {
     let originalHidden: PropertyDescriptor | undefined;
+    let originalUserAgent: PropertyDescriptor | undefined;
 
     beforeEach(() => {
       originalHidden = Object.getOwnPropertyDescriptor(Document.prototype, 'hidden');
@@ -321,11 +340,20 @@ describe('useInactivityTimer', () => {
         configurable: true,
         get: vi.fn(() => false),
       });
+      
+      originalUserAgent = Object.getOwnPropertyDescriptor(Navigator.prototype, 'userAgent');
+      Object.defineProperty(Navigator.prototype, 'userAgent', {
+        configurable: true,
+        get: () => 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36',
+      });
     });
 
     afterEach(() => {
       if (originalHidden) {
         Object.defineProperty(Document.prototype, 'hidden', originalHidden);
+      }
+      if (originalUserAgent) {
+        Object.defineProperty(Navigator.prototype, 'userAgent', originalUserAgent);
       }
     });
 
@@ -442,6 +470,72 @@ describe('useInactivityTimer', () => {
       });
 
       expect(mockClearToken).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('non-Android behavior (iPhone/Chrome)', () => {
+    let originalUserAgent: PropertyDescriptor | undefined;
+
+    beforeEach(() => {
+      originalUserAgent = Object.getOwnPropertyDescriptor(Navigator.prototype, 'userAgent');
+      Object.defineProperty(Navigator.prototype, 'userAgent', {
+        configurable: true,
+        get: () => 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15',
+      });
+    });
+
+    afterEach(() => {
+      if (originalUserAgent) {
+        Object.defineProperty(Navigator.prototype, 'userAgent', originalUserAgent);
+      }
+    });
+
+    it('should NOT reset timer on touchstart activity on non-Android devices', () => {
+      const { result } = renderHook(() => useInactivityTimer());
+
+      act(() => {
+        vi.advanceTimersByTime(INACTIVITY_TIMEOUT_MS / 2);
+      });
+
+      act(() => {
+        window.dispatchEvent(new Event('touchstart'));
+      });
+
+      act(() => {
+        vi.advanceTimersByTime(INACTIVITY_TIMEOUT_MS / 2);
+      });
+
+      expect(result.current.isWarningVisible).toBe(true);
+    });
+
+    it('should NOT trigger visibility change handler on non-Android devices', () => {
+      const { result } = renderHook(() => useInactivityTimer());
+
+      const originalHidden = Object.getOwnPropertyDescriptor(Document.prototype, 'hidden');
+      
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => true,
+      });
+
+      const initialTimestamp = Date.now();
+      vi.setSystemTime(initialTimestamp);
+      vi.setSystemTime(initialTimestamp + INACTIVITY_TIMEOUT_MS + 1000);
+
+      Object.defineProperty(document, 'hidden', {
+        configurable: true,
+        get: () => false,
+      });
+
+      act(() => {
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+
+      expect(result.current.isWarningVisible).toBe(false);
+
+      if (originalHidden) {
+        Object.defineProperty(Document.prototype, 'hidden', originalHidden);
+      }
     });
   });
 });

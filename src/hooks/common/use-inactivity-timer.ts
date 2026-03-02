@@ -6,6 +6,11 @@ import { ROUTES } from '@/constants/routes';
 export const INACTIVITY_TIMEOUT_MS = 1 * 60 * 1000;
 export const COUNTDOWN_SECONDS = 120;
 
+function isAndroidDevice(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return /android/i.test(navigator.userAgent);
+}
+
 interface UseInactivityTimerReturn {
   isWarningVisible: boolean;
   remainingSeconds: number;
@@ -121,12 +126,19 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
 
     window.addEventListener('click', handleActivity);
     window.addEventListener('scroll', handleActivity);
-    window.addEventListener('touchstart', handleActivity, { passive: true });
+    
+    if (isAndroidDevice()) {
+      window.addEventListener('touchstart', handleActivity, { passive: true });
+    }
 
     return () => {
       window.removeEventListener('click', handleActivity);
       window.removeEventListener('scroll', handleActivity);
-      window.removeEventListener('touchstart', handleActivity);
+      
+      if (isAndroidDevice()) {
+        window.removeEventListener('touchstart', handleActivity);
+      }
+      
       clearInactivityTimer();
       clearCountdownInterval();
     };
@@ -138,7 +150,7 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
       pathname !== ROUTES.HOME && 
       pathname !== ROUTES.EXPIRED_SESSION;
 
-    if (!shouldMonitor) {
+    if (!shouldMonitor || !isAndroidDevice()) {
       return;
     }
 

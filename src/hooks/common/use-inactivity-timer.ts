@@ -22,6 +22,7 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
   
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const prevPathnameRef = useRef(pathname);
 
   const clearInactivityTimer = useCallback((): void => {
     if (inactivityTimerRef.current) {
@@ -105,7 +106,14 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
       return;
     }
 
-    startInactivityTimer();
+    const pathnameChanged = prevPathnameRef.current !== pathname;
+    prevPathnameRef.current = pathname;
+
+    if (pathnameChanged) {
+      resetTimer();
+    } else {
+      startInactivityTimer();
+    }
 
     window.addEventListener('click', handleActivity);
     window.addEventListener('scroll', handleActivity);
@@ -116,7 +124,7 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
       clearInactivityTimer();
       clearCountdownInterval();
     };
-  }, [token, pathname, startInactivityTimer, handleActivity, clearInactivityTimer, clearCountdownInterval]);
+  }, [token, pathname, resetTimer, startInactivityTimer, handleActivity, clearInactivityTimer, clearCountdownInterval]);
 
   return {
     isWarningVisible,

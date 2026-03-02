@@ -274,4 +274,23 @@ describe('useInactivityTimer', () => {
 
     expect(result.current.isWarningVisible).toBe(false);
   });
+
+  it('should reset timer and hide warning when route changes', () => {
+    const { result, rerender } = renderHook(() => useInactivityTimer());
+
+    act(() => {
+      vi.advanceTimersByTime(INACTIVITY_TIMEOUT_MS);
+    });
+
+    expect(result.current.isWarningVisible).toBe(true);
+    expect(result.current.remainingSeconds).toBe(COUNTDOWN_SECONDS);
+
+    act(() => {
+      (usePathname as ReturnType<typeof vi.fn>).mockReturnValue('/different-route');
+      rerender();
+    });
+
+    expect(result.current.isWarningVisible).toBe(false);
+    expect(result.current.remainingSeconds).toBe(COUNTDOWN_SECONDS);
+  });
 });

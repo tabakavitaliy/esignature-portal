@@ -131,7 +131,8 @@ export function Input({
       const formatted = applyMask(rawValue, mask);
       onChange(formatted);
     } else {
-      onChange(e.target.value);
+      const value = type === 'email' ? e.target.value.toLowerCase() : e.target.value;
+      onChange(value);
     }
   };
 

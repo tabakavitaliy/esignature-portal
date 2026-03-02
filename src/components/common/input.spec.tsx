@@ -365,6 +365,53 @@ describe('Input', () => {
     });
   });
 
+  describe('email type lowercase transformation', () => {
+    it('converts email input to lowercase', () => {
+      const onChange = vi.fn();
+      render(<Input label="Email" type="email" value="" onChange={onChange} />);
+      const input = screen.getByLabelText('Email') as HTMLInputElement;
+
+      fireEvent.change(input, { target: { value: 'Test@Example.COM' } });
+      expect(onChange).toHaveBeenCalledWith('test@example.com');
+    });
+
+    it('converts mixed-case email to lowercase', () => {
+      const onChange = vi.fn();
+      render(<Input label="Email" type="email" value="" onChange={onChange} />);
+      const input = screen.getByLabelText('Email') as HTMLInputElement;
+
+      fireEvent.change(input, { target: { value: 'JohnDoe@EXAMPLE.COM' } });
+      expect(onChange).toHaveBeenCalledWith('johndoe@example.com');
+    });
+
+    it('keeps email already in lowercase unchanged', () => {
+      const onChange = vi.fn();
+      render(<Input label="Email" type="email" value="" onChange={onChange} />);
+      const input = screen.getByLabelText('Email') as HTMLInputElement;
+
+      fireEvent.change(input, { target: { value: 'test@example.com' } });
+      expect(onChange).toHaveBeenCalledWith('test@example.com');
+    });
+
+    it('does not lowercase non-email input types', () => {
+      const onChange = vi.fn();
+      render(<Input label="Name" type="text" value="" onChange={onChange} />);
+      const input = screen.getByLabelText('Name') as HTMLInputElement;
+
+      fireEvent.change(input, { target: { value: 'John Doe' } });
+      expect(onChange).toHaveBeenCalledWith('John Doe');
+    });
+
+    it('does not lowercase password input', () => {
+      const onChange = vi.fn();
+      render(<Input label="Password" type="password" value="" onChange={onChange} />);
+      const input = screen.getByLabelText('Password') as HTMLInputElement;
+
+      fireEvent.change(input, { target: { value: 'MyPassword123' } });
+      expect(onChange).toHaveBeenCalledWith('MyPassword123');
+    });
+  });
+
   describe('controlled behavior', () => {
     it('calls onChange on mount when mask needs to be applied to initial value', () => {
       const onChange = vi.fn();

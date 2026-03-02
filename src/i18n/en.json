@@ -41,7 +41,7 @@
     "confirmEmailLabel": "Confirm email",
     "mobileLabel": "Mobile number (optional)",
     "correspondenceAddressLabel": "Correspondence address (optional)",
-    "addressLine1Label": "Address line 1 (optional)",
+    "addressLine1Label": "Address line 1",
     "addressLine2Label": "Address line 2 (optional)",
     "addressLine3Label": "Address line 3 (optional)",
     "townLabel": "City",

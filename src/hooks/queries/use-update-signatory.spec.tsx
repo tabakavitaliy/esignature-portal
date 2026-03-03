@@ -64,8 +64,8 @@ describe('useUpdateSignatory', () => {
       correspondenceAddress: {
         addressLine1: '123 Main St',
         addressLine2: 'Apt 4',
-        addressLine3: '',
-        addressLine4: '',
+        addressLine3: null,
+        addressLine4: null,
         town: 'London',
         county: 'Greater London',
         postcode: 'SW1A 1AA',
@@ -75,10 +75,11 @@ describe('useUpdateSignatory', () => {
 
   beforeEach(() => {
     global.fetch = mockFetch;
-    
+
     vi.spyOn(useTokenModule, 'useToken').mockReturnValue({
       token: mockToken,
       setToken: vi.fn(),
+      clearToken: vi.fn(),
     });
 
     vi.spyOn(useMatterDetailsModule, 'useMatterDetails').mockReturnValue({
@@ -213,6 +214,7 @@ describe('useUpdateSignatory', () => {
     vi.spyOn(useTokenModule, 'useToken').mockReturnValue({
       token: customToken,
       setToken: vi.fn(),
+      clearToken: vi.fn(),
     });
 
     mockFetch.mockResolvedValue({
@@ -259,7 +261,9 @@ describe('useUpdateSignatory', () => {
 
     await result.current.updateSignatory(mockSignatoryBody);
 
-    await waitFor(() => expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['matterDetails'] }));
+    await waitFor(() =>
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['matterDetails'] })
+    );
   });
 
   it('exposes mutation state correctly', async () => {
@@ -305,7 +309,9 @@ describe('useUpdateSignatory', () => {
       wrapper: createWrapper(),
     });
 
-    await expect(result.current.updateSignatory(mockSignatoryBody)).rejects.toThrow('Network error');
+    await expect(result.current.updateSignatory(mockSignatoryBody)).rejects.toThrow(
+      'Network error'
+    );
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
@@ -317,6 +323,7 @@ describe('useUpdateSignatory', () => {
     vi.spyOn(useTokenModule, 'useToken').mockReturnValue({
       token: null,
       setToken: vi.fn(),
+      clearToken: vi.fn(),
     });
 
     mockFetch.mockResolvedValue({

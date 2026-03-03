@@ -5,6 +5,7 @@ const TOKEN_KEY = 'token';
 interface UseTokenReturn {
   token: string | null;
   setToken: (token: string) => void;
+  clearToken: () => void;
 }
 
 export function useToken(): UseTokenReturn {
@@ -25,5 +26,12 @@ export function useToken(): UseTokenReturn {
     }
   }, []);
 
-  return { token, setToken };
+  const clearToken = useCallback((): void => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem(TOKEN_KEY);
+      setTokenState(null);
+    }
+  }, []);
+
+  return { token, setToken, clearToken };
 }

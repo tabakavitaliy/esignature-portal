@@ -19,12 +19,14 @@ import { SignatoryFormActions } from '@/components/common/signatory-form-actions
 import translations from '@/i18n/en.json';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
 import { useMatterDetails, type AddressAssociation } from '@/hooks/queries/use-matter-details';
-import { useUpdateSignatory } from '@/hooks/queries/use-update-signatory';
+import { useChangeSignatory } from '@/hooks/queries/use-change-signatory';
 import { TITLE_OPTIONS, ADDRESS_ASSOCIATION_OPTIONS } from '@/constants/signatory-options';
 import { ROUTES } from '@/constants/routes';
 import { EMAIL_REGEX, PHONE_REGEX } from '@/constants/validation';
 
-type RequiredFormValue = Required<Omit<SignatoryDetailsFormValue, 'mobile'>> & { mobile: string | null };
+type RequiredFormValue = Required<Omit<SignatoryDetailsFormValue, 'mobile'>> & {
+  mobile: string | null;
+};
 
 /**
  * NotAuthorizedSignatory page for the "No, I do not have authority" flow.
@@ -39,7 +41,7 @@ export function NotAuthorizedSignatory(): ReactNode {
     addressAssociation: '',
     email: '',
     confirmEmail: '',
-    mobile: null,
+    mobile: '',
     addressLine1: '',
     addressLine2: '',
     addressLine3: '',
@@ -53,7 +55,7 @@ export function NotAuthorizedSignatory(): ReactNode {
   const { notAuthorizedSignatoryPage: t, signatoryDetailsForm: tForm } = translations;
   const router = useRouter();
   const { data: matterData } = useMatterDetails();
-  const { updateSignatory, isPending } = useUpdateSignatory();
+  const { changeSignatory, isPending } = useChangeSignatory();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -70,9 +72,30 @@ export function NotAuthorizedSignatory(): ReactNode {
   };
 
   const validateForm = (): boolean => {
-    const { title, firstName, lastName, addressAssociation, email, confirmEmail, mobile, addressLine1, town, postcode } = formValue;
+    const {
+      title,
+      firstName,
+      lastName,
+      addressAssociation,
+      email,
+      confirmEmail,
+      mobile,
+      addressLine1,
+      town,
+      postcode,
+    } = formValue;
 
-    if (!title || !firstName || !lastName || !addressAssociation || !email || !confirmEmail || !addressLine1 || !town || !postcode) {
+    if (
+      !title ||
+      !firstName ||
+      !lastName ||
+      !addressAssociation ||
+      !email ||
+      !confirmEmail ||
+      !addressLine1 ||
+      !town ||
+      !postcode
+    ) {
       setErrorMessage(tForm.requiredFieldsError);
       return false;
     }
@@ -106,10 +129,23 @@ export function NotAuthorizedSignatory(): ReactNode {
       (s) => s.signatoryId === selectedSignatoryId
     );
 
-    const { title, firstName, lastName, addressAssociation, email, mobile, addressLine1, addressLine2, addressLine3, town, county, postcode } = formValue;
+    const {
+      title,
+      firstName,
+      lastName,
+      addressAssociation,
+      email,
+      mobile,
+      addressLine1,
+      addressLine2,
+      addressLine3,
+      town,
+      county,
+      postcode,
+    } = formValue;
 
     try {
-      await updateSignatory({
+      await changeSignatory({
         signatory: {
           signatoryId: currentSignatory?.signatoryId ?? '',
           envelopeId: currentSignatory?.envelopeId ?? '',
@@ -118,21 +154,23 @@ export function NotAuthorizedSignatory(): ReactNode {
           surname: lastName,
           addressAssociation: addressAssociation as AddressAssociation,
           emailAddress: email,
-          mobile,
+          mobile: mobile || null,
           agreementShareMethod: 'Unspecified',
           correspondenceAddress: {
-            addressLine1,
-            addressLine2,
-            addressLine3,
-            town,
-            county,
-            postcode,
+            addressLine1: addressLine1 || null,
+            addressLine2: addressLine2 || null,
+            addressLine3: addressLine3 || null,
+            town: town || null,
+            county: county || null,
+            postcode: postcode || null,
           },
         },
       });
       router.push(ROUTES.THANK_YOU);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'An error occurred while adding signatory');
+      setErrorMessage(
+        error instanceof Error ? error.message : 'An error occurred while adding signatory'
+      );
     }
   };
 
@@ -148,7 +186,7 @@ export function NotAuthorizedSignatory(): ReactNode {
 
       <main className={cn('flex flex-1 flex-col px-6 py-12')}>
         <ContentWrapper className="flex flex-1 flex-col gap-8">
-          <ProgressStepper stepCount={4} currentStep={4} className="self-center" />
+          <ProgressStepper stepCount={4} currentStep={2} className="self-center" />
 
           <SignatoryFormCard
             heading={t.formHeading}
@@ -164,9 +202,7 @@ export function NotAuthorizedSignatory(): ReactNode {
             />
           </SignatoryFormCard>
 
-          <p className="text-xs text-white text-center leading-[18px]">
-            {t.legalBasisText}
-          </p>
+          <p className="text-xs text-white text-center leading-[18px]">{t.legalBasisText}</p>
 
           {errorMessage && <ButtonErrorLabel message={errorMessage} />}
 
@@ -176,6 +212,7 @@ export function NotAuthorizedSignatory(): ReactNode {
             onBackClick={handleBackClick}
             onSubmitClick={handleSubmitClick}
             isPending={isPending}
+            dataHandlingText={t.dataHandlingText}
           />
         </ContentWrapper>
       </main>

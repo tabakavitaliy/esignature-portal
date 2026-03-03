@@ -61,7 +61,7 @@ export function Select({
       <Label htmlFor={selectId} className="text-xs text-white">
         {label}
       </Label>
-      <BaseSelect 
+      <BaseSelect
         {...(value !== undefined ? { value } : {})}
         {...(onChange !== undefined ? { onValueChange: onChange } : {})}
         disabled={disabled}
@@ -70,7 +70,7 @@ export function Select({
           id={selectId}
           className={cn(
             'bg-white text-gray-900 text-sm group',
-            'disabled:bg-[#F5F5F5] disabled:text-[#CCCCCC] disabled:opacity-100',
+            'disabled:bg-[#F5F5F5] disabled:text-[#808080] disabled:opacity-100',
             selectClassName
           )}
           disabled={disabled}

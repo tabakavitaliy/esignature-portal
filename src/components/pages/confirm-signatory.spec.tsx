@@ -48,7 +48,7 @@ describe('ConfirmSignatory', () => {
     render(<ConfirmSignatory />);
     const nav = screen.getByRole('navigation', { name: 'Progress' });
     expect(nav).toBeInTheDocument();
-    
+
     const listItems = screen.getAllByRole('listitem');
     expect(listItems).toHaveLength(4);
   });
@@ -62,11 +62,11 @@ describe('ConfirmSignatory', () => {
 
   it('ProgressStepper shows steps 1-2 as completed', () => {
     render(<ConfirmSignatory />);
-    
+
     const completedStep1 = screen.getByLabelText('Step 1 completed');
     expect(completedStep1).toBeInTheDocument();
     expect(completedStep1).toHaveClass('bg-stepper-complete');
-    
+
     const completedStep2 = screen.getByLabelText('Step 2 completed');
     expect(completedStep2).toBeInTheDocument();
     expect(completedStep2).toHaveClass('bg-stepper-complete');
@@ -74,7 +74,7 @@ describe('ConfirmSignatory', () => {
 
   it('ProgressStepper shows step 4 as upcoming', () => {
     render(<ConfirmSignatory />);
-    
+
     const upcomingStep4 = screen.getByLabelText('Step 4 upcoming');
     expect(upcomingStep4).toBeInTheDocument();
     expect(upcomingStep4).toHaveClass('bg-stepper-upcoming');
@@ -91,11 +91,11 @@ describe('ConfirmSignatory', () => {
       propertyAddresses: [
         {
           addressLine1: '123 Main St',
-          addressLine2: '',
-          addressLine3: '',
-          addressLine4: '',
+          addressLine2: null,
+          addressLine3: null,
+          addressLine4: null,
           town: 'London',
-          county: '',
+          county: null,
           postcode: 'SW1A 1AA',
         },
       ],
@@ -172,12 +172,12 @@ describe('ConfirmSignatory', () => {
 
   it('navigates to /confirm-details when Back button is clicked', async () => {
     const user = userEvent.setup();
-    
+
     render(<ConfirmSignatory />);
     const backButton = screen.getByRole('button', { name: t.backButtonLabel });
-    
+
     await user.click(backButton);
-    
+
     expect(mockPush).toHaveBeenCalledWith('/confirm-details');
     expect(mockPush).toHaveBeenCalledTimes(1);
   });
@@ -193,7 +193,7 @@ describe('ConfirmSignatory', () => {
     render(<ConfirmSignatory />);
     const backButton = screen.getByRole('button', { name: t.backButtonLabel });
     const nextButton = screen.getByRole('button', { name: t.nextButton });
-    
+
     expect(backButton).toBeInTheDocument();
     expect(nextButton).toBeInTheDocument();
   });
@@ -202,14 +202,14 @@ describe('ConfirmSignatory', () => {
     render(<ConfirmSignatory />);
     const backButton = screen.getByRole('button', { name: t.backButtonLabel });
     const nextButton = screen.getByRole('button', { name: t.nextButton });
-    
+
     expect(backButton).toHaveClass('w-auto');
     expect(nextButton).toHaveClass('w-full');
   });
 
   it('all text comes from translations', () => {
     render(<ConfirmSignatory />);
-    
+
     expect(screen.getByText(t.headerText)).toBeInTheDocument();
     expect(screen.getByText(t.addressCountSuffix)).toBeInTheDocument();
     expect(screen.getByText(t.authorityQuestion)).toBeInTheDocument();
@@ -255,9 +255,9 @@ describe('ConfirmSignatory', () => {
       });
 
       render(<ConfirmSignatory />);
-      
+
       expect(screen.getByText(/0 addresses/i)).toBeInTheDocument();
-      
+
       const radios = screen.getAllByRole('radio');
       expect(radios).toHaveLength(2);
     });
@@ -281,9 +281,9 @@ describe('ConfirmSignatory', () => {
       });
 
       render(<ConfirmSignatory />);
-      
+
       expect(screen.getByText(/0 addresses/i)).toBeInTheDocument();
-      
+
       const radios = screen.getAllByRole('radio');
       expect(radios).toHaveLength(2);
     });
@@ -326,9 +326,13 @@ describe('ConfirmSignatory', () => {
       });
 
       render(<ConfirmSignatory />);
-      
-      expect(screen.getByText('123 Main St, Apt 4B, London, Greater London, SW1A 1AA')).toBeInTheDocument();
-      expect(screen.getByText('456 Oak Ave, Manchester, Greater Manchester, M1 1AA')).toBeInTheDocument();
+
+      expect(
+        screen.getByText('123 Main St, Apt 4B, London, Greater London, SW1A 1AA')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('456 Oak Ave, Manchester, Greater Manchester, M1 1AA')
+      ).toBeInTheDocument();
     });
 
     it('formats addresses correctly with all fields', () => {
@@ -360,8 +364,12 @@ describe('ConfirmSignatory', () => {
       });
 
       render(<ConfirmSignatory />);
-      
-      expect(screen.getByText('100 Test Rd, Suite 200, Floor 3, Building A, Birmingham, West Midlands, B1 1AA')).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          '100 Test Rd, Suite 200, Floor 3, Building A, Birmingham, West Midlands, B1 1AA'
+        )
+      ).toBeInTheDocument();
     });
 
     it('formats addresses correctly with minimal fields', () => {
@@ -379,7 +387,7 @@ describe('ConfirmSignatory', () => {
             addressLine3: '',
             addressLine4: '',
             town: 'Leeds',
-            county: '',
+            county: null,
             postcode: 'LS1 1AA',
           },
         ],
@@ -393,7 +401,7 @@ describe('ConfirmSignatory', () => {
       });
 
       render(<ConfirmSignatory />);
-      
+
       expect(screen.getByText('789 Pine Rd, Leeds, LS1 1AA')).toBeInTheDocument();
     });
   });
@@ -440,7 +448,7 @@ describe('ConfirmSignatory', () => {
             addressLine3: '',
             addressLine4: '',
             town: 'London',
-            county: '',
+            county: null,
             postcode: 'SW1A 1AA',
           },
         ],
@@ -472,7 +480,7 @@ describe('ConfirmSignatory', () => {
             addressLine3: '',
             addressLine4: '',
             town: 'London',
-            county: '',
+            county: null,
             postcode: 'SW1A 1AA',
           },
           {
@@ -481,7 +489,7 @@ describe('ConfirmSignatory', () => {
             addressLine3: '',
             addressLine4: '',
             town: 'Manchester',
-            county: '',
+            county: null,
             postcode: 'M1 1AA',
           },
         ],
@@ -564,7 +572,7 @@ describe('ConfirmSignatory', () => {
       render(<ConfirmSignatory />);
       const radios = screen.getAllByRole('radio');
       expect(radios).toHaveLength(2);
-      
+
       expect(screen.getByText(t.authorityYes)).toBeInTheDocument();
       expect(screen.getByText(t.authorityNo)).toBeInTheDocument();
     });
@@ -572,10 +580,10 @@ describe('ConfirmSignatory', () => {
     it('can select Yes authority option', async () => {
       const user = userEvent.setup();
       render(<ConfirmSignatory />);
-      
+
       const radios = screen.getAllByRole('radio');
       const yesRadio = radios[0]!;
-      
+
       expect(yesRadio).not.toBeChecked();
       await user.click(yesRadio);
       expect(yesRadio).toBeChecked();
@@ -584,10 +592,10 @@ describe('ConfirmSignatory', () => {
     it('can select No authority option', async () => {
       const user = userEvent.setup();
       render(<ConfirmSignatory />);
-      
+
       const radios = screen.getAllByRole('radio');
       const noRadio = radios[1]!;
-      
+
       expect(noRadio).not.toBeChecked();
       await user.click(noRadio);
       expect(noRadio).toBeChecked();
@@ -596,15 +604,15 @@ describe('ConfirmSignatory', () => {
     it('can switch between authority options', async () => {
       const user = userEvent.setup();
       render(<ConfirmSignatory />);
-      
+
       const radios = screen.getAllByRole('radio');
       const yesRadio = radios[0]!;
       const noRadio = radios[1]!;
-      
+
       await user.click(yesRadio);
       expect(yesRadio).toBeChecked();
       expect(noRadio).not.toBeChecked();
-      
+
       await user.click(noRadio);
       expect(yesRadio).not.toBeChecked();
       expect(noRadio).toBeChecked();
@@ -613,11 +621,11 @@ describe('ConfirmSignatory', () => {
     it('clicking authority label selects corresponding radio button', async () => {
       const user = userEvent.setup();
       render(<ConfirmSignatory />);
-      
+
       const yesLabel = screen.getByText(t.authorityYes);
       const radios = screen.getAllByRole('radio');
       const yesRadio = radios[0]!;
-      
+
       expect(yesRadio).not.toBeChecked();
       await user.click(yesLabel);
       expect(yesRadio).toBeChecked();
@@ -629,9 +637,9 @@ describe('ConfirmSignatory', () => {
       const user = userEvent.setup();
       render(<ConfirmSignatory />);
       const nextButton = screen.getByRole('button', { name: t.nextButton });
-      
+
       await user.click(nextButton);
-      
+
       const errorMessage = screen.getByText(t.selectAuthorityError);
       expect(errorMessage).toBeInTheDocument();
       expect(mockPush).not.toHaveBeenCalled();
@@ -683,18 +691,18 @@ describe('ConfirmSignatory', () => {
     it('error message clears when selecting an authority option after error', async () => {
       const user = userEvent.setup();
       render(<ConfirmSignatory />);
-      
+
       const nextButton = screen.getByRole('button', { name: t.nextButton });
       await user.click(nextButton);
-      
+
       const errorMessage = screen.getByText(t.selectAuthorityError);
       expect(errorMessage).toBeInTheDocument();
 
       const radios = screen.getAllByRole('radio');
       await user.click(radios[0]!);
-      
+
       await user.click(nextButton);
-      
+
       const errorAfterSelection = screen.queryByText(t.selectAuthorityError);
       expect(errorAfterSelection).not.toBeInTheDocument();
     });
@@ -723,7 +731,7 @@ describe('ConfirmSignatory', () => {
             addressLine3: '',
             addressLine4: '',
             town: 'London',
-            county: '',
+            county: null,
             postcode: 'SW1A 1AA',
           },
           {
@@ -732,7 +740,7 @@ describe('ConfirmSignatory', () => {
             addressLine3: '',
             addressLine4: '',
             town: 'Manchester',
-            county: '',
+            county: null,
             postcode: 'M1 1AA',
           },
           {
@@ -741,7 +749,7 @@ describe('ConfirmSignatory', () => {
             addressLine3: '',
             addressLine4: '',
             town: 'Birmingham',
-            county: '',
+            county: null,
             postcode: 'B1 1AA',
           },
         ],
@@ -755,7 +763,7 @@ describe('ConfirmSignatory', () => {
       });
 
       render(<ConfirmSignatory />);
-      
+
       expect(screen.getByText('1 First St, London, SW1A 1AA')).toBeInTheDocument();
       expect(screen.getByText('2 Second St, Manchester, M1 1AA')).toBeInTheDocument();
       expect(screen.getByText('3 Third St, Birmingham, B1 1AA')).toBeInTheDocument();
@@ -778,7 +786,7 @@ describe('ConfirmSignatory', () => {
             addressLine3: '',
             addressLine4: '',
             town: 'London',
-            county: '',
+            county: null,
             postcode: 'SW1A 1AA',
           },
         ],
@@ -808,13 +816,13 @@ describe('ConfirmSignatory', () => {
     it('authority radio buttons are keyboard accessible', async () => {
       const user = userEvent.setup();
       render(<ConfirmSignatory />);
-      
+
       const radios = screen.getAllByRole('radio');
       const yesRadio = radios[0]!;
-      
+
       yesRadio.focus();
       expect(yesRadio).toHaveFocus();
-      
+
       await user.keyboard(' ');
       expect(yesRadio).toBeChecked();
     });
@@ -822,13 +830,13 @@ describe('ConfirmSignatory', () => {
     it('Preview agreement button is keyboard accessible', async () => {
       const user = userEvent.setup();
       render(<ConfirmSignatory />);
-      
+
       const nextButton = screen.getByRole('button', { name: t.nextButton });
       nextButton.focus();
       expect(nextButton).toHaveFocus();
-      
+
       await user.keyboard('{Enter}');
-      
+
       const errorMessage = screen.getByText(t.selectAuthorityError);
       expect(errorMessage).toBeInTheDocument();
     });
@@ -836,13 +844,13 @@ describe('ConfirmSignatory', () => {
     it('Back button is keyboard accessible', async () => {
       const user = userEvent.setup();
       render(<ConfirmSignatory />);
-      
+
       const backButton = screen.getByRole('button', { name: t.backButtonLabel });
       backButton.focus();
       expect(backButton).toHaveFocus();
-      
+
       await user.keyboard('{Enter}');
-      
+
       expect(mockPush).toHaveBeenCalledWith('/confirm-details');
     });
   });
@@ -863,7 +871,7 @@ describe('ConfirmSignatory', () => {
             addressLine3: '',
             addressLine4: '',
             town: 'London',
-            county: '',
+            county: null,
             postcode: 'SW1A 1AA',
           },
         ],
@@ -877,12 +885,12 @@ describe('ConfirmSignatory', () => {
       });
 
       const { rerender } = render(<ConfirmSignatory />);
-      
+
       const radiosBefore = screen.getAllByRole('radio');
       expect(radiosBefore).toHaveLength(2);
-      
+
       rerender(<ConfirmSignatory />);
-      
+
       const radiosAfter = screen.getAllByRole('radio');
       expect(radiosAfter).toHaveLength(2);
     });

@@ -28,6 +28,7 @@ describe('useMatterDetails', () => {
     vi.spyOn(useTokenModule, 'useToken').mockReturnValue({
       token: mockToken,
       setToken: vi.fn(),
+      clearToken: vi.fn(),
     });
     vi.clearAllMocks();
   });
@@ -48,8 +49,8 @@ describe('useMatterDetails', () => {
         {
           addressLine1: '123 Main St',
           addressLine2: 'Apt 4',
-          addressLine3: '',
-          addressLine4: '',
+          addressLine3: null,
+          addressLine4: null,
           town: 'London',
           county: 'Greater London',
           postcode: 'SW1A 1AA',
@@ -69,8 +70,8 @@ describe('useMatterDetails', () => {
           correspondenceAddress: {
             addressLine1: '123 Main St',
             addressLine2: 'Apt 4',
-            addressLine3: '',
-            addressLine4: '',
+            addressLine3: null,
+            addressLine4: null,
             town: 'London',
             county: 'Greater London',
             postcode: 'SW1A 1AA',
@@ -140,6 +141,7 @@ describe('useMatterDetails', () => {
     vi.spyOn(useTokenModule, 'useToken').mockReturnValue({
       token: null,
       setToken: vi.fn(),
+      clearToken: vi.fn(),
     });
 
     const { result } = renderHook(() => useMatterDetails(), {

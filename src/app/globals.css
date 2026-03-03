@@ -29,10 +29,10 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --login-gradient-start: #3A238C;
-    --login-gradient-end: #28005A;
+    --login-gradient-start: #3a238c;
+    --login-gradient-end: #28005a;
     --login-card-bg: rgba(0, 0, 0, 0.25);
-    --recaptcha-badge-bg: #1C1335;
+    --recaptcha-badge-bg: #1c1335;
     --stepper-complete: 142 71% 45%;
     --stepper-complete-foreground: 0 0% 100%;
     --stepper-current: 0 0% 100%;
@@ -49,6 +49,11 @@
     --privacy-notice-bg: rgba(17, 17, 17, 0.4);
     --privacy-notice-text: 0 0% 80%;
     --data-handling-text: 0 0% 100% / 0.8;
+    --timer-badge-bg: #f0edfa;
+    --timer-badge-border: #b9afdb;
+    --modal-overlay-bg: rgba(17, 17, 17, 0.4);
+    --brand-primary: #3a238c;
+    --expired-session-icon-stroke: #ffffff;
   }
 
   .dark {

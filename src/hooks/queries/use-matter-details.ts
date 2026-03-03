@@ -3,23 +3,16 @@ import { apiClient } from '@/lib/api';
 import { useToken } from './use-token';
 
 export interface Address {
-  addressLine1: string;
-  addressLine2: string;
-  addressLine3: string;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  addressLine3: string | null;
   addressLine4?: string | null;
-  town: string;
-  county: string;
-  postcode: string;
+  town: string | null;
+  county: string | null;
+  postcode: string | null;
 }
 
-export type AddressAssociation =
-  | 'Owner'
-  | 'Landlord'
-  | 'Property Manager'
-  | 'Solicitor'
-  | 'Executor'
-  | 'Director'
-  | 'Other';
+export type AddressAssociation = 'Owner' | 'Landlord' | 'LegalTenant';
 export type AgreementShareMethod = 'Unspecified';
 
 export interface Signatory {
@@ -62,7 +55,7 @@ export function useMatterDetails(): UseMatterDetailsReturn {
       return apiClient<MatterDetails>('/api/lb/matter/matterDetails', {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Access-Control-Allow-Origin': 'http://localhost:3002'
+          'Access-Control-Allow-Origin': 'http://localhost:3002',
         },
       });
     },

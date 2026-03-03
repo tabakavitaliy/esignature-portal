@@ -28,19 +28,19 @@ export function ConfirmDetails(): ReactNode {
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [selectedSignatoryId, setSelectedSignatoryId] = useState<string | null>(null);
-  
+
   const [title, setTitle] = useState<string>('');
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [confirmEmail, setConfirmEmail] = useState<string>('');
-  const [mobile, setMobile] = useState<string>('');
-  const [addressLine1, setAddressLine1] = useState<string>('');
-  const [addressLine2, setAddressLine2] = useState<string>('');
-  const [addressLine3, setAddressLine3] = useState<string>('');
-  const [town, setTown] = useState<string>('');
-  const [county, setCounty] = useState<string>('');
-  const [postcode, setPostcode] = useState<string>('');
+  const [mobile, setMobile] = useState<string | null>(null);
+  const [addressLine1, setAddressLine1] = useState<string | null>(null);
+  const [addressLine2, setAddressLine2] = useState<string | null>(null);
+  const [addressLine3, setAddressLine3] = useState<string | null>(null);
+  const [town, setTown] = useState<string | null>(null);
+  const [county, setCounty] = useState<string | null>(null);
+  const [postcode, setPostcode] = useState<string | null>(null);
 
   const { confirmDetailsPage: t } = translations;
   const router = useRouter();
@@ -54,42 +54,41 @@ export function ConfirmDetails(): ReactNode {
     }
   }, []);
 
-  const titleOptions = useMemo(() => [
-    { value: 'Mr', label: 'Mr' },
-    { value: 'Mrs', label: 'Mrs' },
-    { value: 'Miss', label: 'Miss' },
-    { value: 'Ms', label: 'Ms' },
-    { value: 'Dr', label: 'Dr' },
-  ], []);
+  const titleOptions = useMemo(
+    () => [
+      { value: 'Mr', label: 'Mr' },
+      { value: 'Mrs', label: 'Mrs' },
+      { value: 'Miss', label: 'Miss' },
+      { value: 'Ms', label: 'Ms' },
+      { value: 'Dr', label: 'Dr' },
+    ],
+    []
+  );
 
   const currentSignatory = useMemo(() => {
     if (selectedSignatoryId && data?.signatories) {
-      return data.signatories.find(
-        (s) => s.signatoryId === selectedSignatoryId
-      );
+      return data.signatories.find((s) => s.signatoryId === selectedSignatoryId);
     }
     return undefined;
   }, [selectedSignatoryId, data]);
 
   useEffect(() => {
     if (selectedSignatoryId && data?.signatories) {
-      const signatory = data.signatories.find(
-        (s) => s.signatoryId === selectedSignatoryId
-      );
-      
+      const signatory = data.signatories.find((s) => s.signatoryId === selectedSignatoryId);
+
       if (signatory) {
         setTitle(signatory.title);
         setFirstName(signatory.firstname);
         setLastName(signatory.surname);
         setEmail(signatory.emailAddress);
         setConfirmEmail(signatory.emailAddress);
-        setMobile(signatory.mobile || '');
-        setAddressLine1(signatory.correspondenceAddress?.addressLine1 || '');
-        setAddressLine2(signatory.correspondenceAddress?.addressLine2 || '');
-        setAddressLine3(signatory.correspondenceAddress?.addressLine3 || '');
-        setTown(signatory.correspondenceAddress?.town || '');
-        setCounty(signatory.correspondenceAddress?.county || '');
-        setPostcode(signatory.correspondenceAddress?.postcode || '');
+        setMobile(signatory.mobile ?? null);
+        setAddressLine1(signatory.correspondenceAddress?.addressLine1 ?? null);
+        setAddressLine2(signatory.correspondenceAddress?.addressLine2 ?? null);
+        setAddressLine3(signatory.correspondenceAddress?.addressLine3 ?? null);
+        setTown(signatory.correspondenceAddress?.town ?? null);
+        setCounty(signatory.correspondenceAddress?.county ?? null);
+        setPostcode(signatory.correspondenceAddress?.postcode ?? null);
       }
     }
   }, [selectedSignatoryId, data]);
@@ -103,7 +102,7 @@ export function ConfirmDetails(): ReactNode {
   };
 
   const validateForm = (): boolean => {
-    if (!title || !firstName || !lastName || !email) {
+    if (!title || !firstName || !lastName || !email || !addressLine1 || !town || !postcode) {
       setErrorMessage(t.requiredFieldsError);
       return false;
     }
@@ -154,7 +153,7 @@ export function ConfirmDetails(): ReactNode {
           addressLine1,
           addressLine2,
           addressLine3,
-          addressLine4: currentSignatory.correspondenceAddress?.addressLine4 ?? '',
+          addressLine4: currentSignatory.correspondenceAddress?.addressLine4 ?? null,
           town,
           county,
           postcode,
@@ -166,7 +165,9 @@ export function ConfirmDetails(): ReactNode {
         await refetch();
         router.push('/confirm-signatory');
       } catch (error) {
-        setErrorMessage(error instanceof Error ? error.message : 'An error occurred while updating signatory');
+        setErrorMessage(
+          error instanceof Error ? error.message : 'An error occurred while updating signatory'
+        );
       }
     } else {
       if (!isConfirmed) {
@@ -202,9 +203,7 @@ export function ConfirmDetails(): ReactNode {
             <div className="h-px w-[24px] bg-white/20 mb-6 mx-auto" />
 
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-base font-bold text-white">
-                {t.signatoryDetailsHeading}
-              </h3>
+              <h3 className="text-base font-bold text-white">{t.signatoryDetailsHeading}</h3>
               {!isEditMode && (
                 <Button
                   text={t.editButton}
@@ -212,8 +211,20 @@ export function ConfirmDetails(): ReactNode {
                   onClick={handleEditClick}
                   className="w-auto px-6 h-9 text-sm border-0 shadow-none"
                   iconBefore={
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M6 1.98744H1.91667C1.60725 1.98744 1.3105 2.11035 1.09171 2.32915C0.872916 2.54794 0.75 2.84468 0.75 3.1541V11.3208C0.75 11.6302 0.872916 11.9269 1.09171 12.1457C1.3105 12.3645 1.60725 12.4874 1.91667 12.4874H10.0833C10.3928 12.4874 10.6895 12.3645 10.9083 12.1457C11.1271 11.9269 11.25 11.6302 11.25 11.3208V7.23744M10.375 1.11244C10.6071 0.880372 10.9218 0.75 11.25 0.75C11.5782 0.75 11.8929 0.880372 12.125 1.11244C12.3571 1.3445 12.4874 1.65925 12.4874 1.98744C12.4874 2.31563 12.3571 2.63037 12.125 2.86244L6.58333 8.4041L4.25 8.98744L4.83333 6.6541L10.375 1.11244Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6 1.98744H1.91667C1.60725 1.98744 1.3105 2.11035 1.09171 2.32915C0.872916 2.54794 0.75 2.84468 0.75 3.1541V11.3208C0.75 11.6302 0.872916 11.9269 1.09171 12.1457C1.3105 12.3645 1.60725 12.4874 1.91667 12.4874H10.0833C10.3928 12.4874 10.6895 12.3645 10.9083 12.1457C11.1271 11.9269 11.25 11.6302 11.25 11.3208V7.23744M10.375 1.11244C10.6071 0.880372 10.9218 0.75 11.25 0.75C11.5782 0.75 11.8929 0.880372 12.125 1.11244C12.3571 1.3445 12.4874 1.65925 12.4874 1.98744C12.4874 2.31563 12.3571 2.63037 12.125 2.86244L6.58333 8.4041L4.25 8.98744L4.83333 6.6541L10.375 1.11244Z"
+                        stroke="white"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   }
                 />
@@ -271,13 +282,19 @@ export function ConfirmDetails(): ReactNode {
                   label={t.mobileLabel}
                   type="tel"
                   placeholder={t.mobileLabel}
-                  value={mobile}
-                  onChange={setMobile}
+                  value={mobile ?? ''}
+                  onChange={(v) => setMobile(v || null)}
                   disabled={!isEditMode}
                 />
               )}
 
-              {(isEditMode || addressLine1 || addressLine2 || addressLine3 || town || county || postcode) && (
+              {(isEditMode ||
+                addressLine1 ||
+                addressLine2 ||
+                addressLine3 ||
+                town ||
+                county ||
+                postcode) && (
                 <div className="flex flex-col gap-2">
                   <label className="text-xs text-white">{t.correspondenceAddressLabel}</label>
                   <div className="space-y-2">
@@ -285,8 +302,8 @@ export function ConfirmDetails(): ReactNode {
                       <Input
                         label=""
                         placeholder={t.addressLine1Label}
-                        value={addressLine1}
-                        onChange={setAddressLine1}
+                        value={addressLine1 ?? ''}
+                        onChange={(v) => setAddressLine1(v || null)}
                         disabled={!isEditMode}
                         className="gap-0"
                       />
@@ -296,8 +313,8 @@ export function ConfirmDetails(): ReactNode {
                       <Input
                         label=""
                         placeholder={t.addressLine2Label}
-                        value={addressLine2}
-                        onChange={setAddressLine2}
+                        value={addressLine2 ?? ''}
+                        onChange={(v) => setAddressLine2(v || null)}
                         disabled={!isEditMode}
                         className="gap-0"
                       />
@@ -307,8 +324,8 @@ export function ConfirmDetails(): ReactNode {
                       <Input
                         label=""
                         placeholder={t.addressLine3Label}
-                        value={addressLine3}
-                        onChange={setAddressLine3}
+                        value={addressLine3 ?? ''}
+                        onChange={(v) => setAddressLine3(v || null)}
                         disabled={!isEditMode}
                         className="gap-0"
                       />
@@ -318,8 +335,8 @@ export function ConfirmDetails(): ReactNode {
                       <Input
                         label=""
                         placeholder={t.townLabel}
-                        value={town}
-                        onChange={setTown}
+                        value={town ?? ''}
+                        onChange={(v) => setTown(v || null)}
                         disabled={!isEditMode}
                         className="gap-0"
                       />
@@ -329,8 +346,8 @@ export function ConfirmDetails(): ReactNode {
                       <Input
                         label=""
                         placeholder={t.countyLabel}
-                        value={county}
-                        onChange={setCounty}
+                        value={county ?? ''}
+                        onChange={(v) => setCounty(v || null)}
                         disabled={!isEditMode}
                         className="gap-0"
                       />
@@ -340,8 +357,8 @@ export function ConfirmDetails(): ReactNode {
                       <Input
                         label=""
                         placeholder={t.postcodeLabel}
-                        value={postcode}
-                        onChange={setPostcode}
+                        value={postcode ?? ''}
+                        onChange={(v) => setPostcode(v || null)}
                         disabled={!isEditMode}
                         className="gap-0"
                       />

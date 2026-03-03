@@ -55,10 +55,13 @@ export function ConfirmSignatory(): ReactNode {
   const addressCount = addresses.length;
   const addressCountText = addressCount === 1 ? t.addressCountSingular : t.addressCountPlural;
 
-  const authorityOptions = useMemo(() => [
-    { value: 'yes', label: t.authorityYes },
-    { value: 'no', label: t.authorityNo },
-  ], [t]);
+  const authorityOptions = useMemo(
+    () => [
+      { value: 'yes', label: t.authorityYes },
+      { value: 'no', label: t.authorityNo },
+    ],
+    [t]
+  );
 
   const handleBackClick = (): void => {
     router.push(ROUTES.CONFIRM_DETAILS);
@@ -80,18 +83,16 @@ export function ConfirmSignatory(): ReactNode {
   };
 
   return (
-    <div className={cn(
-      "relative flex min-h-screen flex-col overflow-hidden",
-      'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
-      )}>
+    <div
+      className={cn(
+        'relative flex min-h-screen flex-col overflow-hidden',
+        'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
+      )}
+    >
       <BackgroundPattern />
       <Header text={t.headerText} />
 
-      <main
-        className={cn(
-          'flex flex-1 flex-col px-6 py-12',
-        )}
-      >
+      <main className={cn('flex flex-1 flex-col px-6 py-12')}>
         <ContentWrapper className="flex flex-1 flex-col gap-8">
           <ProgressStepper stepCount={4} currentStep={3} className="self-center" />
 
@@ -102,21 +103,17 @@ export function ConfirmSignatory(): ReactNode {
             )}
           >
             <p className="text-sm text-white mb-6">
-              <strong>{addressCount} {addressCountText}</strong> {t.addressCountSuffix}
+              <strong>
+                {addressCount} {addressCountText}
+              </strong>{' '}
+              {t.addressCountSuffix}
             </p>
 
-            <div
-              className={cn(
-                'bg-white rounded-xl max-h-[300px] overflow-y-auto mb-6',
-                'p-6'
-              )}
-            >
+            <div className={cn('bg-white rounded-xl max-h-[300px] overflow-y-auto mb-6', 'p-6')}>
               {addresses.map((address, index) => (
                 <div key={index}>
                   <p className="text-sm text-[#1a1a1a]">{address}</p>
-                  {index < addresses.length - 1 && (
-                    <div className="h-px bg-gray-200 my-4" />
-                  )}
+                  {index < addresses.length - 1 && <div className="h-px bg-gray-200 my-4 -mx-6" />}
                 </div>
               ))}
             </div>

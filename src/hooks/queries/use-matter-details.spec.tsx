@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { ReactNode } from 'react';
 import { useMatterDetails, type MatterDetails } from './use-matter-details';
 import * as useTokenModule from './use-token';
+import * as useRecaptchaModule from '../common/use-recaptcha';
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -29,6 +30,9 @@ describe('useMatterDetails', () => {
       token: mockToken,
       setToken: vi.fn(),
       clearToken: vi.fn(),
+    });
+    vi.spyOn(useRecaptchaModule, 'useRecaptcha').mockReturnValue({
+      getToken: vi.fn().mockResolvedValue('mock-recaptcha-token'),
     });
     vi.clearAllMocks();
   });

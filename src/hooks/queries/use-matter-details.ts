@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
 import { useToken } from './use-token';
+import { useRecaptcha } from '../common/use-recaptcha';
 
 export interface Address {
   addressLine1: string | null;
@@ -48,15 +49,19 @@ interface UseMatterDetailsReturn {
 
 export function useMatterDetails(): UseMatterDetailsReturn {
   const { token } = useToken();
+  const { getToken } = useRecaptcha();
 
   const { data, error, isLoading, refetch } = useQuery<MatterDetails, Error>({
     queryKey: ['matterDetails'],
     queryFn: async () => {
+      const recaptchaToken = await getToken('matterDetails');
+
       return apiClient<MatterDetails>('/api/lb/matter/matterDetails', {
         headers: {
           Authorization: `Bearer ${token}`,
           'Access-Control-Allow-Origin': 'http://localhost:3002',
         },
+        recaptchaToken,
       });
     },
     enabled: !!token,

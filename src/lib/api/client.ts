@@ -5,7 +5,9 @@
  * Configure the base URL and common headers here.
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net';
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string>;
@@ -20,7 +22,6 @@ interface RequestOptions extends RequestInit {
  */
 export async function apiClient<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const { params, recaptchaToken, ...fetchOptions } = options;
-console.log(recaptchaToken);
   let url = `${API_BASE_URL}${endpoint}`;
 
   if (params) {

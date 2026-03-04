@@ -24,7 +24,9 @@ import { TITLE_OPTIONS, ADDRESS_ASSOCIATION_OPTIONS } from '@/constants/signator
 import { ROUTES } from '@/constants/routes';
 import { EMAIL_REGEX, PHONE_REGEX } from '@/constants/validation';
 
-type RequiredFormValue = Required<Omit<SignatoryDetailsFormValue, 'mobile'>> & { mobile: string | null };
+type RequiredFormValue = Required<Omit<SignatoryDetailsFormValue, 'mobile'>> & {
+  mobile: string | null;
+};
 
 /**
  * AddAuthorizedSign page collects and submits details for an authorised signatory.
@@ -70,9 +72,30 @@ export function AddAuthorizedSign(): ReactNode {
   };
 
   const validateForm = (): boolean => {
-    const { title, firstName, lastName, addressAssociation, email, confirmEmail, mobile, addressLine1, town, postcode } = formValue;
+    const {
+      title,
+      firstName,
+      lastName,
+      addressAssociation,
+      email,
+      confirmEmail,
+      mobile,
+      addressLine1,
+      town,
+      postcode,
+    } = formValue;
 
-    if (!title || !firstName || !lastName || !addressAssociation || !email || !confirmEmail  || !addressLine1 || !town || !postcode) {
+    if (
+      !title ||
+      !firstName ||
+      !lastName ||
+      !addressAssociation ||
+      !email ||
+      !confirmEmail ||
+      !addressLine1 ||
+      !town ||
+      !postcode
+    ) {
       setErrorMessage(tForm.requiredFieldsError);
       return false;
     }
@@ -106,7 +129,20 @@ export function AddAuthorizedSign(): ReactNode {
       (s) => s.signatoryId === selectedSignatoryId
     );
 
-    const { title, firstName, lastName, addressAssociation, email, mobile, addressLine1, addressLine2, addressLine3, town, county, postcode } = formValue;
+    const {
+      title,
+      firstName,
+      lastName,
+      addressAssociation,
+      email,
+      mobile,
+      addressLine1,
+      addressLine2,
+      addressLine3,
+      town,
+      county,
+      postcode,
+    } = formValue;
 
     try {
       await addNewSignatory({
@@ -133,7 +169,9 @@ export function AddAuthorizedSign(): ReactNode {
       });
       router.push(ROUTES.CONFIRM_SIGNATORY);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'An error occurred while adding signatory');
+      setErrorMessage(
+        error instanceof Error ? error.message : 'An error occurred while adding signatory'
+      );
     }
   };
 
@@ -165,9 +203,7 @@ export function AddAuthorizedSign(): ReactNode {
             />
           </SignatoryFormCard>
 
-          <p className="text-xs text-white text-center leading-[18px]">
-            {t.legalBasisText}
-          </p>
+          <p className="text-xs text-white text-center leading-[18px]">{t.legalBasisText}</p>
 
           {errorMessage && <ButtonErrorLabel message={errorMessage} />}
 

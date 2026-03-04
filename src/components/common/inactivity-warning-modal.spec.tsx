@@ -21,9 +21,7 @@ describe('InactivityWarningModal', () => {
     render(<InactivityWarningModal {...defaultProps} />);
 
     expect(
-      screen.getByText(
-        'Are you still there? Your session will expire soon due to inactivity'
-      )
+      screen.getByText('Are you still there? Your session will expire soon due to inactivity')
     ).toBeInTheDocument();
   });
 
@@ -35,9 +33,7 @@ describe('InactivityWarningModal', () => {
   });
 
   it('should format minutes and seconds correctly', () => {
-    const { rerender } = render(
-      <InactivityWarningModal {...defaultProps} remainingSeconds={95} />
-    );
+    const { rerender } = render(<InactivityWarningModal {...defaultProps} remainingSeconds={95} />);
 
     expect(screen.getByText('01')).toBeInTheDocument();
     expect(screen.getByText('35')).toBeInTheDocument();
@@ -55,7 +51,7 @@ describe('InactivityWarningModal', () => {
     expect(screen.getByRole('button', { name: 'Log off' })).toBeInTheDocument();
   });
 
-  it('should call onImHere when I\'m here button is clicked', async () => {
+  it("should call onImHere when I'm here button is clicked", async () => {
     const user = userEvent.setup();
     render(<InactivityWarningModal {...defaultProps} />);
 

@@ -50,7 +50,7 @@ describe('Input', () => {
     render(<Input label="Full Name" value="" onChange={onChange} />);
     const label = screen.getByText('Full Name');
     const input = screen.getByLabelText('Full Name');
-    
+
     expect(label).toHaveAttribute('for');
     expect(input).toHaveAttribute('id');
     expect(label.getAttribute('for')).toBe(input.getAttribute('id'));
@@ -94,9 +94,9 @@ describe('Input', () => {
   it('renders with both placeholder and custom type', () => {
     const onChange = vi.fn();
     render(
-      <Input 
-        label="Password" 
-        type="password" 
+      <Input
+        label="Password"
+        type="password"
         placeholder="Enter password"
         value=""
         onChange={onChange}
@@ -323,12 +323,14 @@ describe('Input', () => {
 
       it('strips restricted characters from programmatically set value (useEffect path)', () => {
         const onChange = vi.fn();
-        const { rerender } = render(<Input label="Code" mask="***-***" value="" onChange={onChange} />);
-        
+        const { rerender } = render(
+          <Input label="Code" mask="***-***" value="" onChange={onChange} />
+        );
+
         onChange.mockClear();
         // Programmatically set value with restricted chars
         rerender(<Input label="Code" mask="***-***" value="ALOBICDEF" onChange={onChange} />);
-        
+
         // Should strip 'L', 'O', 'I' leaving 'ABCDEF' -> 'ABC-DEF'
         expect(onChange).toHaveBeenCalledWith('ABC-DEF');
       });
@@ -416,24 +418,26 @@ describe('Input', () => {
     it('calls onChange on mount when mask needs to be applied to initial value', () => {
       const onChange = vi.fn();
       render(<Input label="Phone" mask="999-999" value="123456" onChange={onChange} />);
-      
+
       expect(onChange).toHaveBeenCalledWith('123-456');
     });
 
     it('calls onChange when value prop changes and needs masking', () => {
       const onChange = vi.fn();
-      const { rerender } = render(<Input label="Phone" mask="999-999" value="" onChange={onChange} />);
-      
+      const { rerender } = render(
+        <Input label="Phone" mask="999-999" value="" onChange={onChange} />
+      );
+
       onChange.mockClear();
       rerender(<Input label="Phone" mask="999-999" value="789012" onChange={onChange} />);
-      
+
       expect(onChange).toHaveBeenCalledWith('789-012');
     });
 
     it('does not call onChange when masked value matches current value', () => {
       const onChange = vi.fn();
       render(<Input label="Phone" mask="999-999" value="123-456" onChange={onChange} />);
-      
+
       expect(onChange).not.toHaveBeenCalled();
     });
 
@@ -459,11 +463,15 @@ describe('Input', () => {
 
     it('applies mask to programmatically set values', () => {
       const onChange = vi.fn();
-      const { rerender } = render(<Input label="Phone" mask="(999) 999-9999" value="" onChange={onChange} />);
-      
+      const { rerender } = render(
+        <Input label="Phone" mask="(999) 999-9999" value="" onChange={onChange} />
+      );
+
       onChange.mockClear();
-      rerender(<Input label="Phone" mask="(999) 999-9999" value="5551234567" onChange={onChange} />);
-      
+      rerender(
+        <Input label="Phone" mask="(999) 999-9999" value="5551234567" onChange={onChange} />
+      );
+
       expect(onChange).toHaveBeenCalledWith('(555) 123-4567');
     });
 

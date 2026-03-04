@@ -32,7 +32,7 @@ function applyMask(value: string, mask: string): string {
 
   for (let maskIndex = 0; maskIndex < mask.length; maskIndex++) {
     const maskChar = mask[maskIndex];
-    
+
     if (!maskChar) {
       break;
     }
@@ -42,7 +42,7 @@ function applyMask(value: string, mask: string): string {
     }
 
     const valueChar = value[valueIndex];
-    
+
     if (!valueChar) {
       break;
     }
@@ -117,7 +117,10 @@ export function Input({
   // Apply mask to incoming value if mask exists and value doesn't match mask format
   useEffect(() => {
     if (mask && value) {
-      const rawValue = value.replace(/[^a-zA-Z0-9]/g, '').replace(/[loiLOI]/g, '').toUpperCase();
+      const rawValue = value
+        .replace(/[^a-zA-Z0-9]/g, '')
+        .replace(/[loiLOI]/g, '')
+        .toUpperCase();
       const maskedValue = applyMask(rawValue, mask);
       if (maskedValue !== value) {
         onChange(maskedValue);
@@ -127,7 +130,10 @@ export function Input({
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     if (mask) {
-      const rawValue = e.target.value.replace(/[^a-zA-Z0-9]/g, '').replace(/[loiLOI]/g, '').toUpperCase();
+      const rawValue = e.target.value
+        .replace(/[^a-zA-Z0-9]/g, '')
+        .replace(/[loiLOI]/g, '')
+        .toUpperCase();
       const formatted = applyMask(rawValue, mask);
       onChange(formatted);
     } else {

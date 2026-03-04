@@ -27,9 +27,7 @@ describe('LoginPage', () => {
       push: mockPush,
       replace: mockReplace,
     });
-    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(
-      new URLSearchParams()
-    );
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(new URLSearchParams());
     (useToken as ReturnType<typeof vi.fn>).mockReturnValue({
       token: null,
       setToken: mockSetToken,
@@ -503,9 +501,7 @@ describe('LoginPage', () => {
     });
 
     it('does not call setToken or replace when no key param is present', () => {
-      (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(
-        new URLSearchParams()
-      );
+      (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(new URLSearchParams());
 
       render(<LoginPage />);
 

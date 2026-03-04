@@ -100,6 +100,40 @@ describe('apiClient', () => {
     });
   });
 
+  it('includes X-ReCaptcha-Token header when recaptchaToken is provided', async () => {
+    const mockData = { success: true };
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockData,
+    });
+
+    await apiClient('/test', {
+      recaptchaToken: 'test-recaptcha-token',
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'X-ReCaptcha-Token': 'test-recaptcha-token',
+        }),
+      })
+    );
+  });
+
+  it('omits X-ReCaptcha-Token header when recaptchaToken is not provided', async () => {
+    const mockData = { success: true };
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockData,
+    });
+
+    await apiClient('/test');
+
+    const calledHeaders = mockFetch.mock.calls[0]?.[1]?.headers as Record<string, string> | undefined;
+    expect(calledHeaders).not.toHaveProperty('X-ReCaptcha-Token');
+  });
+
   it('handles empty params object', async () => {
     const mockData = { data: [] };
     mockFetch.mockResolvedValue({

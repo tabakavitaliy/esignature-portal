@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useInactivityTimer, INACTIVITY_TIMEOUT_MS, COUNTDOWN_SECONDS } from './use-inactivity-timer';
+import {
+  useInactivityTimer,
+  INACTIVITY_TIMEOUT_MS,
+  COUNTDOWN_SECONDS,
+} from './use-inactivity-timer';
 import { useRouter, usePathname } from 'next/navigation';
 import { useToken } from '@/hooks/queries/use-token';
 import { ROUTES } from '@/constants/routes';
@@ -340,7 +344,7 @@ describe('useInactivityTimer', () => {
         configurable: true,
         get: vi.fn(() => false),
       });
-      
+
       originalUserAgent = Object.getOwnPropertyDescriptor(Navigator.prototype, 'userAgent');
       Object.defineProperty(Navigator.prototype, 'userAgent', {
         configurable: true,
@@ -512,7 +516,7 @@ describe('useInactivityTimer', () => {
       const { result } = renderHook(() => useInactivityTimer());
 
       const originalHidden = Object.getOwnPropertyDescriptor(Document.prototype, 'hidden');
-      
+
       Object.defineProperty(document, 'hidden', {
         configurable: true,
         get: () => true,

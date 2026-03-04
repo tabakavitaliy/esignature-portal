@@ -48,7 +48,7 @@ describe('ConfirmName', () => {
     render(<ConfirmName />);
     const nav = screen.getByRole('navigation', { name: 'Progress' });
     expect(nav).toBeInTheDocument();
-    
+
     const listItems = screen.getAllByRole('listitem');
     expect(listItems).toHaveLength(4);
   });
@@ -62,13 +62,13 @@ describe('ConfirmName', () => {
 
   it('ProgressStepper shows steps 2-4 as upcoming', () => {
     render(<ConfirmName />);
-    
+
     const upcomingStep2 = screen.getByLabelText('Step 2 upcoming');
     expect(upcomingStep2).toBeInTheDocument();
-    
+
     const upcomingStep3 = screen.getByLabelText('Step 3 upcoming');
     expect(upcomingStep3).toBeInTheDocument();
-    
+
     const upcomingStep4 = screen.getByLabelText('Step 4 upcoming');
     expect(upcomingStep4).toBeInTheDocument();
   });
@@ -137,12 +137,12 @@ describe('ConfirmName', () => {
 
   it('navigates to home when Back button is clicked', async () => {
     const user = userEvent.setup();
-    
+
     render(<ConfirmName />);
     const backButton = screen.getByRole('button', { name: t.backButtonLabel });
-    
+
     await user.click(backButton);
-    
+
     expect(mockPush).toHaveBeenCalledWith('/');
     expect(mockPush).toHaveBeenCalledTimes(1);
   });
@@ -157,7 +157,7 @@ describe('ConfirmName', () => {
     render(<ConfirmName />);
     const label = screen.getByText(t.selectLabel);
     const select = screen.getByRole('combobox');
-    
+
     expect(label).toHaveAttribute('for');
     expect(select).toHaveAttribute('id');
     expect(label.getAttribute('for')).toBe(select.getAttribute('id'));
@@ -174,7 +174,7 @@ describe('ConfirmName', () => {
     const { container } = render(<ConfirmName />);
     const buttonContainer = container.querySelector('.flex.gap-4');
     expect(buttonContainer).toBeInTheDocument();
-    
+
     const buttons = buttonContainer?.querySelectorAll('button');
     expect(buttons).toHaveLength(2);
   });
@@ -183,14 +183,14 @@ describe('ConfirmName', () => {
     render(<ConfirmName />);
     const backButton = screen.getByRole('button', { name: t.backButtonLabel });
     const nextButton = screen.getByRole('button', { name: t.nextButton });
-    
+
     expect(backButton).toHaveClass('w-auto');
     expect(nextButton).toHaveClass('w-full');
   });
 
   it('all text comes from translations', () => {
     render(<ConfirmName />);
-    
+
     expect(screen.getByText(t.headerText)).toBeInTheDocument();
     expect(screen.getByText(t.selectLabel)).toBeInTheDocument();
     expect(screen.getByText(t.selectPlaceholder)).toBeInTheDocument();
@@ -322,11 +322,11 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       // Verify the select is rendered and can receive options
       // The options are computed from signatories and passed to Select component
       expect(select).toBeInTheDocument();
-      
+
       // Verify the options would be correctly formatted: "John Doe" and "Jane Smith"
       // We can't easily test the portal-rendered options, but we verify the component
       // receives the correct data structure
@@ -384,7 +384,7 @@ describe('ConfirmName', () => {
       // Verify the select is rendered and receives options
       // The options are computed from signatories: [{ value: 'signatory-1', label: 'John Doe' }]
       expect(select).toBeInTheDocument();
-      
+
       // Verify the data structure that would generate the options
       expect(mockData.signatories).toHaveLength(1);
       expect(mockData.signatories[0]?.signatoryId).toBe('signatory-1');
@@ -397,14 +397,14 @@ describe('ConfirmName', () => {
       // The Select component uses setSelectedOption directly via onChange prop
       // This test verifies the component renders correctly despite the unused function
       const consoleSpy = vi.spyOn(console, 'log');
-      
+
       render(<ConfirmName />);
-      
+
       // The function exists in the component but is dead code
       // We verify the component still works correctly
       const select = screen.getByRole('combobox');
       expect(select).toBeInTheDocument();
-      
+
       // handleSelectChange would log 'Select changed:' if called, but it's never invoked
       // This is acceptable as it's dead code that doesn't affect functionality
       consoleSpy.mockRestore();
@@ -487,7 +487,7 @@ describe('ConfirmName', () => {
       });
 
       render(<ConfirmName />);
-      
+
       // Verify the component renders with the formatted name data
       expect(mockData.signatories[0]?.firstname).toBe('Alice');
       expect(mockData.signatories[0]?.surname).toBe('Johnson');
@@ -581,7 +581,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const noNameOption = await screen.findByText(t.noNameExistsLabel);
       await user.click(noNameOption);
@@ -632,7 +632,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
       await user.click(johnDoeOption);
@@ -683,7 +683,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
       await user.click(johnDoeOption);
@@ -734,7 +734,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
       await user.click(johnDoeOption);
@@ -786,7 +786,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
       await user.click(johnDoeOption);
@@ -840,21 +840,21 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
       await user.click(johnDoeOption);
 
       const checkbox = await screen.findByRole('checkbox');
-      
+
       // Check it
       await user.click(checkbox);
       expect(checkbox).toHaveAttribute('aria-checked', 'true');
-      
+
       // Uncheck it
       await user.click(checkbox);
       expect(checkbox).toHaveAttribute('aria-checked', 'false');
-      
+
       // Check it again
       await user.click(checkbox);
       expect(checkbox).toHaveAttribute('aria-checked', 'true');
@@ -902,14 +902,14 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
       await user.click(johnDoeOption);
 
       const checkboxLabel = await screen.findByText(t.confirmCheckboxLabel);
       const checkbox = await screen.findByRole('checkbox');
-      
+
       // Click the label
       await user.click(checkboxLabel);
       expect(checkbox).toHaveAttribute('aria-checked', 'true');
@@ -957,14 +957,14 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
       await user.click(johnDoeOption);
 
       const checkbox = await screen.findByRole('checkbox');
       const checkboxContainer = checkbox.parentElement;
-      
+
       expect(checkboxContainer).toHaveClass('mt-6');
     });
 
@@ -1030,7 +1030,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       // Select first signatory
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
@@ -1092,7 +1092,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       // Select signatory
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
@@ -1114,12 +1114,12 @@ describe('ConfirmName', () => {
   describe('handleNextClick', () => {
     it('shows selectNameError when clicking Next with no selection', async () => {
       const user = userEvent.setup();
-      
+
       render(<ConfirmName />);
       const nextButton = screen.getByRole('button', { name: t.nextButton });
-      
+
       await user.click(nextButton);
-      
+
       const errorMessage = screen.getByText(t.selectNameError);
       expect(errorMessage).toBeInTheDocument();
       expect(mockPush).not.toHaveBeenCalled();
@@ -1167,7 +1167,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const noNameOption = await screen.findByText(t.noNameExistsLabel);
       await user.click(noNameOption);
@@ -1221,7 +1221,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
       await user.click(johnDoeOption);
@@ -1276,7 +1276,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
       await user.click(johnDoeOption);
@@ -1332,11 +1332,11 @@ describe('ConfirmName', () => {
       });
 
       render(<ConfirmName />);
-      
+
       // First click Next without selection to show error
       const nextButton = screen.getByRole('button', { name: t.nextButton });
       await user.click(nextButton);
-      
+
       const errorMessage = screen.getByText(t.selectNameError);
       expect(errorMessage).toBeInTheDocument();
 
@@ -1418,7 +1418,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       // Select signatory
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
@@ -1514,7 +1514,7 @@ describe('ConfirmName', () => {
       });
 
       render(<ConfirmName />);
-      
+
       // Verify all signatories are present in the data
       expect(mockData.signatories).toHaveLength(3);
       expect(mockData.signatories[0]?.firstname).toBe('Adam');
@@ -1576,7 +1576,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
       await user.click(johnDoeOption);
@@ -1593,12 +1593,12 @@ describe('ConfirmName', () => {
 
     it('does not save to sessionStorage when no option is selected', async () => {
       const user = userEvent.setup();
-      
+
       render(<ConfirmName />);
       const nextButton = screen.getByRole('button', { name: t.nextButton });
-      
+
       await user.click(nextButton);
-      
+
       expect(sessionStorageSpy).not.toHaveBeenCalled();
       expect(mockPush).not.toHaveBeenCalled();
     });
@@ -1645,7 +1645,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const johnDoeOption = await screen.findByText('John Doe');
       await user.click(johnDoeOption);
@@ -1699,7 +1699,7 @@ describe('ConfirmName', () => {
 
       render(<ConfirmName />);
       const select = screen.getByRole('combobox');
-      
+
       await user.click(select);
       const noNameOption = await screen.findByText(t.noNameExistsLabel);
       await user.click(noNameOption);
@@ -1711,5 +1711,4 @@ describe('ConfirmName', () => {
       expect(mockPush).toHaveBeenCalledWith('/add-new-name');
     });
   });
-
 });

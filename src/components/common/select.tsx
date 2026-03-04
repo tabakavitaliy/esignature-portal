@@ -61,7 +61,7 @@ export function Select({
       <Label htmlFor={selectId} className="text-xs text-white">
         {label}
       </Label>
-      <BaseSelect 
+      <BaseSelect
         {...(value !== undefined ? { value } : {})}
         {...(onChange !== undefined ? { onValueChange: onChange } : {})}
         disabled={disabled}

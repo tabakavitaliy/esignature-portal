@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Inactivity Timeout', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/confirm-name');
-    
+
     await page.evaluate(() => {
       sessionStorage.setItem('token', 'TEST-1234-5678-9012');
     });
@@ -12,7 +12,7 @@ test.describe('Inactivity Timeout', () => {
 
   test('shows warning modal after 10 minutes of inactivity', async ({ page }) => {
     await page.clock.install({ time: new Date() });
-    
+
     await page.clock.fastForward(10 * 60 * 1000);
 
     const modal = page.getByText(
@@ -23,9 +23,9 @@ test.describe('Inactivity Timeout', () => {
 
   test('warning modal displays countdown timer', async ({ page }) => {
     await page.clock.install({ time: new Date() });
-    
+
     await page.clock.fastForward(10 * 60 * 1000);
-    
+
     const modal = page.getByText(
       'Are you still there? Your session will expire soon due to inactivity'
     );
@@ -39,7 +39,7 @@ test.describe('Inactivity Timeout', () => {
 
   test('warning modal displays clock icon', async ({ page }) => {
     await page.clock.install({ time: new Date() });
-    
+
     await page.clock.fastForward(10 * 60 * 1000);
 
     const clockIcon = page.getByRole('img', { name: 'Clock' });
@@ -48,7 +48,7 @@ test.describe('Inactivity Timeout', () => {
 
   test('warning modal displays both buttons', async ({ page }) => {
     await page.clock.install({ time: new Date() });
-    
+
     await page.clock.fastForward(10 * 60 * 1000);
 
     const imHereButton = page.getByRole('button', { name: "I'm here" });
@@ -58,9 +58,9 @@ test.describe('Inactivity Timeout', () => {
     await expect(logOffButton).toBeVisible();
   });
 
-  test('I\'m here button dismisses modal and resets timer', async ({ page }) => {
+  test("I'm here button dismisses modal and resets timer", async ({ page }) => {
     await page.clock.install({ time: new Date() });
-    
+
     await page.clock.fastForward(10 * 60 * 1000);
 
     const modal = page.getByText(
@@ -72,17 +72,17 @@ test.describe('Inactivity Timeout', () => {
     await imHereButton.click();
 
     await expect(modal).not.toBeVisible();
-    
+
     await page.clock.fastForward(9 * 60 * 1000);
     await expect(modal).not.toBeVisible();
-    
+
     await page.clock.fastForward(1 * 60 * 1000);
     await expect(modal).toBeVisible();
   });
 
   test('Log off button navigates to expired session page', async ({ page }) => {
     await page.clock.install({ time: new Date() });
-    
+
     await page.clock.fastForward(10 * 60 * 1000);
 
     const logOffButton = page.getByRole('button', { name: 'Log off' });
@@ -93,7 +93,7 @@ test.describe('Inactivity Timeout', () => {
 
   test('redirects to expired session when countdown reaches zero', async ({ page }) => {
     await page.clock.install({ time: new Date() });
-    
+
     await page.clock.fastForward(10 * 60 * 1000);
 
     const modal = page.getByText(
@@ -108,7 +108,7 @@ test.describe('Inactivity Timeout', () => {
 
   test('click activity resets inactivity timer', async ({ page }) => {
     await page.clock.install({ time: new Date() });
-    
+
     await page.clock.fastForward(9 * 60 * 1000);
 
     await page.mouse.click(100, 100);
@@ -123,7 +123,7 @@ test.describe('Inactivity Timeout', () => {
 
   test('scroll activity resets inactivity timer', async ({ page }) => {
     await page.clock.install({ time: new Date() });
-    
+
     await page.clock.fastForward(9 * 60 * 1000);
 
     await page.mouse.wheel(0, 100);
@@ -170,7 +170,7 @@ test.describe('Inactivity Timeout', () => {
 
   test('does not show modal on login page', async ({ page }) => {
     await page.goto('/');
-    
+
     await page.clock.install({ time: new Date() });
     await page.clock.fastForward(10 * 60 * 1000);
 
@@ -182,7 +182,7 @@ test.describe('Inactivity Timeout', () => {
 
   test('does not show modal on expired session page', async ({ page }) => {
     await page.goto('/expired-session');
-    
+
     await page.clock.install({ time: new Date() });
     await page.clock.fastForward(10 * 60 * 1000);
 
@@ -194,7 +194,7 @@ test.describe('Inactivity Timeout', () => {
 
   test('token is cleared after logout', async ({ page }) => {
     await page.clock.install({ time: new Date() });
-    
+
     await page.clock.fastForward(10 * 60 * 1000);
 
     const logOffButton = page.getByRole('button', { name: 'Log off' });
@@ -216,7 +216,7 @@ test.describe('Inactivity Timeout', () => {
 
   test('modal overlay has correct styling', async ({ page }) => {
     await page.clock.install({ time: new Date() });
-    
+
     await page.clock.fastForward(10 * 60 * 1000);
 
     const modal = page.getByText(

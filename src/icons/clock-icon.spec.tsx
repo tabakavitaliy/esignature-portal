@@ -72,9 +72,9 @@ describe('ClockIcon', () => {
   it('applies size to both container and svg element', () => {
     const { container } = render(<ClockIcon size={60} />);
     const wrapper = container.firstChild as HTMLElement;
-    
+
     expect(wrapper).toHaveStyle({ width: '60px', height: '60px' });
-    
+
     const icon = screen.getByRole('img', { name: 'Clock' });
     expect(icon).toHaveAttribute('width', '60');
     expect(icon).toHaveAttribute('height', '60');
@@ -84,7 +84,7 @@ describe('ClockIcon', () => {
     render(<ClockIcon />);
     const icon = screen.getByRole('img', { name: 'Clock' });
     const path = icon.querySelector('path');
-    
+
     expect(path).toHaveAttribute('stroke-width', '4');
     expect(path).toHaveAttribute('stroke-linecap', 'round');
     expect(path).toHaveAttribute('stroke-linejoin', 'round');

@@ -233,7 +233,9 @@ describe('useChangeSignatory', () => {
 
     await result.current.changeSignatory(mockChangeSignatoryBody);
 
-    await waitFor(() => expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['matterDetails'] }));
+    await waitFor(() =>
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['matterDetails'] })
+    );
   });
 
   it('exposes mutation state correctly', async () => {
@@ -279,7 +281,9 @@ describe('useChangeSignatory', () => {
       wrapper: createWrapper(),
     });
 
-    await expect(result.current.changeSignatory(mockChangeSignatoryBody)).rejects.toThrow('Network error');
+    await expect(result.current.changeSignatory(mockChangeSignatoryBody)).rejects.toThrow(
+      'Network error'
+    );
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);

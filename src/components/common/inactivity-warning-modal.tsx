@@ -17,23 +17,18 @@ export function InactivityWarningModal({
   onLogOff,
 }: InactivityWarningModalProps): ReactNode {
   const { inactivityWarning: t } = translations;
-  
+
   const minutes = Math.floor(remainingSeconds / 60);
   const seconds = remainingSeconds % 60;
-  
+
   const formatTime = (value: number): string => {
     return value.toString().padStart(2, '0');
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div 
-        className={cn(
-          'absolute inset-0',
-          'backdrop-blur-[2px] bg-modal-overlay'
-        )}
-      />
-      
+      <div className={cn('absolute inset-0', 'backdrop-blur-[2px] bg-modal-overlay')} />
+
       <div
         className={cn(
           'relative z-10',
@@ -46,7 +41,7 @@ export function InactivityWarningModal({
       >
         <div className="flex flex-col gap-6 items-center px-4">
           <ClockIcon size={48} />
-          
+
           <div className="flex gap-[6px] items-center">
             <div
               className={cn(
@@ -57,13 +52,11 @@ export function InactivityWarningModal({
                 'flex flex-col items-center justify-center'
               )}
             >
-              <p className="text-2xl font-bold text-[#111] leading-none">
-                {formatTime(minutes)}
-              </p>
+              <p className="text-2xl font-bold text-[#111] leading-none">{formatTime(minutes)}</p>
             </div>
-            
+
             <div className="text-[#111] text-xl leading-none">:</div>
-            
+
             <div
               className={cn(
                 'bg-timer-badge-bg',
@@ -73,17 +66,13 @@ export function InactivityWarningModal({
                 'flex flex-col items-center justify-center'
               )}
             >
-              <p className="text-2xl font-bold text-[#111] leading-none">
-                {formatTime(seconds)}
-              </p>
+              <p className="text-2xl font-bold text-[#111] leading-none">{formatTime(seconds)}</p>
             </div>
           </div>
-          
-          <p className="text-sm text-[#1e1e1e] text-center leading-[19px]">
-            {t.message}
-          </p>
+
+          <p className="text-sm text-[#1e1e1e] text-center leading-[19px]">{t.message}</p>
         </div>
-        
+
         <div className="flex gap-4 items-start justify-center w-full">
           <button
             onClick={onLogOff}
@@ -101,7 +90,7 @@ export function InactivityWarningModal({
           >
             {t.logOffButton}
           </button>
-          
+
           <button
             onClick={onImHere}
             className={cn(

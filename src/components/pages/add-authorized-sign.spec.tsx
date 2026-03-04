@@ -25,7 +25,11 @@ describe('AddAuthorizedSign', () => {
   const mockPush = vi.fn();
   const mockAddSignatory = vi.fn();
 
-  const selectOption = async (_user: ReturnType<typeof userEvent.setup>, selectElement: HTMLElement, optionText: string): Promise<void> => {
+  const selectOption = async (
+    _user: ReturnType<typeof userEvent.setup>,
+    selectElement: HTMLElement,
+    optionText: string
+  ): Promise<void> => {
     fireEvent.pointerDown(selectElement, { button: 0, ctrlKey: false, pointerType: 'mouse' });
     const option = await screen.findByRole('option', { name: optionText });
     fireEvent.click(option);
@@ -334,7 +338,9 @@ describe('AddAuthorizedSign', () => {
       const titleSelect = screen.getAllByRole('combobox')[0];
       await selectOption(user, titleSelect!, 'Mr');
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
 
       fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
 
@@ -365,8 +371,12 @@ describe('AddAuthorizedSign', () => {
       const titleSelect = screen.getAllByRole('combobox')[0];
       await selectOption(user, titleSelect!, 'Mr');
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
       await selectOption(user, addressAssociationSelect!, 'Owner');
@@ -375,9 +385,15 @@ describe('AddAuthorizedSign', () => {
       fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
       fireEvent.change(emailInputs[1]!, { target: { value: 'john@example.com' } });
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), { target: { value: '123 Main St' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), { target: { value: 'London' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), { target: { value: 'SW1A 1AA' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
 
       await user.click(screen.getByRole('button', { name: t.submitButton }));
 
@@ -393,8 +409,12 @@ describe('AddAuthorizedSign', () => {
       const titleSelect = screen.getAllByRole('combobox')[0];
       await selectOption(user, titleSelect!, 'Mr');
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
       await selectOption(user, addressAssociationSelect!, 'Owner');
@@ -403,10 +423,18 @@ describe('AddAuthorizedSign', () => {
       fireEvent.change(emailInputs[0]!, { target: { value: 'not-a-valid-email' } });
       fireEvent.change(emailInputs[1]!, { target: { value: 'not-a-valid-email' } });
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), { target: { value: '07700900000' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), { target: { value: '123 Main St' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), { target: { value: 'London' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), { target: { value: 'SW1A 1AA' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), {
+        target: { value: '07700900000' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
 
       await user.click(screen.getByRole('button', { name: t.submitButton }));
 
@@ -422,8 +450,12 @@ describe('AddAuthorizedSign', () => {
       const titleSelect = screen.getAllByRole('combobox')[0];
       await selectOption(user, titleSelect!, 'Mr');
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
       await selectOption(user, addressAssociationSelect!, 'Owner');
@@ -432,10 +464,18 @@ describe('AddAuthorizedSign', () => {
       fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
       fireEvent.change(emailInputs[1]!, { target: { value: 'different@example.com' } });
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), { target: { value: '07700900000' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), { target: { value: '123 Main St' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), { target: { value: 'London' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), { target: { value: 'SW1A 1AA' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), {
+        target: { value: '07700900000' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
 
       fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
 
@@ -451,8 +491,12 @@ describe('AddAuthorizedSign', () => {
       const titleSelect = screen.getAllByRole('combobox')[0];
       await selectOption(user, titleSelect!, 'Mr');
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
       await selectOption(user, addressAssociationSelect!, 'Owner');
@@ -461,10 +505,18 @@ describe('AddAuthorizedSign', () => {
       fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
       fireEvent.change(emailInputs[1]!, { target: { value: 'john@example.com' } });
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), { target: { value: 'abc' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), { target: { value: '123 Main St' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), { target: { value: 'London' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), { target: { value: 'SW1A 1AA' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), {
+        target: { value: 'abc' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
 
       await user.click(screen.getByRole('button', { name: t.submitButton }));
 
@@ -494,8 +546,12 @@ describe('AddAuthorizedSign', () => {
       const titleSelect = screen.getAllByRole('combobox')[0];
       await selectOption(user, titleSelect!, 'Mr');
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
       await selectOption(user, addressAssociationSelect!, 'Owner');
@@ -504,10 +560,18 @@ describe('AddAuthorizedSign', () => {
       fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
       fireEvent.change(emailInputs[1]!, { target: { value: 'john@example.com' } });
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), { target: { value: '07700900000' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), { target: { value: '123 Main St' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), { target: { value: 'London' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), { target: { value: 'SW1A 1AA' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), {
+        target: { value: '07700900000' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
     };
 
     it('calls addSignatory with correct payload on valid submission', async () => {
@@ -694,8 +758,12 @@ describe('AddAuthorizedSign', () => {
       const titleSelect = screen.getAllByRole('combobox')[0];
       await selectOption(user, titleSelect!, 'Mr');
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), { target: { value: 'John' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), { target: { value: 'Doe' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.firstNamePlaceholder), {
+        target: { value: 'John' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.lastNamePlaceholder), {
+        target: { value: 'Doe' },
+      });
 
       const addressAssociationSelect = screen.getAllByRole('combobox')[1];
       await selectOption(user, addressAssociationSelect!, 'Owner');
@@ -704,10 +772,18 @@ describe('AddAuthorizedSign', () => {
       fireEvent.change(emailInputs[0]!, { target: { value: 'john@example.com' } });
       fireEvent.change(emailInputs[1]!, { target: { value: 'john@example.com' } });
 
-      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), { target: { value: '07700900000' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), { target: { value: '123 Main St' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), { target: { value: 'London' } });
-      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), { target: { value: 'SW1A 1AA' } });
+      fireEvent.change(screen.getByPlaceholderText(tForm.mobilePlaceholder), {
+        target: { value: '07700900000' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.addressLine1Placeholder), {
+        target: { value: '123 Main St' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.townPlaceholder), {
+        target: { value: 'London' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(tForm.postcodePlaceholder), {
+        target: { value: 'SW1A 1AA' },
+      });
 
       fireEvent.click(screen.getByRole('button', { name: t.submitButton }));
 

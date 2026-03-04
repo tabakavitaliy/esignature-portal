@@ -21,12 +21,7 @@ interface RadioProps {
  * @param className - Additional CSS classes for the container
  * @returns ReactNode
  */
-export function Radio({
-  value,
-  label,
-  id,
-  className,
-}: RadioProps): ReactNode {
+export function Radio({ value, label, id, className }: RadioProps): ReactNode {
   const generatedId = useId();
   const radioId = id || generatedId;
 
@@ -42,10 +37,7 @@ export function Radio({
           'focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent'
         )}
       />
-      <Label
-        htmlFor={radioId}
-        className="text-[14px] text-white cursor-pointer"
-      >
+      <Label htmlFor={radioId} className="text-[14px] text-white cursor-pointer">
         {label}
       </Label>
     </div>

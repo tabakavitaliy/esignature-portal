@@ -33,7 +33,7 @@ describe('ExpiredSession', () => {
     (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
       push: mockPush,
     });
-    
+
     vi.spyOn(useMatterDetailsModule, 'useMatterDetails').mockReturnValue({
       data: {
         hasSignedMatter: false,

@@ -47,9 +47,7 @@ describe('InactivityProvider', () => {
     );
 
     expect(
-      screen.queryByText(
-        'Are you still there? Your session will expire soon due to inactivity'
-      )
+      screen.queryByText('Are you still there? Your session will expire soon due to inactivity')
     ).not.toBeInTheDocument();
   });
 
@@ -68,9 +66,7 @@ describe('InactivityProvider', () => {
     );
 
     expect(
-      screen.getByText(
-        'Are you still there? Your session will expire soon due to inactivity'
-      )
+      screen.getByText('Are you still there? Your session will expire soon due to inactivity')
     ).toBeInTheDocument();
   });
 

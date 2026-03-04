@@ -7,6 +7,11 @@ import * as useTokenModule from './use-token';
 import * as useMatterDetailsModule from './use-matter-details';
 import type { MatterDetails } from './use-matter-details';
 
+const mockGetToken = vi.fn();
+vi.mock('@/hooks/common/use-recaptcha', () => ({
+  useRecaptcha: () => ({ getToken: mockGetToken }),
+}));
+
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -24,6 +29,7 @@ describe('useAddNewSignatory', () => {
   const mockFetch = vi.fn();
   const mockToken = 'test-token-123';
   const mockMatterId = 'matter-123';
+  const mockRecaptchaToken = 'mock-recaptcha-token';
 
   const mockMatterData: MatterDetails = {
     hasSignedMatter: false,
@@ -61,6 +67,9 @@ describe('useAddNewSignatory', () => {
 
   beforeEach(() => {
     global.fetch = mockFetch;
+    mockFetch.mockClear();
+    mockGetToken.mockClear();
+    mockGetToken.mockResolvedValue(mockRecaptchaToken);
 
     vi.spyOn(useTokenModule, 'useToken').mockReturnValue({
       token: mockToken,
@@ -95,6 +104,7 @@ describe('useAddNewSignatory', () => {
     const response = await result.current.addNewSignatory(mockAddNewSignatoryBody);
 
     expect(response).toEqual(mockResponse);
+    expect(mockGetToken).toHaveBeenCalledWith('addSignatory');
     expect(mockFetch).toHaveBeenCalledWith(
       `https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/api/lb/matter/${mockMatterId}/addSignatory`,
       expect.objectContaining({
@@ -102,10 +112,29 @@ describe('useAddNewSignatory', () => {
         headers: expect.objectContaining({
           Authorization: `Bearer ${mockToken}`,
           'Content-Type': 'application/json',
+          'X-ReCaptcha-Token': mockRecaptchaToken,
         }),
         body: JSON.stringify(mockAddNewSignatoryBody),
       })
     );
+  });
+
+  it('blocks request and throws when reCAPTCHA token generation fails (fail-closed)', async () => {
+    mockGetToken.mockRejectedValue(new Error('reCAPTCHA Enterprise script has not loaded yet.'));
+
+    const { result } = renderHook(() => useAddNewSignatory(), {
+      wrapper: createWrapper(),
+    });
+
+    await expect(result.current.addNewSignatory(mockAddNewSignatoryBody)).rejects.toThrow(
+      'reCAPTCHA Enterprise script has not loaded yet.'
+    );
+
+    expect(mockFetch).not.toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+    });
   });
 
   it('returns error on failed request', async () => {
@@ -198,7 +227,9 @@ describe('useAddNewSignatory', () => {
 
     await result.current.addNewSignatory(mockAddNewSignatoryBody);
 
-    await waitFor(() => expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['matterDetails'] }));
+    await waitFor(() =>
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['matterDetails'] })
+    );
   });
 
   it('exposes mutation state correctly', async () => {
@@ -244,7 +275,9 @@ describe('useAddNewSignatory', () => {
       wrapper: createWrapper(),
     });
 
-    await expect(result.current.addNewSignatory(mockAddNewSignatoryBody)).rejects.toThrow('Network error');
+    await expect(result.current.addNewSignatory(mockAddNewSignatoryBody)).rejects.toThrow(
+      'Network error'
+    );
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);

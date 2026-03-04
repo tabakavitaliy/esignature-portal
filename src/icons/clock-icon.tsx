@@ -7,13 +7,14 @@ interface ClockIconProps {
   stroke?: string;
 }
 
-export function ClockIcon({ className, size = 44, stroke = 'var(--brand-primary)' }: ClockIconProps): ReactNode {
+export function ClockIcon({
+  className,
+  size = 44,
+  stroke = 'var(--brand-primary)',
+}: ClockIconProps): ReactNode {
   return (
     <div
-      className={cn(
-        'flex items-center justify-center',
-        className
-      )}
+      className={cn('flex items-center justify-center', className)}
       style={{ width: size, height: size }}
     >
       <svg

@@ -22,11 +22,14 @@ describe('apiClient', () => {
 
     const result = await apiClient<typeof mockData>('/test');
 
-    expect(mockFetch).toHaveBeenCalledWith('https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/test', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/test',
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
     expect(result).toEqual(mockData);
   });
 
@@ -41,11 +44,14 @@ describe('apiClient', () => {
       params: { q: 'test', limit: '10' },
     });
 
-    expect(mockFetch).toHaveBeenCalledWith('https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/search?q=test&limit=10', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/search?q=test&limit=10',
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
   });
 
   it('merges custom headers with default headers', async () => {
@@ -61,12 +67,15 @@ describe('apiClient', () => {
       },
     });
 
-    expect(mockFetch).toHaveBeenCalledWith('https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/test', {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer token123',
-      },
-    });
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/test',
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer token123',
+        },
+      }
+    );
   });
 
   it('throws error when response is not ok', async () => {
@@ -91,13 +100,52 @@ describe('apiClient', () => {
       body: JSON.stringify({ name: 'New Item' }),
     });
 
-    expect(mockFetch).toHaveBeenCalledWith('https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/create', {
-      method: 'POST',
-      body: JSON.stringify({ name: 'New Item' }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/create',
+      {
+        method: 'POST',
+        body: JSON.stringify({ name: 'New Item' }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  });
+
+  it('includes X-ReCaptcha-Token header when recaptchaToken is provided', async () => {
+    const mockData = { success: true };
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockData,
     });
+
+    await apiClient('/test', {
+      recaptchaToken: 'test-recaptcha-token',
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'X-ReCaptcha-Token': 'test-recaptcha-token',
+        }),
+      })
+    );
+  });
+
+  it('omits X-ReCaptcha-Token header when recaptchaToken is not provided', async () => {
+    const mockData = { success: true };
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockData,
+    });
+
+    await apiClient('/test');
+
+    const calledHeaders = mockFetch.mock.calls[0]?.[1]?.headers as
+      | Record<string, string>
+      | undefined;
+    expect(calledHeaders).not.toHaveProperty('X-ReCaptcha-Token');
   });
 
   it('handles empty params object', async () => {
@@ -109,10 +157,13 @@ describe('apiClient', () => {
 
     await apiClient('/test', { params: {} });
 
-    expect(mockFetch).toHaveBeenCalledWith('https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/test?', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net/test?',
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
   });
 });

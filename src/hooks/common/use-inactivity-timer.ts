@@ -24,7 +24,7 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
   const { token, clearToken } = useToken();
   const [isWarningVisible, setIsWarningVisible] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState(COUNTDOWN_SECONDS);
-  
+
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const prevPathnameRef = useRef(pathname);
@@ -71,14 +71,17 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
     }
   }, [isWarningVisible]);
 
-  const startInactivityTimer = useCallback((delay: number = INACTIVITY_TIMEOUT_MS): void => {
-    clearInactivityTimer();
-    lastActivityTimestampRef.current = Date.now();
-    
-    inactivityTimerRef.current = setTimeout(() => {
-      startCountdown();
-    }, delay);
-  }, [clearInactivityTimer, startCountdown]);
+  const startInactivityTimer = useCallback(
+    (delay: number = INACTIVITY_TIMEOUT_MS): void => {
+      clearInactivityTimer();
+      lastActivityTimestampRef.current = Date.now();
+
+      inactivityTimerRef.current = setTimeout(() => {
+        startCountdown();
+      }, delay);
+    },
+    [clearInactivityTimer, startCountdown]
+  );
 
   const resetTimer = useCallback((): void => {
     clearInactivityTimer();
@@ -103,10 +106,7 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
   }, [isWarningVisible, remainingSeconds, logOff]);
 
   useEffect(() => {
-    const shouldMonitor = 
-      token && 
-      pathname !== ROUTES.HOME && 
-      pathname !== ROUTES.EXPIRED_SESSION;
+    const shouldMonitor = token && pathname !== ROUTES.HOME && pathname !== ROUTES.EXPIRED_SESSION;
 
     if (!shouldMonitor) {
       clearInactivityTimer();
@@ -126,7 +126,7 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
 
     window.addEventListener('click', handleActivity);
     window.addEventListener('scroll', handleActivity);
-    
+
     if (isAndroidDevice()) {
       window.addEventListener('touchstart', handleActivity, { passive: true });
     }
@@ -134,21 +134,26 @@ export function useInactivityTimer(): UseInactivityTimerReturn {
     return () => {
       window.removeEventListener('click', handleActivity);
       window.removeEventListener('scroll', handleActivity);
-      
+
       if (isAndroidDevice()) {
         window.removeEventListener('touchstart', handleActivity);
       }
-      
+
       clearInactivityTimer();
       clearCountdownInterval();
     };
-  }, [token, pathname, resetTimer, startInactivityTimer, handleActivity, clearInactivityTimer, clearCountdownInterval]);
+  }, [
+    token,
+    pathname,
+    resetTimer,
+    startInactivityTimer,
+    handleActivity,
+    clearInactivityTimer,
+    clearCountdownInterval,
+  ]);
 
   useEffect(() => {
-    const shouldMonitor = 
-      token && 
-      pathname !== ROUTES.HOME && 
-      pathname !== ROUTES.EXPIRED_SESSION;
+    const shouldMonitor = token && pathname !== ROUTES.HOME && pathname !== ROUTES.EXPIRED_SESSION;
 
     if (!shouldMonitor || !isAndroidDevice()) {
       return;

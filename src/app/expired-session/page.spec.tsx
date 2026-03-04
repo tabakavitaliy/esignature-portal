@@ -27,7 +27,7 @@ const createWrapper = () => {
 describe('ExpiredSessionPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     vi.spyOn(useMatterDetailsModule, 'useMatterDetails').mockReturnValue({
       data: {
         hasSignedMatter: false,

@@ -27,9 +27,8 @@ export function useChangeSignatory(): UseChangeSignatoryReturn {
   const mutation = useMutation<ChangeSignatoryResponse, Error, ChangeSignatoryBody>({
     mutationFn: async (body: ChangeSignatoryBody) => {
       const matterId = matterData?.matterId;
-      const signatoryToChangeId = typeof window !== 'undefined'
-        ? sessionStorage.getItem('selectedSignatoryId')
-        : null;
+      const signatoryToChangeId =
+        typeof window !== 'undefined' ? sessionStorage.getItem('selectedSignatoryId') : null;
 
       if (!matterId) {
         throw new Error('Matter ID is not available');

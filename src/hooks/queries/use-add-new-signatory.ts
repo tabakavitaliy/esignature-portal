@@ -36,17 +36,14 @@ export function useAddNewSignatory(): UseAddNewSignatoryReturn {
 
       const recaptchaToken = await getToken('addSignatory');
 
-      return apiClient<AddNewSignatoryResponse>(
-        `/api/lb/matter/${matterId}/addSignatory`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          recaptchaToken,
-          body: JSON.stringify(body),
-        }
-      );
+      return apiClient<AddNewSignatoryResponse>(`/api/lb/matter/${matterId}/addSignatory`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        recaptchaToken,
+        body: JSON.stringify(body),
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['matterDetails'] });

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/navigation';
@@ -16,7 +16,7 @@ vi.mock('@/hooks/queries/use-matter-details', () => ({
 }));
 
 describe('ConfirmName', () => {
-  const { confirmNamePage: t } = translations;
+  const { confirmNamePage: t, loadingModal: tLoading } = translations;
   const mockPush = vi.fn();
 
   beforeEach(() => {
@@ -1709,6 +1709,63 @@ describe('ConfirmName', () => {
 
       expect(sessionStorageSpy).not.toHaveBeenCalled();
       expect(mockPush).toHaveBeenCalledWith('/add-new-name');
+    });
+  });
+
+  describe('loading modal', () => {
+    it('should show loading modal while matter details are loading', () => {
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: undefined,
+        isLoading: true,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByText(tLoading.loadingAgreement)).toBeInTheDocument();
+    });
+
+    it('should not show loading modal when data has loaded', () => {
+      (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: undefined,
+        isLoading: false,
+        error: null,
+      });
+
+      render(<ConfirmName />);
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    it('should keep loading modal visible briefly after loading completes and then hide it', async () => {
+      const { rerender } = render(<ConfirmName />);
+
+      await act(async () => {
+        (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+          data: undefined,
+          isLoading: true,
+          error: null,
+        });
+        rerender(<ConfirmName />);
+      });
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+      await act(async () => {
+        (useMatterDetailsModule.useMatterDetails as ReturnType<typeof vi.fn>).mockReturnValue({
+          data: undefined,
+          isLoading: false,
+          error: null,
+        });
+        rerender(<ConfirmName />);
+      });
+      // Modal is still visible immediately after loading completes (minimum display duration)
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+      // Modal disappears after the minimum display duration elapses
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument(), {
+        timeout: 1000,
+      });
     });
   });
 });

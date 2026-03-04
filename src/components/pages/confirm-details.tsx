@@ -18,6 +18,8 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useMatterDetails, type Signatory } from '@/hooks/queries/use-matter-details';
 import { useUpdateSignatory } from '@/hooks/queries/use-update-signatory';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
+import { LoadingModal } from '@/components/common/loading-modal';
+import { useMinimumPending } from '@/hooks/common/use-minimum-pending';
 
 /**
  * ConfirmDetails component displays the details confirmation page
@@ -42,10 +44,11 @@ export function ConfirmDetails(): ReactNode {
   const [county, setCounty] = useState<string | null>(null);
   const [postcode, setPostcode] = useState<string | null>(null);
 
-  const { confirmDetailsPage: t } = translations;
+  const { confirmDetailsPage: t, loadingModal: tLoading } = translations;
   const router = useRouter();
   const { data, isLoading: _isLoading, error: _error, refetch } = useMatterDetails();
   const { updateSignatory, isPending } = useUpdateSignatory();
+  const isLoadingDisplayed = useMinimumPending(isPending);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -185,6 +188,7 @@ export function ConfirmDetails(): ReactNode {
         'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
       )}
     >
+      <LoadingModal isOpen={isLoadingDisplayed} message={tLoading.updatingSignatory} />
       <BackgroundPattern />
       <Header text={t.headerText} />
 

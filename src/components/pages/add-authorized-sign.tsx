@@ -18,6 +18,8 @@ import { SignatoryFormCard } from '@/components/common/signatory-form-card';
 import { SignatoryFormActions } from '@/components/common/signatory-form-actions';
 import translations from '@/i18n/en.json';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
+import { LoadingModal } from '@/components/common/loading-modal';
+import { useMinimumPending } from '@/hooks/common/use-minimum-pending';
 import { useMatterDetails, type AddressAssociation } from '@/hooks/queries/use-matter-details';
 import { useAddNewSignatory } from '@/hooks/queries/use-add-new-signatory';
 import { TITLE_OPTIONS, ADDRESS_ASSOCIATION_OPTIONS } from '@/constants/signatory-options';
@@ -52,10 +54,15 @@ export function AddAuthorizedSign(): ReactNode {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [selectedSignatoryId, setSelectedSignatoryId] = useState<string | null>(null);
 
-  const { addAuthorizedSignPage: t, signatoryDetailsForm: tForm } = translations;
+  const {
+    addAuthorizedSignPage: t,
+    signatoryDetailsForm: tForm,
+    loadingModal: tLoading,
+  } = translations;
   const router = useRouter();
   const { data: matterData } = useMatterDetails();
   const { addNewSignatory, isPending } = useAddNewSignatory();
+  const isLoadingDisplayed = useMinimumPending(isPending);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -182,6 +189,7 @@ export function AddAuthorizedSign(): ReactNode {
         'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
       )}
     >
+      <LoadingModal isOpen={isLoadingDisplayed} message={tLoading.addingSignatory} />
       <BackgroundPattern />
       <Header text={t.headerText} />
 

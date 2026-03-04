@@ -22,9 +22,7 @@ export function useRecaptcha(): UseRecaptchaReturn {
     }
 
     if (typeof window === 'undefined' || !window.grecaptcha?.enterprise) {
-      return Promise.reject(
-        new Error('reCAPTCHA Enterprise script has not loaded yet.')
-      );
+      return Promise.reject(new Error('reCAPTCHA Enterprise script has not loaded yet.'));
     }
 
     const enterprise = window.grecaptcha.enterprise;

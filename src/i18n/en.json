@@ -134,5 +134,11 @@
     "subtitle": "Powered by Liberty Blume",
     "message": "Your session has expired due to inactivity. Use the eSignature credential to login again",
     "loginButton": "Login"
+  },
+  "loadingModal": {
+    "loadingAgreement": "Loading your agreement details, please wait…",
+    "updatingSignatory": "Saving your details, please wait…",
+    "addingSignatory": "Submitting your information, please wait…",
+    "changingSignatory": "Submitting the authorised signatory details, please wait…"
   }
 }

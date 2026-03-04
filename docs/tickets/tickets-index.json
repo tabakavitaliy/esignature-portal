@@ -1,6 +1,24 @@
 {
   "tickets": [
     {
+      "id": "WEP-97",
+      "title": "Loading Modal for Form Submissions and API Calls",
+      "description": "Reusable LoadingModal component shown during all API mutations with context-specific messages",
+      "status": "completed",
+      "progress": "100%",
+      "jiraUrl": "https://jdc.eleks.com/browse/WEP-97",
+      "ticketFile": "docs/tickets/WEP-97.md",
+      "relatedFeatures": ["loading-modal"],
+      "relatedFiles": [
+        "src/components/common/loading-modal.tsx",
+        "src/components/common/loading-modal.spec.tsx",
+        "src/components/pages/confirm-details.tsx",
+        "src/components/pages/add-authorized-sign.tsx",
+        "src/components/pages/not-authorized-signatory.tsx",
+        "src/i18n/en.json"
+      ]
+    },
+    {
       "id": "WEP-31",
       "title": "Refactor AddAuthorizedSign to Use Reusable Form",
       "description": "Refactor add-authorized-sign.tsx: unified state, SignatoryDetailsForm, useAddSignatory, regex validation",
@@ -80,15 +98,11 @@
       "jiraUrl": "https://jdc.eleks.com/browse/WEP-6",
       "ticketFile": "docs/tickets/WEP-6.md",
       "relatedFeatures": ["cookie-consent"],
-      "relatedFiles": [
-        "src/app/layout.tsx",
-        ".env.example",
-        "tests/e2e/cookie-consent.e2e-spec.ts"
-      ]
+      "relatedFiles": ["src/app/layout.tsx", ".env.example", "tests/e2e/cookie-consent.e2e-spec.ts"]
     }
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-02-26"
+    "lastUpdated": "2026-03-04"
   }
 }

@@ -17,30 +17,33 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useMatterDetails } from '@/hooks/queries/use-matter-details';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
 import { ROUTES } from '@/constants/routes';
+import { LoadingModal } from '@/components/common/loading-modal';
+import { useMinimumPending } from '@/hooks/common/use-minimum-pending';
 
 /**
  * ConfirmName component displays the name selection page
  * @returns ReactNode
  */
 export function ConfirmName(): ReactNode {
-const [selectedOption, setSelectedOption] = useState<string>('');
+  const [selectedOption, setSelectedOption] = useState<string>('');
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const { confirmNamePage: t } = translations;
+  const { confirmNamePage: t, loadingModal: tLoading } = translations;
   const router = useRouter();
-  const { data, isLoading: _isLoading, error: _error } = useMatterDetails();
-
+  const { data, isLoading, error: _error } = useMatterDetails();
+  const isLoadingDisplayed = useMinimumPending(isLoading);
 
   const options = useMemo(() => {
-    const names = data?.signatories?.map((signatory) => ({
-      value: signatory.signatoryId,
-      label: `${signatory.firstname} ${signatory.surname}`,
-    })) ?? [];
+    const names =
+      data?.signatories?.map((signatory) => ({
+        value: signatory.signatoryId,
+        label: `${signatory.firstname} ${signatory.surname}`,
+      })) ?? [];
     const noNameExistsOption = {
       value: 'no-name-exists',
       label: t.noNameExistsLabel,
     };
-    return [...names, noNameExistsOption]
+    return [...names, noNameExistsOption];
   }, [data]);
 
   const handleBackClick = (): void => {
@@ -49,17 +52,17 @@ const [selectedOption, setSelectedOption] = useState<string>('');
 
   const handleNextClick = (): void => {
     setErrorMessage('');
-    
+
     if (selectedOption === '') {
       setErrorMessage(t.selectNameError);
       return;
     }
-    
+
     if (selectedOption === 'no-name-exists') {
       router.push(ROUTES.ADD_NEW_NAME);
       return;
     }
-    
+
     if (isConfirmed) {
       sessionStorage.setItem('selectedSignatoryId', selectedOption);
       router.push(ROUTES.CONFIRM_DETAILS);
@@ -69,18 +72,17 @@ const [selectedOption, setSelectedOption] = useState<string>('');
   };
 
   return (
-    <div className={cn(
-      "relative flex min-h-screen flex-col overflow-hidden",
-      'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
-      )}>
+    <div
+      className={cn(
+        'relative flex min-h-screen flex-col overflow-hidden',
+        'bg-gradient-to-b from-[var(--login-gradient-start)] to-[var(--login-gradient-end)]'
+      )}
+    >
+      <LoadingModal isOpen={isLoadingDisplayed} message={tLoading.loadingAgreement} />
       <BackgroundPattern />
       <Header text={t.headerText} />
 
-      <main
-        className={cn(
-          'flex flex-1 flex-col px-6 py-12',
-        )}
-      >
+      <main className={cn('flex flex-1 flex-col px-6 py-12')}>
         <ContentWrapper className="flex flex-1 flex-col gap-8">
           <ProgressStepper stepCount={4} currentStep={1} className="self-center" />
 
@@ -97,16 +99,14 @@ const [selectedOption, setSelectedOption] = useState<string>('');
               value={selectedOption}
               onChange={setSelectedOption}
             />
-            {
-              !!selectedOption && selectedOption !== 'no-name-exists' && (
-                <Checkbox
+            {!!selectedOption && selectedOption !== 'no-name-exists' && (
+              <Checkbox
                 label={t.confirmCheckboxLabel}
                 value={isConfirmed}
                 onChange={setIsConfirmed}
                 className="mt-6"
               />
-              )
-            }
+            )}
           </div>
 
           {errorMessage && <ButtonErrorLabel message={errorMessage} />}

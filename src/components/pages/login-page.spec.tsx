@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -27,9 +27,7 @@ describe('LoginPage', () => {
       push: mockPush,
       replace: mockReplace,
     });
-    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(
-      new URLSearchParams()
-    );
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(new URLSearchParams());
     (useToken as ReturnType<typeof vi.fn>).mockReturnValue({
       token: null,
       setToken: mockSetToken,
@@ -163,7 +161,9 @@ describe('LoginPage', () => {
       await user.type(input, 'ABCD1234EFGH5678');
       await user.click(nextButton);
 
-      expect(mockPush).toHaveBeenCalledWith('/confirm-name');
+      await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/confirm-name'), {
+        timeout: 1000,
+      });
       expect(mockPush).toHaveBeenCalledTimes(1);
     });
 
@@ -228,7 +228,9 @@ describe('LoginPage', () => {
       expect(input.value).toBe('2A2E-42WX-8375-QC3B');
       await user.click(nextButton);
 
-      expect(mockPush).toHaveBeenCalledWith('/confirm-name');
+      await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/confirm-name'), {
+        timeout: 1000,
+      });
     });
 
     it('validates credential pattern correctly for invalid format with too few groups', async () => {
@@ -254,7 +256,9 @@ describe('LoginPage', () => {
       expect(input.value).toBe('ABCD-1234-EFGH-5678'); // Mask limits to 16 chars
       await user.click(nextButton);
 
-      expect(mockPush).toHaveBeenCalledWith('/confirm-name');
+      await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/confirm-name'), {
+        timeout: 1000,
+      });
     });
 
     it('validates credential pattern correctly for all numeric credential', async () => {
@@ -267,7 +271,9 @@ describe('LoginPage', () => {
       expect(input.value).toBe('1234-5678-9012-3456');
       await user.click(nextButton);
 
-      expect(mockPush).toHaveBeenCalledWith('/confirm-name');
+      await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/confirm-name'), {
+        timeout: 1000,
+      });
     });
 
     it('validates credential pattern correctly for all alphabetic credential', async () => {
@@ -280,7 +286,9 @@ describe('LoginPage', () => {
       expect(input.value).toBe('ABCD-EFGH-JKMN-PQRS');
       await user.click(nextButton);
 
-      expect(mockPush).toHaveBeenCalledWith('/confirm-name');
+      await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/confirm-name'), {
+        timeout: 1000,
+      });
     });
 
     it('sets isInvalid state when credential is invalid', async () => {
@@ -307,7 +315,9 @@ describe('LoginPage', () => {
       await user.click(nextButton);
 
       // isInvalid should be set to false (we verify by successful navigation)
-      expect(mockPush).toHaveBeenCalledWith('/confirm-name');
+      await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/confirm-name'), {
+        timeout: 1000,
+      });
     });
   });
 
@@ -390,7 +400,9 @@ describe('LoginPage', () => {
       await user.type(input, 'ABCD1234EFGH5678');
       await user.keyboard('{Enter}');
 
-      expect(mockPush).toHaveBeenCalledWith('/confirm-name');
+      await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/confirm-name'), {
+        timeout: 1000,
+      });
     });
 
     it('triggers handleNextClick when Enter key is pressed with invalid credential', async () => {
@@ -477,6 +489,24 @@ describe('LoginPage', () => {
     });
   });
 
+  describe('loading modal', () => {
+    it('should not show the loading modal initially', () => {
+      render(<LoginPage />);
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    it('should not show loading modal when invalid credential is submitted', async () => {
+      const user = userEvent.setup();
+      render(<LoginPage />);
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+
+      await user.click(nextButton);
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+  });
+
   describe('key query parameter handling', () => {
     it('sets token and credential from key query param and removes it from URL', () => {
       const keyValue = 'TEST-KEY1-ABCD-1234';
@@ -503,9 +533,7 @@ describe('LoginPage', () => {
     });
 
     it('does not call setToken or replace when no key param is present', () => {
-      (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(
-        new URLSearchParams()
-      );
+      (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(new URLSearchParams());
 
       render(<LoginPage />);
 

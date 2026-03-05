@@ -18,6 +18,7 @@ interface RadioGroupProps {
   onChange?: (value: string) => void;
   className?: string;
   id?: string;
+  disabled?: boolean;
 }
 
 /**
@@ -37,6 +38,7 @@ export function RadioGroup({
   onChange,
   className,
   id,
+  disabled,
 }: RadioGroupProps): ReactNode {
   const generatedId = useId();
   const radioGroupId = id || generatedId;
@@ -49,6 +51,7 @@ export function RadioGroup({
       <BaseRadioGroup
         {...(value !== undefined ? { value } : {})}
         {...(onChange !== undefined ? { onValueChange: onChange } : {})}
+        {...(disabled !== undefined ? { disabled } : {})}
         aria-labelledby={`${radioGroupId}-label`}
         className="flex flex-col gap-3"
       >

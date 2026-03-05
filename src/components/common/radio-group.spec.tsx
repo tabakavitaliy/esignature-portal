@@ -221,4 +221,52 @@ describe('RadioGroup', () => {
     expect(radios[1]).toHaveAttribute('value', 'address-2');
     expect(radios[2]).toHaveAttribute('value', 'address-3');
   });
+
+  it('disables all radio buttons when disabled prop is true', () => {
+    render(
+      <RadioGroup
+        label="Address"
+        options={mockOptions}
+        disabled={true}
+      />
+    );
+    
+    const radios = screen.getAllByRole('radio');
+    radios.forEach((radio) => {
+      expect(radio).toBeDisabled();
+    });
+  });
+
+  it('does not call onChange when disabled and radio is clicked', async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(
+      <RadioGroup
+        label="Address"
+        options={mockOptions}
+        onChange={handleChange}
+        disabled={true}
+      />
+    );
+    
+    const firstRadio = screen.getAllByRole('radio')[0];
+    await user.click(firstRadio!);
+    
+    expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  it('enables all radio buttons when disabled prop is false', () => {
+    render(
+      <RadioGroup
+        label="Address"
+        options={mockOptions}
+        disabled={false}
+      />
+    );
+    
+    const radios = screen.getAllByRole('radio');
+    radios.forEach((radio) => {
+      expect(radio).not.toBeDisabled();
+    });
+  });
 });

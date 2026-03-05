@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { apiClient } from './client';
+import { HttpError } from './http-error';
 
 describe('apiClient', () => {
   const mockFetch = vi.fn();
@@ -78,14 +79,24 @@ describe('apiClient', () => {
     );
   });
 
-  it('throws error when response is not ok', async () => {
+  it('throws HttpError when response is not ok', async () => {
     mockFetch.mockResolvedValue({
       ok: false,
       status: 404,
       statusText: 'Not Found',
     });
 
+    await expect(apiClient('/not-found')).rejects.toThrow(HttpError);
     await expect(apiClient('/not-found')).rejects.toThrow('API Error: 404 Not Found');
+    
+    try {
+      await apiClient('/not-found');
+    } catch (error) {
+      expect(error).toBeInstanceOf(HttpError);
+      if (error instanceof HttpError) {
+        expect(error.status).toBe(404);
+      }
+    }
   });
 
   it('passes through fetch options', async () => {

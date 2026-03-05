@@ -140,5 +140,18 @@
     "updatingSignatory": "Saving your details, please wait…",
     "addingSignatory": "Submitting your information, please wait…",
     "changingSignatory": "Submitting the authorised signatory details, please wait…"
+  },
+  "previewAgreementPage": {
+    "headerText": "Preview agreement",
+    "downloadButton": "Download agreement preview",
+    "moreInfoButton": "More options",
+    "signButton": "Continue to sign",
+    "backButtonLabel": "Go back",
+    "loadingMessage": "Loading document...",
+    "errorMessage": "Failed to load document"
+  },
+  "drawInput": {
+    "signatureLabel": "Signature",
+    "clearButton": "Clear"
   }
 }

@@ -5,6 +5,8 @@
  * Configure the base URL and common headers here.
  */
 
+import { HttpError } from './http-error';
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ??
   'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net';
@@ -39,7 +41,7 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
   });
 
   if (!response.ok) {
-    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    throw new HttpError(`API Error: ${response.status} ${response.statusText}`, response.status);
   }
 
   return response.json() as Promise<T>;

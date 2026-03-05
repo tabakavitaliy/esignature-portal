@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ConfirmSignatory } from './confirm-signatory';
 import translations from '@/i18n/en.json';
 import * as useMatterDetailsModule from '@/hooks/queries/use-matter-details';
+import * as useReadyToSignModule from '@/hooks/queries/use-ready-to-sign';
 import type { MatterDetails } from '@/hooks/queries/use-matter-details';
 
 vi.mock('next/navigation', () => ({
@@ -15,9 +16,14 @@ vi.mock('@/hooks/queries/use-matter-details', () => ({
   useMatterDetails: vi.fn(),
 }));
 
+vi.mock('@/hooks/queries/use-ready-to-sign', () => ({
+  useReadyToSign: vi.fn(),
+}));
+
 describe('ConfirmSignatory', () => {
   const { confirmSignatoryPage: t } = translations;
   const mockPush = vi.fn();
+  const mockSign = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -28,6 +34,12 @@ describe('ConfirmSignatory', () => {
       data: undefined,
       isLoading: false,
       error: null,
+    });
+    (useReadyToSignModule.useReadyToSign as ReturnType<typeof vi.fn>).mockReturnValue({
+      sign: mockSign,
+      isLoading: false,
+      error: null,
+      data: undefined,
     });
   });
 
@@ -643,9 +655,10 @@ describe('ConfirmSignatory', () => {
       const errorMessage = screen.getByText(t.selectAuthorityError);
       expect(errorMessage).toBeInTheDocument();
       expect(mockPush).not.toHaveBeenCalled();
+      expect(mockSign).not.toHaveBeenCalled();
     });
 
-    it('navigates to /preview-agreement when Yes authority is selected', async () => {
+    it('calls sign mutation when Yes authority is selected', async () => {
       const user = userEvent.setup();
 
       render(<ConfirmSignatory />);
@@ -657,7 +670,31 @@ describe('ConfirmSignatory', () => {
       const nextButton = screen.getByRole('button', { name: t.nextButton });
       await user.click(nextButton);
 
+      expect(mockSign).toHaveBeenCalledTimes(1);
+      expect(mockSign).toHaveBeenCalledWith({ onSuccess: expect.any(Function) });
+    });
+
+    it('redirects to preview-agreement only after sign success callback', async () => {
+      const user = userEvent.setup();
+
+      render(<ConfirmSignatory />);
+      const radios = screen.getAllByRole('radio');
+      const yesRadio = radios[0]!;
+
+      await user.click(yesRadio);
+
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+      await user.click(nextButton);
+
+      expect(mockPush).not.toHaveBeenCalled();
+
+      const onSuccessCallback = mockSign.mock.calls[0]?.[0]?.onSuccess;
+      expect(onSuccessCallback).toBeDefined();
+
+      onSuccessCallback?.();
+
       expect(mockPush).toHaveBeenCalledWith('/preview-agreement');
+      expect(mockPush).toHaveBeenCalledTimes(1);
     });
 
     it('shows Next button label when No authority is selected', async () => {
@@ -686,6 +723,7 @@ describe('ConfirmSignatory', () => {
       await user.click(nextButton);
 
       expect(mockPush).toHaveBeenCalledWith('/not-authorized-signatory');
+      expect(mockSign).not.toHaveBeenCalled();
     });
 
     it('error message clears when selecting an authority option after error', async () => {
@@ -893,6 +931,71 @@ describe('ConfirmSignatory', () => {
 
       const radiosAfter = screen.getAllByRole('radio');
       expect(radiosAfter).toHaveLength(2);
+    });
+  });
+
+  describe('useReadyToSign integration', () => {
+    it('disables all controls while isLoading is true', () => {
+      (useReadyToSignModule.useReadyToSign as ReturnType<typeof vi.fn>).mockReturnValue({
+        sign: mockSign,
+        isLoading: true,
+        error: null,
+        data: undefined,
+      });
+
+      render(<ConfirmSignatory />);
+
+      const radios = screen.getAllByRole('radio');
+      radios.forEach((radio) => {
+        expect(radio).toBeDisabled();
+      });
+
+      const backButton = screen.getByRole('button', { name: t.backButtonLabel });
+      expect(backButton).toBeDisabled();
+
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+      expect(nextButton).toBeDisabled();
+    });
+
+    it('enables all controls when isLoading is false', () => {
+      (useReadyToSignModule.useReadyToSign as ReturnType<typeof vi.fn>).mockReturnValue({
+        sign: mockSign,
+        isLoading: false,
+        error: null,
+        data: undefined,
+      });
+
+      render(<ConfirmSignatory />);
+
+      const radios = screen.getAllByRole('radio');
+      radios.forEach((radio) => {
+        expect(radio).not.toBeDisabled();
+      });
+
+      const backButton = screen.getByRole('button', { name: t.backButtonLabel });
+      expect(backButton).not.toBeDisabled();
+
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+      expect(nextButton).not.toBeDisabled();
+    });
+
+    it('does not call sign when disabled and Next button is clicked', async () => {
+      const user = userEvent.setup();
+      (useReadyToSignModule.useReadyToSign as ReturnType<typeof vi.fn>).mockReturnValue({
+        sign: mockSign,
+        isLoading: true,
+        error: null,
+        data: undefined,
+      });
+
+      render(<ConfirmSignatory />);
+      const radios = screen.getAllByRole('radio');
+      await user.click(radios[0]!);
+
+      const nextButton = screen.getByRole('button', { name: t.nextButton });
+      await user.click(nextButton);
+
+      expect(mockSign).not.toHaveBeenCalled();
     });
   });
 });

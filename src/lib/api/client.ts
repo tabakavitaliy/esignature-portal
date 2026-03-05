@@ -14,6 +14,35 @@ interface RequestOptions extends RequestInit {
   recaptchaToken?: string;
 }
 
+interface ApiClientErrorOptions {
+  status?: number;
+  isNetworkError?: boolean;
+}
+
+export class ApiClientError extends Error {
+  status: number | undefined;
+  isNetworkError: boolean;
+
+  constructor(message: string, options: ApiClientErrorOptions = {}) {
+    super(message);
+    this.name = 'ApiClientError';
+    this.status = options.status;
+    this.isNetworkError = options.isNetworkError ?? false;
+  }
+}
+
+export function isServiceOutageError(error: unknown): boolean {
+  if (!(error instanceof ApiClientError)) {
+    return false;
+  }
+
+  if (error.isNetworkError) {
+    return true;
+  }
+
+  return typeof error.status === 'number' && error.status >= 500;
+}
+
 /**
  * Makes an HTTP request to the API
  * @param endpoint - API endpoint (relative to base URL)
@@ -29,17 +58,25 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
     url += `?${searchParams.toString()}`;
   }
 
-  const response = await fetch(url, {
-    ...fetchOptions,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(recaptchaToken && { 'X-ReCaptcha-Token': recaptchaToken }),
-      ...fetchOptions.headers,
-    },
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...fetchOptions,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(recaptchaToken && { 'X-ReCaptcha-Token': recaptchaToken }),
+        ...fetchOptions.headers,
+      },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Network error';
+    throw new ApiClientError(message, { isNetworkError: true });
+  }
 
   if (!response.ok) {
-    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    throw new ApiClientError(`API Error: ${response.status} ${response.statusText}`, {
+      status: response.status,
+    });
   }
 
   return response.json() as Promise<T>;

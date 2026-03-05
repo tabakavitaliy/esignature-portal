@@ -1,6 +1,33 @@
 {
   "tickets": [
     {
+      "id": "WEP-43",
+      "title": "Error Screen: We're on it",
+      "description": "Outage-focused error page with global redirect for query and catastrophic mutation failures",
+      "status": "completed",
+      "progress": "100%",
+      "jiraUrl": "https://jdc.eleks.com/browse/WEP-43",
+      "ticketFile": "docs/tickets/WEP-43.md",
+      "relatedFeatures": ["error-handling"],
+      "relatedFiles": [
+        "src/app/error-page/page.tsx",
+        "src/app/error-page/page.spec.tsx",
+        "src/app/error.tsx",
+        "src/components/pages/error-page.tsx",
+        "src/components/pages/error-page.spec.tsx",
+        "src/icons/warning-triangle-icon.tsx",
+        "src/icons/index.ts",
+        "src/providers/query-provider.tsx",
+        "src/providers/query-provider.spec.tsx",
+        "src/lib/api/client.ts",
+        "src/lib/api/index.ts",
+        "src/lib/api/client.spec.ts",
+        "src/constants/routes.ts",
+        "src/i18n/en.json",
+        "docs/features/error-handling.md"
+      ]
+    },
+    {
       "id": "WEP-97",
       "title": "Loading Modal for Form Submissions and API Calls",
       "description": "Reusable LoadingModal component shown during all API mutations with context-specific messages",
@@ -103,6 +130,6 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-03-04"
+    "lastUpdated": "2026-03-05"
   }
 }

@@ -8,4 +8,5 @@ export const ROUTES = {
   PREVIEW_AGREEMENT: '/preview-agreement',
   THANK_YOU: '/thank-you',
   EXPIRED_SESSION: '/expired-session',
+  ERROR_PAGE: '/error-page',
 } as const;

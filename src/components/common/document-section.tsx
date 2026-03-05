@@ -1,10 +1,8 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
+import { useState, useRef, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/common/button';
 import { MoreInfoIcon } from '@/icons/more-info-icon';
@@ -12,10 +10,18 @@ import { useDocumentById } from '@/hooks/queries/use-document-by-id';
 import translations from '@/i18n/en.json';
 import { Download } from 'lucide-react';
 
-// Configure pdf.js worker (only in browser)
-if (typeof window !== 'undefined') {
-  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-}
+// Dynamic import of PDF viewer to avoid SSR issues
+const PDFViewer = dynamic(() => import('./pdf-viewer').then((mod) => mod.PDFViewer), {
+  ssr: false,
+  loading: () => {
+    const { previewAgreementPage: t } = translations;
+    return (
+      <div className="flex h-[400px] items-center justify-center rounded-lg bg-gray-100">
+        <p className="text-sm text-gray-600">{t.loadingMessage}</p>
+      </div>
+    );
+  },
+});
 
 interface DocumentSectionProps {
   documentTitle: string;
@@ -38,44 +44,8 @@ export function DocumentSection({
   const { data, error, isLoading } = useDocumentById(documentId);
   const { previewAgreementPage: t } = translations;
 
-  const [numPages, setNumPages] = useState<number>(0);
   const [pageHeight, setPageHeight] = useState<number>(0);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<ResizeObserver | null>(null);
-
-  // Callback ref to measure container width when it mounts
-  const setContainerElement = useCallback((node: HTMLDivElement | null): void => {
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
-    }
-
-    containerRef.current = node;
-
-    if (node) {
-      setContainerWidth(node.offsetWidth);
-      observerRef.current = new ResizeObserver(() => {
-        if (node) {
-          setContainerWidth(node.offsetWidth);
-        }
-      });
-      observerRef.current.observe(node);
-    } else {
-      setContainerWidth(0);
-    }
-  }, []);
-
-  // Cleanup observer on unmount
-  useEffect(() => {
-    return () => {
-      observerRef.current?.disconnect();
-    };
-  }, []);
-
-  const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }): void => {
-    setNumPages(numPages);
-  }, []);
 
   const onFirstPageRenderSuccess = useCallback((): void => {
     if (containerRef.current) {
@@ -127,36 +97,14 @@ export function DocumentSection({
 
       {!isLoading && !error && data?.previewUrl && (
         <div
-          ref={setContainerElement}
+          ref={containerRef}
           className="mb-4 rounded-lg border border-gray-200 overflow-y-auto"
           style={{ maxHeight: pageHeight > 0 ? `${pageHeight}px` : '600px' }}
         >
-          <Document
-            file={data.previewUrl}
-            onLoadSuccess={onDocumentLoadSuccess}
-            loading={
-              <div className="flex h-[400px] items-center justify-center">
-                <p className="text-sm text-gray-600">{t.loadingMessage}</p>
-              </div>
-            }
-            error={
-              <div className="flex h-[400px] items-center justify-center">
-                <p className="text-sm text-red-600">{t.errorMessage}</p>
-              </div>
-            }
-          >
-            {containerWidth > 0 &&
-              Array.from({ length: numPages }, (_, i) => {
-                const pageProps = {
-                  pageNumber: i + 1,
-                  width: containerWidth,
-                  renderTextLayer: true,
-                  renderAnnotationLayer: true,
-                  ...(i === 0 && { onRenderSuccess: onFirstPageRenderSuccess }),
-                };
-                return <Page key={`page_${i + 1}`} {...pageProps} />;
-              })}
-          </Document>
+          <PDFViewer
+            fileUrl={data.previewUrl}
+            onFirstPageRenderSuccess={onFirstPageRenderSuccess}
+          />
         </div>
       )}
 

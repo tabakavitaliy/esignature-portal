@@ -5,53 +5,36 @@ import { DocumentSection } from './document-section';
 import translations from '@/i18n/en.json';
 import * as useDocumentByIdModule from '@/hooks/queries/use-document-by-id';
 import type { DocumentByIdResponse } from '@/hooks/queries/use-document-by-id';
+import type { ReactNode } from 'react';
 
 vi.mock('@/hooks/queries/use-document-by-id', () => ({
   useDocumentById: vi.fn(),
 }));
 
-vi.mock('react-pdf', async () => {
-  const React = await import('react');
+vi.mock('next/dynamic', () => {
+  const MockPDFViewer = ({
+    fileUrl,
+    onFirstPageRenderSuccess: _onFirstPageRenderSuccess,
+  }: {
+    fileUrl: string;
+    onFirstPageRenderSuccess?: () => void;
+  }): ReactNode => {
+    return (
+      <div data-testid="pdf-viewer" data-file-url={fileUrl}>
+        <div data-testid="pdf-document">
+          <div data-testid="pdf-page-1" className="react-pdf__Page" style={{ height: 600 }}>
+            Page 1
+          </div>
+          <div data-testid="pdf-page-2" className="react-pdf__Page">
+            Page 2
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return {
-    pdfjs: {
-      GlobalWorkerOptions: {
-        workerSrc: '',
-      },
-      version: '3.11.174',
-    },
-    Document: ({ children, onLoadSuccess, file }: {
-      children: React.ReactNode;
-      onLoadSuccess?: (data: { numPages: number }) => void;
-      file?: string;
-    }) => {
-      React.useEffect(() => {
-        if (onLoadSuccess && file) {
-          onLoadSuccess({ numPages: 2 });
-        }
-      }, [onLoadSuccess, file]);
-      return React.createElement('div', { 'data-testid': 'pdf-document' }, children);
-    },
-    Page: ({ pageNumber, onRenderSuccess, width }: {
-      pageNumber: number;
-      onRenderSuccess?: () => void;
-      width?: number;
-    }) => {
-      React.useEffect(() => {
-        if (onRenderSuccess && pageNumber === 1) {
-          onRenderSuccess();
-        }
-      }, [onRenderSuccess, pageNumber]);
-      
-      return React.createElement(
-        'div',
-        { 
-          'data-testid': `pdf-page-${pageNumber}`,
-          className: 'react-pdf__Page',
-          style: { width: width || 0, height: 600 }
-        },
-        `Page ${pageNumber}`
-      );
-    },
+    default: () => MockPDFViewer,
   };
 });
 
@@ -80,13 +63,15 @@ describe('DocumentSection', () => {
         // Simulate initial width measurement
         if (element instanceof HTMLElement) {
           Object.defineProperty(element, 'offsetWidth', { value: 800, writable: true });
-          const entries = [{
-            target: element,
-            contentRect: { width: 800 } as DOMRectReadOnly,
-            borderBoxSize: [],
-            contentBoxSize: [],
-            devicePixelContentBoxSize: [],
-          }] as unknown as ResizeObserverEntry[];
+          const entries = [
+            {
+              target: element,
+              contentRect: { width: 800 } as DOMRectReadOnly,
+              borderBoxSize: [],
+              contentBoxSize: [],
+              devicePixelContentBoxSize: [],
+            },
+          ] as unknown as ResizeObserverEntry[];
           this.callback(entries, this);
         }
       }
@@ -129,10 +114,10 @@ describe('DocumentSection', () => {
   it('more info button has no functionality when clicked', async () => {
     const user = userEvent.setup();
     render(<DocumentSection documentTitle={mockDocumentTitle} documentId={mockDocumentId} />);
-    
+
     const moreInfoButton = screen.getByRole('button', { name: t.moreInfoButton });
     await user.click(moreInfoButton);
-    
+
     expect(moreInfoButton).toBeInTheDocument();
   });
 
@@ -229,7 +214,7 @@ describe('DocumentSection', () => {
 
     it('download button is clickable when previewUrl is available', async () => {
       const user = userEvent.setup();
-      
+
       (useDocumentByIdModule.useDocumentById as ReturnType<typeof vi.fn>).mockReturnValue({
         data: mockData,
         error: null,
@@ -238,10 +223,10 @@ describe('DocumentSection', () => {
 
       render(<DocumentSection documentTitle={mockDocumentTitle} documentId={mockDocumentId} />);
       const downloadButton = screen.getByRole('button', { name: t.downloadButton });
-      
+
       expect(downloadButton).not.toBeDisabled();
       await user.click(downloadButton);
-      
+
       expect(downloadButton).toBeInTheDocument();
     });
 
@@ -253,7 +238,7 @@ describe('DocumentSection', () => {
       });
 
       render(<DocumentSection documentTitle={mockDocumentTitle} documentId={mockDocumentId} />);
-      
+
       await vi.waitFor(() => {
         expect(screen.getByTestId('pdf-page-1')).toBeInTheDocument();
         expect(screen.getByTestId('pdf-page-2')).toBeInTheDocument();
@@ -268,7 +253,7 @@ describe('DocumentSection', () => {
       });
 
       render(<DocumentSection documentTitle={mockDocumentTitle} documentId={mockDocumentId} />);
-      
+
       await vi.waitFor(() => {
         expect(screen.getByTestId('pdf-document')).toBeInTheDocument();
       });
@@ -281,8 +266,10 @@ describe('DocumentSection', () => {
         isLoading: false,
       });
 
-      const { container } = render(<DocumentSection documentTitle={mockDocumentTitle} documentId={mockDocumentId} />);
-      
+      const { container } = render(
+        <DocumentSection documentTitle={mockDocumentTitle} documentId={mockDocumentId} />
+      );
+
       await vi.waitFor(() => {
         const pdfContainer = container.querySelector('.overflow-y-auto');
         expect(pdfContainer).toBeInTheDocument();
@@ -337,16 +324,18 @@ describe('DocumentSection', () => {
 
       render(<DocumentSection documentTitle={mockDocumentTitle} documentId={mockDocumentId} />);
       const downloadButton = screen.getByRole('button', { name: t.downloadButton });
-      
+
       expect(downloadButton).toBeDisabled();
-      
+
       createElementSpy.mockRestore();
     });
   });
 
   describe('styling', () => {
     it('has rounded corners and white background', () => {
-      const { container } = render(<DocumentSection documentTitle={mockDocumentTitle} documentId={mockDocumentId} />);
+      const { container } = render(
+        <DocumentSection documentTitle={mockDocumentTitle} documentId={mockDocumentId} />
+      );
       const section = container.firstChild;
       expect(section).toHaveClass('rounded-xl');
       expect(section).toHaveClass('bg-white');
@@ -354,10 +343,10 @@ describe('DocumentSection', () => {
 
     it('applies custom className', () => {
       const { container } = render(
-        <DocumentSection 
-          documentTitle={mockDocumentTitle} 
-          documentId={mockDocumentId} 
-          className="custom-class" 
+        <DocumentSection
+          documentTitle={mockDocumentTitle}
+          documentId={mockDocumentId}
+          className="custom-class"
         />
       );
       const section = container.firstChild;
@@ -400,14 +389,16 @@ describe('DocumentSection', () => {
   describe('regression: late-mounting container', () => {
     it('renders PDF pages when data arrives after initial mount', async () => {
       const useDocumentByIdSpy = useDocumentByIdModule.useDocumentById as ReturnType<typeof vi.fn>;
-      
+
       useDocumentByIdSpy.mockReturnValue({
         data: undefined,
         error: null,
         isLoading: true,
       });
 
-      const { rerender } = render(<DocumentSection documentTitle={mockDocumentTitle} documentId={mockDocumentId} />);
+      const { rerender } = render(
+        <DocumentSection documentTitle={mockDocumentTitle} documentId={mockDocumentId} />
+      );
       expect(screen.queryByTestId('pdf-document')).not.toBeInTheDocument();
 
       const mockData: DocumentByIdResponse = {

@@ -12,8 +12,10 @@ import { useDocumentById } from '@/hooks/queries/use-document-by-id';
 import translations from '@/i18n/en.json';
 import { Download } from 'lucide-react';
 
-// Configure pdf.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Configure pdf.js worker (only in browser)
+if (typeof window !== 'undefined') {
+  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+}
 
 interface DocumentSectionProps {
   documentTitle: string;
@@ -48,9 +50,9 @@ export function DocumentSection({
       observerRef.current.disconnect();
       observerRef.current = null;
     }
-    
+
     containerRef.current = node;
-    
+
     if (node) {
       setContainerWidth(node.offsetWidth);
       observerRef.current = new ResizeObserver(() => {

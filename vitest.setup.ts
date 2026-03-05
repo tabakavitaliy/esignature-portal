@@ -27,6 +27,27 @@ if (!Element.prototype.scrollIntoView) {
   };
 }
 
+// Polyfill for ResizeObserver (used in document-section.tsx)
+if (typeof global.ResizeObserver === 'undefined') {
+  global.ResizeObserver = class ResizeObserver {
+    observe(): void {
+      // no-op
+    }
+    unobserve(): void {
+      // no-op
+    }
+    disconnect(): void {
+      // no-op
+    }
+  };
+}
+
+// Polyfill for DOMMatrix (used by pdf.js)
+if (typeof global.DOMMatrix === 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  global.DOMMatrix = class DOMMatrix {} as any;
+}
+
 afterEach(() => {
   cleanup();
 });

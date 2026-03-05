@@ -1,40 +1,24 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import PreviewAgreementPage from './page';
+
+vi.mock('@/components/pages/preview-agreement', () => ({
+  PreviewAgreement: () => (
+    <div data-testid="preview-agreement-component">PreviewAgreement Component</div>
+  ),
+}));
 
 describe('PreviewAgreementPage', () => {
   it('renders without crashing', () => {
     render(<PreviewAgreementPage />);
-    const main = screen.getByRole('main');
-    expect(main).toBeInTheDocument();
+    const component = screen.getByTestId('preview-agreement-component');
+    expect(component).toBeInTheDocument();
   });
 
-  it('displays placeholder content', () => {
+  it('renders PreviewAgreement component', () => {
     render(<PreviewAgreementPage />);
-    const placeholderText = screen.getByText(/Agreement preview — coming soon/i);
-    expect(placeholderText).toBeInTheDocument();
-  });
-
-  it('has centered layout', () => {
-    render(<PreviewAgreementPage />);
-    const main = screen.getByRole('main');
-    expect(main).toHaveClass('flex');
-    expect(main).toHaveClass('min-h-screen');
-    expect(main).toHaveClass('items-center');
-    expect(main).toHaveClass('justify-center');
-  });
-
-  it('placeholder text has proper styling', () => {
-    render(<PreviewAgreementPage />);
-    const placeholderText = screen.getByText(/Agreement preview — coming soon/i);
-    expect(placeholderText).toHaveClass('text-center');
-    expect(placeholderText).toHaveClass('text-sm');
-  });
-
-  it('has semantic main element', () => {
-    render(<PreviewAgreementPage />);
-    const main = screen.getByRole('main');
-    expect(main).toBeInTheDocument();
-    expect(main.tagName).toBe('MAIN');
+    const component = screen.getByTestId('preview-agreement-component');
+    expect(component).toBeInTheDocument();
+    expect(component).toHaveTextContent('PreviewAgreement Component');
   });
 });

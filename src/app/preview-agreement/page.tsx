@@ -1,11 +1,8 @@
+'use client';
+
 import type { ReactNode } from 'react';
+import { PreviewAgreement } from '@/components/pages/preview-agreement';
 
 export default function PreviewAgreementPage(): ReactNode {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <p className="text-center text-sm text-muted-foreground">
-        Agreement preview — coming soon.
-      </p>
-    </main>
-  );
+  return <PreviewAgreement />;
 }

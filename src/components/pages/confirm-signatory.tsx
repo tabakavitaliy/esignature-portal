@@ -14,6 +14,7 @@ import { BackgroundPattern } from '@/components/common/background-pattern';
 import translations from '@/i18n/en.json';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useMatterDetails } from '@/hooks/queries/use-matter-details';
+import { useReadyToSign } from '@/hooks/queries/use-ready-to-sign';
 import { CustomerPrivacy } from '@/components/common/customer-privacy';
 import type { Address } from '@/hooks/queries/use-matter-details';
 import { ROUTES } from '@/constants/routes';
@@ -47,6 +48,7 @@ export function ConfirmSignatory(): ReactNode {
   const { confirmSignatoryPage: t } = translations;
   const router = useRouter();
   const { data, isLoading: _isLoading, error: _error } = useMatterDetails();
+  const { sign, isLoading } = useReadyToSign();
 
   const addresses = useMemo(() => {
     return data?.propertyAddresses?.map((address) => formatAddress(address)) ?? [];
@@ -76,7 +78,7 @@ export function ConfirmSignatory(): ReactNode {
     }
 
     if (selectedAuthority === 'yes') {
-      router.push(ROUTES.PREVIEW_AGREEMENT);
+      sign({ onSuccess: () => router.push(ROUTES.PREVIEW_AGREEMENT) });
     } else {
       router.push(ROUTES.NOT_AUTHORIZED_SIGNATORY);
     }
@@ -125,6 +127,7 @@ export function ConfirmSignatory(): ReactNode {
               options={authorityOptions}
               value={selectedAuthority}
               onChange={setSelectedAuthority}
+              disabled={isLoading}
             />
           </div>
 
@@ -138,12 +141,14 @@ export function ConfirmSignatory(): ReactNode {
               onClick={handleBackClick}
               aria-label={t.backButtonLabel}
               className="w-auto px-6"
+              disabled={isLoading}
             />
             <Button
               text={selectedAuthority === 'no' ? t.nextButtonNoAuth : t.nextButton}
               kind="primary"
               iconAfter={<ArrowRight className="h-5 w-5" />}
               onClick={handleNextClick}
+              disabled={isLoading}
             />
           </div>
         </ContentWrapper>

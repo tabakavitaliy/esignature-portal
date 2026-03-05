@@ -78,15 +78,15 @@ describe('apiClient', () => {
     );
   });
 
-  it('throws error when response is not ok', async () => {
+  it('throws HttpError when response is not ok', async () => {
     mockFetch.mockResolvedValue({
       ok: false,
       status: 404,
       statusText: 'Not Found',
     });
 
+    await expect(apiClient('/not-found')).rejects.toThrow(ApiClientError);
     await expect(apiClient('/not-found')).rejects.toThrow('API Error: 404 Not Found');
-    await expect(apiClient('/not-found')).rejects.toBeInstanceOf(ApiClientError);
   });
 
   it('passes through fetch options', async () => {

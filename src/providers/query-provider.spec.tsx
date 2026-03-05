@@ -5,7 +5,7 @@ import React from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { ApiClientError } from '@/lib/api';
 import { ROUTES } from '@/constants/routes';
-import { QueryProvider, handleGlobalRequestError } from './query-provider';
+import { QueryProvider, handleGlobalRequestError, ERROR_RETURN_PATH_KEY } from './query-provider';
 
 describe('QueryProvider', () => {
   it('renders children correctly', () => {
@@ -86,6 +86,28 @@ describe('QueryProvider', () => {
       ROUTES.ERROR_PAGE,
       redirect
     );
+
+    expect(redirect).not.toHaveBeenCalled();
+  });
+
+  it('saves return path to sessionStorage before redirecting', () => {
+    const redirect = vi.fn();
+    sessionStorage.clear();
+
+    handleGlobalRequestError(
+      new ApiClientError('Network error', { isNetworkError: true }),
+      '/confirm-name',
+      redirect
+    );
+
+    expect(sessionStorage.getItem(ERROR_RETURN_PATH_KEY)).toBe('/confirm-name');
+    expect(redirect).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not redirect for non-Error objects', () => {
+    const redirect = vi.fn();
+
+    handleGlobalRequestError('plain string error', ROUTES.CONFIRM_NAME, redirect);
 
     expect(redirect).not.toHaveBeenCalled();
   });

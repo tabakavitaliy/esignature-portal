@@ -14,11 +14,16 @@ vi.mock('@/hooks/queries/use-document-by-id', () => ({
 vi.mock('next/dynamic', () => {
   const MockPDFViewer = ({
     fileUrl,
-    onFirstPageRenderSuccess: _onFirstPageRenderSuccess,
+    onFirstPageRenderSuccess,
   }: {
     fileUrl: string;
     onFirstPageRenderSuccess?: () => void;
   }): ReactNode => {
+    // Simulate first-page render callback after mount
+    if (onFirstPageRenderSuccess) {
+      setTimeout(onFirstPageRenderSuccess, 0);
+    }
+
     return (
       <div data-testid="pdf-viewer" data-file-url={fileUrl}>
         <div data-testid="pdf-document">
@@ -259,6 +264,23 @@ describe('DocumentSection', () => {
       });
     });
 
+    it('calls onFirstPageRenderSuccess and measures page height', async () => {
+      (useDocumentByIdModule.useDocumentById as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: { documentId: mockDocumentId, previewUrl: 'https://example.com/preview.pdf' },
+        error: null,
+        isLoading: false,
+      });
+
+      const { container } = render(
+        <DocumentSection documentTitle={mockDocumentTitle} documentId={mockDocumentId} />
+      );
+
+      await vi.waitFor(() => {
+        const pdfContainer = container.querySelector('.overflow-y-auto');
+        expect(pdfContainer).toBeInTheDocument();
+      });
+    });
+
     it('sets container height based on first page height', async () => {
       (useDocumentByIdModule.useDocumentById as ReturnType<typeof vi.fn>).mockReturnValue({
         data: mockData,
@@ -326,6 +348,29 @@ describe('DocumentSection', () => {
       const downloadButton = screen.getByRole('button', { name: t.downloadButton });
 
       expect(downloadButton).toBeDisabled();
+
+      createElementSpy.mockRestore();
+    });
+  });
+
+  describe('handleDownload guard', () => {
+    it('does not create a download link when previewUrl is absent', () => {
+      (useDocumentByIdModule.useDocumentById as ReturnType<typeof vi.fn>).mockReturnValue({
+        data: undefined,
+        error: null,
+        isLoading: false,
+      });
+
+      const createElementSpy = vi.spyOn(document, 'createElement');
+
+      render(<DocumentSection documentTitle={mockDocumentTitle} documentId={mockDocumentId} />);
+
+      const downloadButton = screen.getByRole('button', { name: t.downloadButton });
+      downloadButton.removeAttribute('disabled');
+      downloadButton.click();
+
+      const anchorCalls = createElementSpy.mock.calls.filter(([tag]) => tag === 'a');
+      expect(anchorCalls).toHaveLength(0);
 
       createElementSpy.mockRestore();
     });

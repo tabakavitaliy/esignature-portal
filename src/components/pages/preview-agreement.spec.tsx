@@ -21,7 +21,13 @@ vi.mock('@/hooks/queries/use-matter-details', () => ({
 }));
 
 vi.mock('@/components/common/document-section', () => ({
-  DocumentSection: ({ documentTitle, documentId }: { documentTitle: string; documentId: string }) => (
+  DocumentSection: ({
+    documentTitle,
+    documentId,
+  }: {
+    documentTitle: string;
+    documentId: string;
+  }) => (
     <div data-testid={`document-section-${documentId}`}>
       <h2>{documentTitle}</h2>
     </div>
@@ -70,7 +76,7 @@ describe('PreviewAgreement', () => {
     render(<PreviewAgreement />);
     const nav = screen.getByRole('navigation', { name: 'Progress' });
     expect(nav).toBeInTheDocument();
-    
+
     const listItems = screen.getAllByRole('listitem');
     expect(listItems).toHaveLength(4);
   });
@@ -84,11 +90,11 @@ describe('PreviewAgreement', () => {
 
   it('ProgressStepper shows steps 1-3 as completed', () => {
     render(<PreviewAgreement />);
-    
+
     const completedStep1 = screen.getByLabelText('Step 1 completed');
     expect(completedStep1).toBeInTheDocument();
     expect(completedStep1).toHaveClass('bg-stepper-complete');
-    
+
     const completedStep2 = screen.getByLabelText('Step 2 completed');
     expect(completedStep2).toBeInTheDocument();
     expect(completedStep2).toHaveClass('bg-stepper-complete');
@@ -116,7 +122,7 @@ describe('PreviewAgreement', () => {
     render(<PreviewAgreement />);
     const signButton = screen.getByRole('button', { name: t.signButton });
     expect(signButton).toBeInTheDocument();
-    expect(signButton).toHaveTextContent('Sign agreement');
+    expect(signButton).toHaveTextContent(t.signButton);
   });
 
   it('Sign agreement button has primary styling', () => {
@@ -151,24 +157,24 @@ describe('PreviewAgreement', () => {
 
   it('navigates to /confirm-signatory when Back button is clicked', async () => {
     const user = userEvent.setup();
-    
+
     render(<PreviewAgreement />);
     const backButton = screen.getByRole('button', { name: t.backButtonLabel });
-    
+
     await user.click(backButton);
-    
+
     expect(mockPush).toHaveBeenCalledWith('/confirm-signatory');
     expect(mockPush).toHaveBeenCalledTimes(1);
   });
 
   it('Sign agreement button does nothing when clicked (no-op)', async () => {
     const user = userEvent.setup();
-    
+
     render(<PreviewAgreement />);
     const signButton = screen.getByRole('button', { name: t.signButton });
-    
+
     await user.click(signButton);
-    
+
     expect(mockPush).not.toHaveBeenCalled();
   });
 
@@ -176,7 +182,7 @@ describe('PreviewAgreement', () => {
     render(<PreviewAgreement />);
     const backButton = screen.getByRole('button', { name: t.backButtonLabel });
     const signButton = screen.getByRole('button', { name: t.signButton });
-    
+
     expect(backButton).toBeInTheDocument();
     expect(signButton).toBeInTheDocument();
   });
@@ -185,14 +191,14 @@ describe('PreviewAgreement', () => {
     render(<PreviewAgreement />);
     const backButton = screen.getByRole('button', { name: t.backButtonLabel });
     const signButton = screen.getByRole('button', { name: t.signButton });
-    
+
     expect(backButton).toHaveClass('w-auto');
     expect(signButton).toHaveClass('w-full');
   });
 
   it('all text comes from translations', () => {
     render(<PreviewAgreement />);
-    
+
     expect(screen.getByText(t.headerText)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: t.signButton })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: t.backButtonLabel })).toBeInTheDocument();
@@ -262,7 +268,7 @@ describe('PreviewAgreement', () => {
       });
 
       render(<PreviewAgreement />);
-      
+
       expect(screen.getByTestId('document-section-doc-1')).toBeInTheDocument();
       expect(screen.getByTestId('document-section-doc-2')).toBeInTheDocument();
       expect(screen.getByText('Agreement Document 1')).toBeInTheDocument();
@@ -306,11 +312,11 @@ describe('PreviewAgreement', () => {
     it('buttons are keyboard accessible', async () => {
       const user = userEvent.setup();
       render(<PreviewAgreement />);
-      
+
       const backButton = screen.getByRole('button', { name: t.backButtonLabel });
       backButton.focus();
       expect(backButton).toHaveFocus();
-      
+
       await user.keyboard('{Enter}');
       expect(mockPush).toHaveBeenCalledWith('/confirm-signatory');
     });
@@ -318,11 +324,11 @@ describe('PreviewAgreement', () => {
     it('Sign agreement button is keyboard accessible', async () => {
       const user = userEvent.setup();
       render(<PreviewAgreement />);
-      
+
       const signButton = screen.getByRole('button', { name: t.signButton });
       signButton.focus();
       expect(signButton).toHaveFocus();
-      
+
       await user.keyboard('{Enter}');
       expect(mockPush).not.toHaveBeenCalled();
     });

@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useToken } from './use-token';
 import { useMatterDetails } from './use-matter-details';
-import { HttpError } from '@/lib/api';
+import { ApiClientError } from '@/lib/api';
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ??
@@ -47,16 +47,15 @@ export function useReadyToSign(): UseReadyToSignReturn {
       });
 
       if (!response.ok) {
-        throw new HttpError(
-          `API Error: ${response.status} ${response.statusText}`,
-          response.status
-        );
+        throw new ApiClientError(`API Error: ${response.status} ${response.statusText}`, {
+          status: response.status,
+        });
       }
 
       return response.json() as Promise<ReadyToSignResponse>;
     },
     retry: (_, error) => {
-      return error instanceof HttpError && error.status === 404;
+      return error instanceof ApiClientError && error.status === 404;
     },
     retryDelay: 2000,
   });

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiClient, HttpError } from '@/lib/api';
+import { apiClient, ApiClientError } from '@/lib/api';
 import { useToken } from './use-token';
 import { useMatterDetails } from './use-matter-details';
 
@@ -45,7 +45,7 @@ export function usePollPreview(): UsePollPreviewReturn {
     },
     enabled: !!token && !!matterId && !!signatoryId,
     retry: (_, error) => {
-      return error instanceof HttpError && error.status === 404;
+      return error instanceof ApiClientError && error.status === 404;
     },
     retryDelay: 2000,
   });

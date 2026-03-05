@@ -264,21 +264,13 @@ describe('SignatoryDetailsForm', () => {
   });
 
   it('handles undefined optional fields via fallback defaults', () => {
-    const sparseValue: SignatoryDetailsFormValue = {
+    const sparseValue = {
       title: 'Mr',
       firstName: 'John',
       lastName: 'Doe',
       email: 'j@example.com',
       mobile: null,
-      addressAssociation: undefined,
-      confirmEmail: undefined,
-      addressLine1: undefined,
-      addressLine2: undefined,
-      addressLine3: undefined,
-      town: undefined,
-      county: undefined,
-      postcode: undefined,
-    };
+    } as SignatoryDetailsFormValue;
 
     render(
       <SignatoryDetailsForm

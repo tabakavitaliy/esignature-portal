@@ -144,6 +144,14 @@
     "refreshButton": "Refresh",
     "backToLoginButton": "Back to login"
   },
+  "invalidCredentialPage": {
+    "headerText": "Signature Portal",
+    "subtitle": "Powered by Liberty Blume",
+    "messageLine1": "Looks like this eSignature credential is invalid, or the agreement has already been responded to by someone.",
+    "messageLine2": "If you think this is a mistake, check the code and try again.",
+    "backButton": "Back",
+    "closeButton": "Close"
+  },
   "loadingModal": {
     "loadingAgreement": "Loading your agreement details, please wait…",
     "updatingSignatory": "Saving your details, please wait…",

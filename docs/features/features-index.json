@@ -2,18 +2,21 @@
   "features": [
     {
       "id": "error-handling",
-      "title": "Outage Error Handling Page",
-      "description": "Dedicated outage screen with global query/mutation redirect for network and 5xx failures",
-      "status": "completed",
+      "title": "Error Handling (Outage + Invalid Credential)",
+      "description": "Global redirect for 5xx/network to /error-page and 401/403 to /invalid-credential",
+      "status": "in-progress",
       "progress": "100%",
       "featureFile": "docs/features/error-handling.md",
-      "relatedTickets": ["WEP-43"],
+      "relatedTickets": ["WEP-43", "WEP-7"],
       "relatedFiles": [
         "src/app/error-page/page.tsx",
         "src/components/pages/error-page.tsx",
         "src/app/error.tsx",
+        "src/app/invalid-credential/page.tsx",
+        "src/components/pages/invalid-credential-page.tsx",
         "src/providers/query-provider.tsx",
         "src/lib/api/client.ts",
+        "src/lib/api/index.ts",
         "src/constants/routes.ts",
         "src/i18n/en.json"
       ]
@@ -71,6 +74,6 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-03-05"
+    "lastUpdated": "2026-03-06"
   }
 }

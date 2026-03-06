@@ -42,74 +42,156 @@ describe('QueryProvider', () => {
     expect(screen.getByText('Second Child')).toBeInTheDocument();
   });
 
-  it('redirects when query/mutation error is a network outage', () => {
-    const redirect = vi.fn();
+  it('redirects to outage page when query/mutation error is a network outage', () => {
+    const redirectToInvalidCredential = vi.fn();
+    const redirectToOutage = vi.fn();
 
     handleGlobalRequestError(
       new ApiClientError('Network error', { isNetworkError: true }),
       ROUTES.CONFIRM_NAME,
-      redirect
+      redirectToInvalidCredential,
+      redirectToOutage
     );
 
-    expect(redirect).toHaveBeenCalledTimes(1);
+    expect(redirectToOutage).toHaveBeenCalledTimes(1);
+    expect(redirectToInvalidCredential).not.toHaveBeenCalled();
   });
 
-  it('redirects when error is a 5xx API failure', () => {
-    const redirect = vi.fn();
+  it('redirects to outage page when error is a 5xx API failure', () => {
+    const redirectToInvalidCredential = vi.fn();
+    const redirectToOutage = vi.fn();
 
     handleGlobalRequestError(
       new ApiClientError('API Error: 503 Service Unavailable', { status: 503 }),
       ROUTES.CONFIRM_NAME,
-      redirect
+      redirectToInvalidCredential,
+      redirectToOutage
     );
 
-    expect(redirect).toHaveBeenCalledTimes(1);
+    expect(redirectToOutage).toHaveBeenCalledTimes(1);
+    expect(redirectToInvalidCredential).not.toHaveBeenCalled();
   });
 
-  it('does not redirect when error is a 4xx API failure', () => {
-    const redirect = vi.fn();
+  it('redirects to invalid credential page on 401 error', () => {
+    const redirectToInvalidCredential = vi.fn();
+    const redirectToOutage = vi.fn();
+
+    handleGlobalRequestError(
+      new ApiClientError('API Error: 401 Unauthorized', { status: 401 }),
+      ROUTES.CONFIRM_NAME,
+      redirectToInvalidCredential,
+      redirectToOutage
+    );
+
+    expect(redirectToInvalidCredential).toHaveBeenCalledTimes(1);
+    expect(redirectToOutage).not.toHaveBeenCalled();
+  });
+
+  it('redirects to invalid credential page on 403 error', () => {
+    const redirectToInvalidCredential = vi.fn();
+    const redirectToOutage = vi.fn();
+
+    handleGlobalRequestError(
+      new ApiClientError('API Error: 403 Forbidden', { status: 403 }),
+      ROUTES.CONFIRM_NAME,
+      redirectToInvalidCredential,
+      redirectToOutage
+    );
+
+    expect(redirectToInvalidCredential).toHaveBeenCalledTimes(1);
+    expect(redirectToOutage).not.toHaveBeenCalled();
+  });
+
+  it('does not redirect when error is a non-credential 4xx API failure', () => {
+    const redirectToInvalidCredential = vi.fn();
+    const redirectToOutage = vi.fn();
 
     handleGlobalRequestError(
       new ApiClientError('API Error: 400 Bad Request', { status: 400 }),
       ROUTES.CONFIRM_NAME,
-      redirect
+      redirectToInvalidCredential,
+      redirectToOutage
     );
 
-    expect(redirect).not.toHaveBeenCalled();
+    expect(redirectToInvalidCredential).not.toHaveBeenCalled();
+    expect(redirectToOutage).not.toHaveBeenCalled();
   });
 
   it('does not redirect when already on error page', () => {
-    const redirect = vi.fn();
+    const redirectToInvalidCredential = vi.fn();
+    const redirectToOutage = vi.fn();
 
     handleGlobalRequestError(
       new ApiClientError('API Error: 503 Service Unavailable', { status: 503 }),
       ROUTES.ERROR_PAGE,
-      redirect
+      redirectToInvalidCredential,
+      redirectToOutage
     );
 
-    expect(redirect).not.toHaveBeenCalled();
+    expect(redirectToInvalidCredential).not.toHaveBeenCalled();
+    expect(redirectToOutage).not.toHaveBeenCalled();
   });
 
-  it('saves return path to sessionStorage before redirecting', () => {
-    const redirect = vi.fn();
+  it('does not redirect when already on invalid credential page', () => {
+    const redirectToInvalidCredential = vi.fn();
+    const redirectToOutage = vi.fn();
+
+    handleGlobalRequestError(
+      new ApiClientError('API Error: 401 Unauthorized', { status: 401 }),
+      ROUTES.INVALID_CREDENTIAL,
+      redirectToInvalidCredential,
+      redirectToOutage
+    );
+
+    expect(redirectToInvalidCredential).not.toHaveBeenCalled();
+    expect(redirectToOutage).not.toHaveBeenCalled();
+  });
+
+  it('saves return path to sessionStorage before redirecting to outage page', () => {
+    const redirectToInvalidCredential = vi.fn();
+    const redirectToOutage = vi.fn();
     sessionStorage.clear();
 
     handleGlobalRequestError(
       new ApiClientError('Network error', { isNetworkError: true }),
       '/confirm-name',
-      redirect
+      redirectToInvalidCredential,
+      redirectToOutage
     );
 
     expect(sessionStorage.getItem(ERROR_RETURN_PATH_KEY)).toBe('/confirm-name');
-    expect(redirect).toHaveBeenCalledTimes(1);
+    expect(redirectToOutage).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not save return path to sessionStorage for invalid credential errors', () => {
+    const redirectToInvalidCredential = vi.fn();
+    const redirectToOutage = vi.fn();
+    sessionStorage.clear();
+
+    handleGlobalRequestError(
+      new ApiClientError('API Error: 401 Unauthorized', { status: 401 }),
+      '/confirm-name',
+      redirectToInvalidCredential,
+      redirectToOutage
+    );
+
+    expect(sessionStorage.getItem(ERROR_RETURN_PATH_KEY)).toBeNull();
+    expect(redirectToInvalidCredential).toHaveBeenCalledTimes(1);
   });
 
   it('does not redirect for non-Error objects', () => {
-    const redirect = vi.fn();
+    const redirectToInvalidCredential = vi.fn();
+    const redirectToOutage = vi.fn();
 
-    handleGlobalRequestError('plain string error', ROUTES.CONFIRM_NAME, redirect);
+    handleGlobalRequestError(
+      'plain string error',
+      ROUTES.CONFIRM_NAME,
+      redirectToInvalidCredential,
+      redirectToOutage
+    );
 
-    expect(redirect).not.toHaveBeenCalled();
+    expect(redirectToInvalidCredential).not.toHaveBeenCalled();
+    expect(redirectToOutage).not.toHaveBeenCalled();
   });
 });
 
@@ -152,6 +234,27 @@ describe('QueryProvider cache onError wiring', () => {
     });
   });
 
+  it('queryCache.onError redirects to invalid credential page on 401', async () => {
+    function FailingQuery(): null {
+      useQuery({
+        queryKey: ['cache-test-401'],
+        queryFn: (): Promise<never> => Promise.reject(new ApiClientError('fail', { status: 401 })),
+        retry: false,
+      });
+      return null;
+    }
+
+    render(
+      <QueryProvider>
+        <FailingQuery />
+      </QueryProvider>
+    );
+
+    await waitFor(() => {
+      expect(assignSpy).toHaveBeenCalledWith(ROUTES.INVALID_CREDENTIAL);
+    });
+  });
+
   it('mutationCache.onError redirects to error page on outage error', async () => {
     const user = userEvent.setup();
 
@@ -173,6 +276,30 @@ describe('QueryProvider cache onError wiring', () => {
 
     await waitFor(() => {
       expect(assignSpy).toHaveBeenCalledWith(ROUTES.ERROR_PAGE);
+    });
+  });
+
+  it('mutationCache.onError redirects to invalid credential page on 403', async () => {
+    const user = userEvent.setup();
+
+    function TriggerMutation(): React.ReactElement {
+      const { mutate } = useMutation({
+        mutationFn: (): Promise<never> =>
+          Promise.reject(new ApiClientError('fail', { status: 403 })),
+      });
+      return <button onClick={() => mutate()}>trigger</button>;
+    }
+
+    render(
+      <QueryProvider>
+        <TriggerMutation />
+      </QueryProvider>
+    );
+
+    await user.click(screen.getByRole('button', { name: 'trigger' }));
+
+    await waitFor(() => {
+      expect(assignSpy).toHaveBeenCalledWith(ROUTES.INVALID_CREDENTIAL);
     });
   });
 });

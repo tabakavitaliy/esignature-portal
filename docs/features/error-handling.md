@@ -1,30 +1,41 @@
 # Feature: Error Handling
 
-**Status**: completed  
-**Related Tickets**: [WEP-43](https://jdc.eleks.com/browse/WEP-43)  
+**Status**: in-progress  
+**Related Tickets**: [WEP-43](https://jdc.eleks.com/browse/WEP-43), [WEP-7](https://jdc.eleks.com/browse/WEP-7)  
 **Progress**: 100%
 
 ---
 
 ## Overview
 
-This feature introduces an outage-specific error experience for the Signature Portal:
+This feature provides a complete error experience for the Signature Portal, covering two distinct failure classes:
 
-- a dedicated `/error-page` UI based on the approved screenshot;
-- global outage detection for TanStack Query v5 errors;
-- deterministic redirect policy that distinguishes service outage failures from user-correctable errors.
+1. **Service outage** (`/error-page`) — network errors and HTTP 5xx responses.
+2. **Invalid credential** (`/invalid-credential`) — HTTP 401 (credential not found) and 403 (expired or already responded to).
+
+Both classes are detected globally via TanStack Query's `QueryCache` / `MutationCache` and redirect the user to the appropriate page.
 
 ---
 
 ## UX Behavior
 
+### Outage (`/error-page`)
+
 When the backend is temporarily unavailable, users are redirected to the error page with:
 
-- warning icon and `We’re on it` messaging;
-- `Refresh` action to retry;
+- warning icon and `We're on it` messaging;
+- `Refresh` action to retry (returns to the previous path stored in sessionStorage);
 - `Back to login` action to return to `/`.
 
-For non-outage 4xx failures, existing inline feedback remains in place via `ButtonErrorLabel`.
+### Invalid Credential (`/invalid-credential`)
+
+When the API rejects the credential (401 / 403), users are redirected to a dedicated page with:
+
+- alert icon and a clear, non-security-leaking message;
+- `Back` action to return to the credential entry screen (token retained in sessionStorage);
+- `Close` action to wipe the session (`sessionStorage.clear()`) and return to `/`.
+
+For other 4xx failures (e.g. 400, 404, 409), no redirect occurs — existing inline feedback via `ButtonErrorLabel` remains in place.
 
 ---
 
@@ -32,37 +43,47 @@ For non-outage 4xx failures, existing inline feedback remains in place via `Butt
 
 ### Error Classification
 
-`src/lib/api/client.ts` now provides:
+`src/lib/api/client.ts` provides:
 
 - `ApiClientError` with `status` and `isNetworkError`;
-- `isServiceOutageError(error)` helper.
-
-Outage class is:
-
-- network errors;
-- HTTP status >= 500.
+- `isServiceOutageError(error)` — true for network errors or `status >= 500`;
+- `isInvalidCredentialError(error)` — true for `status === 401` or `status === 403`.
 
 ### Global Handling
 
-`src/providers/query-provider.tsx` now configures:
+`src/providers/query-provider.tsx` configures `QueryCache.onError` and `MutationCache.onError`, both calling:
 
-- `QueryCache.onError` for query failures;
-- `MutationCache.onError` for catastrophic mutation failures.
+```typescript
+handleGlobalRequestError(error, pathname, redirectToInvalidCredential, redirectToOutage);
+```
 
-Both invoke shared logic that:
+Decision order:
 
-- redirects to `ROUTES.ERROR_PAGE` for outage-class errors;
-- skips redirect for 4xx and for current path `/error-page` (loop guard).
+1. Already on `/error-page` or `/invalid-credential` — no-op (loop guard)
+2. `isInvalidCredentialError` — `redirectToInvalidCredential()`
+3. `isServiceOutageError` — store return path in sessionStorage, then `redirectToOutage()`
+4. Otherwise — no redirect
 
 ---
 
 ## Files
 
+### Outage error page (WEP-43)
+
 - `src/app/error-page/page.tsx`
 - `src/components/pages/error-page.tsx`
 - `src/app/error.tsx`
+
+### Invalid credential page (WEP-7)
+
+- `src/app/invalid-credential/page.tsx`
+- `src/components/pages/invalid-credential-page.tsx`
+
+### Shared infrastructure
+
 - `src/providers/query-provider.tsx`
 - `src/lib/api/client.ts`
+- `src/lib/api/index.ts`
 - `src/constants/routes.ts`
 - `src/i18n/en.json`
 
@@ -70,6 +91,6 @@ Both invoke shared logic that:
 
 ## Testing Coverage
 
-- Component and route tests for the error page.
-- Redirect decision tests for outage vs non-outage errors.
-- API client tests for normalized error classification.
+- Component and route tests for both error pages.
+- Redirect decision tests covering outage, invalid credential, 4xx pass-through, and loop guards.
+- API client tests for `isServiceOutageError` and `isInvalidCredentialError`.

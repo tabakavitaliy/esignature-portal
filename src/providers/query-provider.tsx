@@ -4,7 +4,7 @@ import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@ta
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useState, type ReactNode } from 'react';
 import { ROUTES } from '@/constants/routes';
-import { isServiceOutageError } from '@/lib/api';
+import { isInvalidCredentialError, isServiceOutageError } from '@/lib/api';
 
 interface QueryProviderProps {
   children: ReactNode;
@@ -15,20 +15,24 @@ export const ERROR_RETURN_PATH_KEY = 'errorReturnPath';
 export function handleGlobalRequestError(
   error: unknown,
   pathname: string,
-  redirect: () => void
+  redirectToInvalidCredential: () => void,
+  redirectToOutage: () => void
 ): void {
-  // Prevent redirect loops if the user is already on the outage page.
-  if (pathname === ROUTES.ERROR_PAGE) {
+  // Prevent redirect loops if the user is already on one of the error pages.
+  if (pathname === ROUTES.ERROR_PAGE || pathname === ROUTES.INVALID_CREDENTIAL) {
     return;
   }
 
-  if (!isServiceOutageError(error)) {
+  if (isInvalidCredentialError(error)) {
+    redirectToInvalidCredential();
     return;
   }
 
-  // Remember where the user was so Refresh can return them there.
-  sessionStorage.setItem(ERROR_RETURN_PATH_KEY, pathname);
-  redirect();
+  if (isServiceOutageError(error)) {
+    // Remember where the user was so Refresh can return them there.
+    sessionStorage.setItem(ERROR_RETURN_PATH_KEY, pathname);
+    redirectToOutage();
+  }
 }
 
 /**
@@ -47,9 +51,16 @@ export function QueryProvider({ children }: QueryProviderProps): ReactNode {
               return;
             }
 
-            handleGlobalRequestError(error, window.location.pathname, () => {
-              window.location.assign(ROUTES.ERROR_PAGE);
-            });
+            handleGlobalRequestError(
+              error,
+              window.location.pathname,
+              () => {
+                window.location.assign(ROUTES.INVALID_CREDENTIAL);
+              },
+              () => {
+                window.location.assign(ROUTES.ERROR_PAGE);
+              }
+            );
           },
         }),
         mutationCache: new MutationCache({
@@ -58,9 +69,16 @@ export function QueryProvider({ children }: QueryProviderProps): ReactNode {
               return;
             }
 
-            handleGlobalRequestError(error, window.location.pathname, () => {
-              window.location.assign(ROUTES.ERROR_PAGE);
-            });
+            handleGlobalRequestError(
+              error,
+              window.location.pathname,
+              () => {
+                window.location.assign(ROUTES.INVALID_CREDENTIAL);
+              },
+              () => {
+                window.location.assign(ROUTES.ERROR_PAGE);
+              }
+            );
           },
         }),
         defaultOptions: {

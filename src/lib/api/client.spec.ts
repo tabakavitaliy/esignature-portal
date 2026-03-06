@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { ApiClientError, apiClient, isServiceOutageError } from './client';
+import {
+  ApiClientError,
+  apiClient,
+  isInvalidCredentialError,
+  isServiceOutageError,
+} from './client';
 
 describe('apiClient', () => {
   const mockFetch = vi.fn();
@@ -184,5 +189,38 @@ describe('apiClient', () => {
   it('does not mark 4xx errors as service outage', () => {
     const error = new ApiClientError('API Error: 400 Bad Request', { status: 400 });
     expect(isServiceOutageError(error)).toBe(false);
+  });
+});
+
+describe('isInvalidCredentialError', () => {
+  it('returns true for 401 ApiClientError', () => {
+    const error = new ApiClientError('API Error: 401 Unauthorized', { status: 401 });
+    expect(isInvalidCredentialError(error)).toBe(true);
+  });
+
+  it('returns true for 403 ApiClientError', () => {
+    const error = new ApiClientError('API Error: 403 Forbidden', { status: 403 });
+    expect(isInvalidCredentialError(error)).toBe(true);
+  });
+
+  it('returns false for 404 ApiClientError', () => {
+    const error = new ApiClientError('API Error: 404 Not Found', { status: 404 });
+    expect(isInvalidCredentialError(error)).toBe(false);
+  });
+
+  it('returns false for 5xx ApiClientError', () => {
+    const error = new ApiClientError('API Error: 500 Internal Server Error', { status: 500 });
+    expect(isInvalidCredentialError(error)).toBe(false);
+  });
+
+  it('returns false for non-ApiClientError', () => {
+    expect(isInvalidCredentialError(new Error('generic error'))).toBe(false);
+    expect(isInvalidCredentialError('string error')).toBe(false);
+    expect(isInvalidCredentialError(null)).toBe(false);
+  });
+
+  it('returns false for network error (no status)', () => {
+    const error = new ApiClientError('Network error', { isNetworkError: true });
+    expect(isInvalidCredentialError(error)).toBe(false);
   });
 });

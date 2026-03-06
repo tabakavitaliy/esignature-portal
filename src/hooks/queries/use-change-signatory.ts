@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
+import { useRecaptcha } from '@/hooks/common/use-recaptcha';
 import { useToken } from './use-token';
 import { useMatterDetails, type Signatory } from './use-matter-details';
 
@@ -22,6 +23,7 @@ interface UseChangeSignatoryReturn {
 export function useChangeSignatory(): UseChangeSignatoryReturn {
   const { token } = useToken();
   const { data: matterData } = useMatterDetails();
+  const { getToken } = useRecaptcha();
   const queryClient = useQueryClient();
 
   const mutation = useMutation<ChangeSignatoryResponse, Error, ChangeSignatoryBody>({
@@ -38,6 +40,8 @@ export function useChangeSignatory(): UseChangeSignatoryReturn {
         throw new Error('Signatory to change ID is not available');
       }
 
+      const recaptchaToken = await getToken('changeSignatory');
+
       return apiClient<ChangeSignatoryResponse>(
         `/api/lb/matter/${matterId}/signatoryToChange/${signatoryToChangeId}/changeSignatory`,
         {
@@ -45,6 +49,7 @@ export function useChangeSignatory(): UseChangeSignatoryReturn {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          recaptchaToken,
           body: JSON.stringify(body),
         }
       );

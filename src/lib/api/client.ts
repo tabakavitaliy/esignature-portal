@@ -1,12 +1,3 @@
-/**
- * API Client Configuration
- *
- * This module provides the base API client setup for making HTTP requests.
- * Configure the base URL and common headers here.
- */
-
-import { HttpError } from './http-error';
-
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ??
   'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net';
@@ -14,6 +5,35 @@ const API_BASE_URL =
 interface RequestOptions extends RequestInit {
   params?: Record<string, string>;
   recaptchaToken?: string;
+}
+
+interface ApiClientErrorOptions {
+  status?: number;
+  isNetworkError?: boolean;
+}
+
+export class ApiClientError extends Error {
+  status: number | undefined;
+  isNetworkError: boolean;
+
+  constructor(message: string, options: ApiClientErrorOptions = {}) {
+    super(message);
+    this.name = 'ApiClientError';
+    this.status = options.status;
+    this.isNetworkError = options.isNetworkError ?? false;
+  }
+}
+
+export function isServiceOutageError(error: unknown): boolean {
+  if (!(error instanceof ApiClientError)) {
+    return false;
+  }
+
+  if (error.isNetworkError) {
+    return true;
+  }
+
+  return typeof error.status === 'number' && error.status >= 500;
 }
 
 /**
@@ -31,17 +51,25 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
     url += `?${searchParams.toString()}`;
   }
 
-  const response = await fetch(url, {
-    ...fetchOptions,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(recaptchaToken && { 'X-ReCaptcha-Token': recaptchaToken }),
-      ...fetchOptions.headers,
-    },
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...fetchOptions,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(recaptchaToken && { 'X-ReCaptcha-Token': recaptchaToken }),
+        ...fetchOptions.headers,
+      },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Network error';
+    throw new ApiClientError(message, { isNetworkError: true });
+  }
 
   if (!response.ok) {
-    throw new HttpError(`API Error: ${response.status} ${response.statusText}`, response.status);
+    throw new ApiClientError(`API Error: ${response.status} ${response.statusText}`, {
+      status: response.status,
+    });
   }
 
   return response.json() as Promise<T>;

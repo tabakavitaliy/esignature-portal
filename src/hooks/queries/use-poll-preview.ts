@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiClient, HttpError } from '@/lib/api';
+import { apiClient, ApiClientError } from '@/lib/api';
 import { useToken } from './use-token';
 import { useMatterDetails } from './use-matter-details';
 
@@ -24,9 +24,8 @@ export function usePollPreview(): UsePollPreviewReturn {
   const { data: matterData } = useMatterDetails();
 
   const matterId = matterData?.matterId;
-  const signatoryId = typeof window !== 'undefined' 
-    ? sessionStorage.getItem('selectedSignatoryId')
-    : null;
+  const signatoryId =
+    typeof window !== 'undefined' ? sessionStorage.getItem('selectedSignatoryId') : null;
 
   const { data, error, isLoading } = useQuery<PollPreviewResponse, Error>({
     queryKey: ['pollPreview', matterId, signatoryId],
@@ -46,7 +45,7 @@ export function usePollPreview(): UsePollPreviewReturn {
     },
     enabled: !!token && !!matterId && !!signatoryId,
     retry: (_, error) => {
-      return error instanceof HttpError && error.status === 404;
+      return error instanceof ApiClientError && error.status === 404;
     },
     retryDelay: 2000,
   });

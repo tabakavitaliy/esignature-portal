@@ -84,8 +84,14 @@ export function DrawInput({
       if (!canvas) return { x: 0, y: 0 };
 
       const rect = canvas.getBoundingClientRect();
-      const clientX = 'touches' in event ? (event as unknown as TouchEvent).touches[0]?.clientX ?? 0 : (event as PointerEvent).clientX;
-      const clientY = 'touches' in event ? (event as unknown as TouchEvent).touches[0]?.clientY ?? 0 : (event as PointerEvent).clientY;
+      const clientX =
+        'touches' in event
+          ? ((event as unknown as TouchEvent).touches[0]?.clientX ?? 0)
+          : (event as PointerEvent).clientX;
+      const clientY =
+        'touches' in event
+          ? ((event as unknown as TouchEvent).touches[0]?.clientY ?? 0)
+          : (event as PointerEvent).clientY;
 
       return {
         x: clientX - rect.left,
@@ -202,10 +208,7 @@ export function DrawInput({
         <canvas
           ref={canvasRef}
           id={canvasId}
-          className={cn(
-            'w-full h-32 touch-none',
-            disabled && 'opacity-50 cursor-not-allowed'
-          )}
+          className={cn('w-full h-32 touch-none', disabled && 'opacity-50 cursor-not-allowed')}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}

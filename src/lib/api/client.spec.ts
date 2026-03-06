@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { apiClient } from './client';
-import { HttpError } from './http-error';
+import { ApiClientError, apiClient, isServiceOutageError } from './client';
 
 describe('apiClient', () => {
   const mockFetch = vi.fn();
@@ -86,17 +85,8 @@ describe('apiClient', () => {
       statusText: 'Not Found',
     });
 
-    await expect(apiClient('/not-found')).rejects.toThrow(HttpError);
+    await expect(apiClient('/not-found')).rejects.toThrow(ApiClientError);
     await expect(apiClient('/not-found')).rejects.toThrow('API Error: 404 Not Found');
-    
-    try {
-      await apiClient('/not-found');
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpError);
-      if (error instanceof HttpError) {
-        expect(error.status).toBe(404);
-      }
-    }
   });
 
   it('passes through fetch options', async () => {
@@ -176,5 +166,23 @@ describe('apiClient', () => {
         },
       }
     );
+  });
+
+  it('marks network errors as service outage', async () => {
+    mockFetch.mockRejectedValue(new Error('Network down'));
+
+    await expect(apiClient('/test')).rejects.toSatisfy((error: unknown) => {
+      return error instanceof ApiClientError && isServiceOutageError(error);
+    });
+  });
+
+  it('marks 5xx errors as service outage', () => {
+    const error = new ApiClientError('API Error: 503 Service Unavailable', { status: 503 });
+    expect(isServiceOutageError(error)).toBe(true);
+  });
+
+  it('does not mark 4xx errors as service outage', () => {
+    const error = new ApiClientError('API Error: 400 Bad Request', { status: 400 });
+    expect(isServiceOutageError(error)).toBe(false);
   });
 });

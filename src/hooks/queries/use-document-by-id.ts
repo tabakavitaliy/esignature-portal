@@ -3,7 +3,9 @@ import { useEffect } from 'react';
 import { useToken } from './use-token';
 import { useMatterDetails } from './use-matter-details';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net';
 
 export interface DocumentByIdResponse {
   documentId: string;

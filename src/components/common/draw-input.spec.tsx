@@ -11,7 +11,7 @@ describe('DrawInput', () => {
 
     // Mock canvas toDataURL to return a valid data URL
     mockToDataURL = vi.fn().mockReturnValue('data:image/png;base64,mockImageData');
-    
+
     mockGetContext = vi.fn().mockReturnValue({
       clearRect: vi.fn(),
       beginPath: vi.fn(),
@@ -26,7 +26,8 @@ describe('DrawInput', () => {
       lineJoin: 'round',
     });
 
-    HTMLCanvasElement.prototype.getContext = mockGetContext as unknown as HTMLCanvasElement['getContext'];
+    HTMLCanvasElement.prototype.getContext =
+      mockGetContext as unknown as HTMLCanvasElement['getContext'];
 
     Object.defineProperty(HTMLCanvasElement.prototype, 'toDataURL', {
       value: mockToDataURL,
@@ -50,7 +51,7 @@ describe('DrawInput', () => {
     global.Image = class MockImage {
       onload: (() => void) | null = null;
       src = '';
-      
+
       constructor() {
         setTimeout(() => {
           if (this.onload) {
@@ -100,9 +101,7 @@ describe('DrawInput', () => {
 
   it('uses custom id when provided', () => {
     const onChange = vi.fn();
-    render(
-      <DrawInput label="Custom ID" id="custom-canvas-id" value="" onChange={onChange} />
-    );
+    render(<DrawInput label="Custom ID" id="custom-canvas-id" value="" onChange={onChange} />);
     const canvas = screen.getByLabelText('Custom ID');
     expect(canvas).toHaveAttribute('id', 'custom-canvas-id');
   });
@@ -119,12 +118,7 @@ describe('DrawInput', () => {
   it('merges custom canvasClassName to canvas wrapper', () => {
     const onChange = vi.fn();
     const { container } = render(
-      <DrawInput
-        label="Test"
-        canvasClassName="custom-canvas-class"
-        value=""
-        onChange={onChange}
-      />
+      <DrawInput label="Test" canvasClassName="custom-canvas-class" value="" onChange={onChange} />
     );
     const canvasWrapper = container.querySelector('.custom-canvas-class');
     expect(canvasWrapper).toBeInTheDocument();
@@ -243,14 +237,7 @@ describe('DrawInput', () => {
 
     it('accepts custom clearButtonLabel', async () => {
       const onChange = vi.fn();
-      render(
-        <DrawInput
-          label="Signature"
-          clearButtonLabel="Reset"
-          value=""
-          onChange={onChange}
-        />
-      );
+      render(<DrawInput label="Signature" clearButtonLabel="Reset" value="" onChange={onChange} />);
       const canvas = screen.getByLabelText('Signature') as HTMLCanvasElement;
 
       // Simulate drawing
@@ -561,15 +548,20 @@ describe('DrawInput', () => {
 
     it('handles null context in handleClear gracefully', async () => {
       const onChange = vi.fn();
-      
+
       // Mock getContext to return null
       const originalGetContext = HTMLCanvasElement.prototype.getContext;
-      HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue(null) as unknown as HTMLCanvasElement['getContext'];
+      HTMLCanvasElement.prototype.getContext = vi
+        .fn()
+        .mockReturnValue(null) as unknown as HTMLCanvasElement['getContext'];
 
-      render(<DrawInput label="Signature" value="data:image/png;base64,test" onChange={onChange} />);
+      render(
+        <DrawInput label="Signature" value="data:image/png;base64,test" onChange={onChange} />
+      );
 
       // Restore original mock
-      HTMLCanvasElement.prototype.getContext = originalGetContext as unknown as HTMLCanvasElement['getContext'];
+      HTMLCanvasElement.prototype.getContext =
+        originalGetContext as unknown as HTMLCanvasElement['getContext'];
 
       // Wait for initial render
       await waitFor(() => {
@@ -579,9 +571,11 @@ describe('DrawInput', () => {
 
     it('handles getContext returning null during initialization', () => {
       const onChange = vi.fn();
-      
+
       // Mock getContext to return null
-      HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue(null) as unknown as HTMLCanvasElement['getContext'];
+      HTMLCanvasElement.prototype.getContext = vi
+        .fn()
+        .mockReturnValue(null) as unknown as HTMLCanvasElement['getContext'];
 
       render(<DrawInput label="Signature" value="" onChange={onChange} />);
       const canvas = screen.getByLabelText('Signature');
@@ -604,9 +598,11 @@ describe('DrawInput', () => {
 
     it('handles null context in handlePointerDown', () => {
       const onChange = vi.fn();
-      
+
       // Mock getContext to return null
-      HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue(null) as unknown as HTMLCanvasElement['getContext'];
+      HTMLCanvasElement.prototype.getContext = vi
+        .fn()
+        .mockReturnValue(null) as unknown as HTMLCanvasElement['getContext'];
 
       render(<DrawInput label="Signature" value="" onChange={onChange} />);
       const canvas = screen.getByLabelText('Signature') as HTMLCanvasElement;
@@ -633,7 +629,7 @@ describe('DrawInput', () => {
 
     it('handles null context in handlePointerMove', () => {
       const onChange = vi.fn();
-      
+
       // Setup mock context that will be returned initially
       const mockContext = {
         clearRect: vi.fn(),

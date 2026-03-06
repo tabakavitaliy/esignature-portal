@@ -42,7 +42,7 @@ describe('RadioGroup', () => {
 
   it('renders correct labels for all options', () => {
     render(<RadioGroup label="Address" options={mockOptions} />);
-    
+
     expect(screen.getByText('123 Main St, Springfield, 12345')).toBeInTheDocument();
     expect(screen.getByText('456 Oak Ave, Riverside, 67890')).toBeInTheDocument();
     expect(screen.getByText('789 Pine Rd, Lakeside, 54321')).toBeInTheDocument();
@@ -51,17 +51,11 @@ describe('RadioGroup', () => {
   it('calls onChange when radio option is selected', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
-    render(
-      <RadioGroup
-        label="Address"
-        options={mockOptions}
-        onChange={handleChange}
-      />
-    );
-    
+    render(<RadioGroup label="Address" options={mockOptions} onChange={handleChange} />);
+
     const firstRadio = screen.getAllByRole('radio')[0];
     await user.click(firstRadio!);
-    
+
     expect(handleChange).toHaveBeenCalledTimes(1);
     expect(handleChange).toHaveBeenCalledWith('address-1');
   });
@@ -69,30 +63,18 @@ describe('RadioGroup', () => {
   it('calls onChange with correct value when second option is selected', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
-    render(
-      <RadioGroup
-        label="Address"
-        options={mockOptions}
-        onChange={handleChange}
-      />
-    );
-    
+    render(<RadioGroup label="Address" options={mockOptions} onChange={handleChange} />);
+
     const secondRadio = screen.getAllByRole('radio')[1];
     await user.click(secondRadio!);
-    
+
     expect(handleChange).toHaveBeenCalledTimes(1);
     expect(handleChange).toHaveBeenCalledWith('address-2');
   });
 
   it('displays selected value when value prop is set', () => {
-    render(
-      <RadioGroup
-        label="Address"
-        options={mockOptions}
-        value="address-2"
-      />
-    );
-    
+    render(<RadioGroup label="Address" options={mockOptions} value="address-2" />);
+
     const radios = screen.getAllByRole('radio');
     expect(radios[0]).not.toBeChecked();
     expect(radios[1]).toBeChecked();
@@ -103,7 +85,7 @@ describe('RadioGroup', () => {
     render(<RadioGroup label="Select Property" options={mockOptions} />);
     const radioGroup = screen.getByRole('radiogroup');
     const legend = screen.getByText('Select Property');
-    
+
     expect(radioGroup).toHaveAttribute('aria-labelledby');
     expect(legend).toHaveAttribute('id');
     expect(radioGroup.getAttribute('aria-labelledby')).toBe(legend.getAttribute('id'));
@@ -111,24 +93,14 @@ describe('RadioGroup', () => {
 
   it('applies custom className to fieldset container', () => {
     const { container } = render(
-      <RadioGroup
-        label="Test"
-        options={mockOptions}
-        className="custom-fieldset-class"
-      />
+      <RadioGroup label="Test" options={mockOptions} className="custom-fieldset-class" />
     );
     const fieldset = container.querySelector('fieldset');
     expect(fieldset).toHaveClass('custom-fieldset-class');
   });
 
   it('uses custom id when provided', () => {
-    render(
-      <RadioGroup
-        label="Custom ID"
-        id="custom-radio-group-id"
-        options={mockOptions}
-      />
-    );
+    render(<RadioGroup label="Custom ID" id="custom-radio-group-id" options={mockOptions} />);
     const legend = screen.getByText('Custom ID');
     expect(legend).toHaveAttribute('id', 'custom-radio-group-id-label');
   });
@@ -163,7 +135,7 @@ describe('RadioGroup', () => {
 
     const legends = screen.getAllByRole('group');
     expect(legends).toHaveLength(2);
-    
+
     const firstLegend = screen.getByText('First Group');
     const secondLegend = screen.getByText('Second Group');
     expect(firstLegend.getAttribute('id')).not.toBe(secondLegend.getAttribute('id'));
@@ -172,22 +144,16 @@ describe('RadioGroup', () => {
   it('can select different options in sequence', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
-    render(
-      <RadioGroup
-        label="Address"
-        options={mockOptions}
-        onChange={handleChange}
-      />
-    );
-    
+    render(<RadioGroup label="Address" options={mockOptions} onChange={handleChange} />);
+
     const radios = screen.getAllByRole('radio');
-    
+
     await user.click(radios[0]!);
     expect(handleChange).toHaveBeenLastCalledWith('address-1');
-    
+
     await user.click(radios[2]!);
     expect(handleChange).toHaveBeenLastCalledWith('address-3');
-    
+
     expect(handleChange).toHaveBeenCalledTimes(2);
   });
 
@@ -195,20 +161,15 @@ describe('RadioGroup', () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(
-      <RadioGroup
-        label="Address"
-        options={mockOptions}
-        value="address-1"
-        onChange={handleChange}
-      />
+      <RadioGroup label="Address" options={mockOptions} value="address-1" onChange={handleChange} />
     );
-    
+
     const secondLabel = screen.getByText('456 Oak Ave, Riverside, 67890');
     const radios = screen.getAllByRole('radio');
-    
+
     expect(radios[0]).toBeChecked();
     expect(radios[1]).not.toBeChecked();
-    
+
     await user.click(secondLabel);
     expect(handleChange).toHaveBeenCalledWith('address-2');
   });
@@ -216,21 +177,15 @@ describe('RadioGroup', () => {
   it('each radio has correct value attribute', () => {
     render(<RadioGroup label="Address" options={mockOptions} />);
     const radios = screen.getAllByRole('radio');
-    
+
     expect(radios[0]).toHaveAttribute('value', 'address-1');
     expect(radios[1]).toHaveAttribute('value', 'address-2');
     expect(radios[2]).toHaveAttribute('value', 'address-3');
   });
 
   it('disables all radio buttons when disabled prop is true', () => {
-    render(
-      <RadioGroup
-        label="Address"
-        options={mockOptions}
-        disabled={true}
-      />
-    );
-    
+    render(<RadioGroup label="Address" options={mockOptions} disabled={true} />);
+
     const radios = screen.getAllByRole('radio');
     radios.forEach((radio) => {
       expect(radio).toBeDisabled();
@@ -241,29 +196,18 @@ describe('RadioGroup', () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(
-      <RadioGroup
-        label="Address"
-        options={mockOptions}
-        onChange={handleChange}
-        disabled={true}
-      />
+      <RadioGroup label="Address" options={mockOptions} onChange={handleChange} disabled={true} />
     );
-    
+
     const firstRadio = screen.getAllByRole('radio')[0];
     await user.click(firstRadio!);
-    
+
     expect(handleChange).not.toHaveBeenCalled();
   });
 
   it('enables all radio buttons when disabled prop is false', () => {
-    render(
-      <RadioGroup
-        label="Address"
-        options={mockOptions}
-        disabled={false}
-      />
-    );
-    
+    render(<RadioGroup label="Address" options={mockOptions} disabled={false} />);
+
     const radios = screen.getAllByRole('radio');
     radios.forEach((radio) => {
       expect(radio).not.toBeDisabled();

@@ -72,7 +72,7 @@ describe('ConfirmSignatoryPage', () => {
 
   it('renders all expected page elements', () => {
     render(<ConfirmSignatoryPage />, { wrapper: createWrapper() });
-    
+
     expect(screen.getByRole('heading', { name: t.headerText })).toBeInTheDocument();
     expect(screen.getByRole('navigation', { name: 'Progress' })).toBeInTheDocument();
     expect(screen.getByText(t.addressCountSuffix)).toBeInTheDocument();

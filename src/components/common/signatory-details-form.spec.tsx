@@ -263,6 +263,87 @@ describe('SignatoryDetailsForm', () => {
     expect(mobileInput).toHaveValue('');
   });
 
+  it('handles undefined optional fields via fallback defaults', () => {
+    const sparseValue = {
+      title: 'Mr',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'j@example.com',
+      mobile: null,
+    } as SignatoryDetailsFormValue;
+
+    render(
+      <SignatoryDetailsForm
+        value={sparseValue}
+        onChange={vi.fn()}
+        config={fullConfig}
+        addressAssociationOptions={ADDRESS_ASSOCIATION_OPTIONS}
+      />
+    );
+
+    expect(screen.getByPlaceholderText(t.addressLine1Placeholder)).toHaveValue('');
+    expect(screen.getByPlaceholderText(t.addressLine2Placeholder)).toHaveValue('');
+    expect(screen.getByPlaceholderText(t.addressLine3Placeholder)).toHaveValue('');
+    expect(screen.getByPlaceholderText(t.townPlaceholder)).toHaveValue('');
+    expect(screen.getByPlaceholderText(t.countyPlaceholder)).toHaveValue('');
+    expect(screen.getByPlaceholderText(t.postcodePlaceholder)).toHaveValue('');
+  });
+
+  it('calls onChange for addressLine2', async () => {
+    const mockOnChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <SignatoryDetailsForm value={defaultValue} onChange={mockOnChange} config={minimalConfig} />
+    );
+
+    const input = screen.getByPlaceholderText(t.addressLine2Placeholder);
+    await user.type(input, 'X');
+
+    expect(mockOnChange).toHaveBeenCalledWith('addressLine2', 'X');
+  });
+
+  it('calls onChange for county when extended address is shown', async () => {
+    const mockOnChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <SignatoryDetailsForm value={defaultValue} onChange={mockOnChange} config={fullConfig} />
+    );
+
+    const input = screen.getByPlaceholderText(t.countyPlaceholder);
+    await user.type(input, 'Y');
+
+    expect(mockOnChange).toHaveBeenCalledWith('county', 'Y');
+  });
+
+  it('calls onChange for addressLine3 when extended address is shown', async () => {
+    const mockOnChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <SignatoryDetailsForm value={defaultValue} onChange={mockOnChange} config={fullConfig} />
+    );
+
+    const input = screen.getByPlaceholderText(t.addressLine3Placeholder);
+    await user.type(input, 'Z');
+
+    expect(mockOnChange).toHaveBeenCalledWith('addressLine3', 'Z');
+  });
+
+  it('prevents default form submission', async () => {
+    const mockOnChange = vi.fn();
+    const { container } = render(
+      <SignatoryDetailsForm value={defaultValue} onChange={mockOnChange} config={minimalConfig} />
+    );
+
+    const form = container.querySelector('form')!;
+    const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+    const prevented = !form.dispatchEvent(submitEvent);
+
+    expect(prevented).toBe(true);
+  });
+
   describe('SIGNATORY_FORM_CONFIG', () => {
     it('confirmDetails config hides address association and confirm email', () => {
       const config = SIGNATORY_FORM_CONFIG.confirmDetails;

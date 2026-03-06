@@ -56,11 +56,7 @@ export function RadioGroup({
         className="flex flex-col gap-3"
       >
         {options.map((option) => (
-          <Radio
-            key={option.value}
-            value={option.value}
-            label={option.label}
-          />
+          <Radio key={option.value} value={option.value} label={option.label} />
         ))}
       </BaseRadioGroup>
     </fieldset>

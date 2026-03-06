@@ -46,7 +46,7 @@ describe('useContinueToSign', () => {
 
   beforeEach(() => {
     global.fetch = mockFetch;
-    
+
     vi.spyOn(useTokenModule, 'useToken').mockReturnValue({
       token: mockToken,
       setToken: vi.fn(),

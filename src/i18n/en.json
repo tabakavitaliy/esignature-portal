@@ -135,6 +135,15 @@
     "message": "Your session has expired due to inactivity. Use the eSignature credential to login again",
     "loginButton": "Login"
   },
+  "errorPage": {
+    "headerText": "Signature Portal",
+    "subtitle": "Powered by Liberty Blume",
+    "heading": "We’re on it",
+    "messageLine1": "Looks like this service is temporarily unavailable. Please refresh and try again.",
+    "messageLine2": "If it still doesn’t work, wait a few minutes and try again.",
+    "refreshButton": "Refresh",
+    "backToLoginButton": "Back to login"
+  },
   "loadingModal": {
     "loadingAgreement": "Loading your agreement details, please wait…",
     "updatingSignatory": "Saving your details, please wait…",

@@ -1,9 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
 import { useToken } from './use-token';
 import { useMatterDetails } from './use-matter-details';
-import { HttpError } from '@/lib/api';
+import { ApiClientError } from '@/lib/api';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  'https://lb-signatureapi-dev-cbcbc8dxf4gpevfa.westeurope-01.azurewebsites.net';
 
 interface ReadyToSignResponse {
   success: boolean;
@@ -23,9 +25,8 @@ export function useReadyToSign(): UseReadyToSignReturn {
   const mutation = useMutation<ReadyToSignResponse, Error, void>({
     mutationFn: async () => {
       const matterId = matterData?.matterId;
-      const signatoryId = typeof window !== 'undefined' 
-        ? sessionStorage.getItem('selectedSignatoryId')
-        : null;
+      const signatoryId =
+        typeof window !== 'undefined' ? sessionStorage.getItem('selectedSignatoryId') : null;
 
       if (!matterId) {
         throw new Error('Matter ID is not available');
@@ -46,16 +47,15 @@ export function useReadyToSign(): UseReadyToSignReturn {
       });
 
       if (!response.ok) {
-        throw new HttpError(
-          `API Error: ${response.status} ${response.statusText}`,
-          response.status
-        );
+        throw new ApiClientError(`API Error: ${response.status} ${response.statusText}`, {
+          status: response.status,
+        });
       }
 
       return response.json() as Promise<ReadyToSignResponse>;
     },
     retry: (_, error) => {
-      return error instanceof HttpError && error.status === 404;
+      return error instanceof ApiClientError && error.status === 404;
     },
     retryDelay: 2000,
   });

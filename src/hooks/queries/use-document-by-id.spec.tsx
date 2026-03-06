@@ -254,13 +254,10 @@ describe('useDocumentById', () => {
       blob: async () => mockBlob,
     });
 
-    const { result, rerender } = renderHook(
-      ({ docId }) => useDocumentById(docId),
-      {
-        wrapper: createWrapper(),
-        initialProps: { docId: mockDocumentId },
-      }
-    );
+    const { result, rerender } = renderHook(({ docId }) => useDocumentById(docId), {
+      wrapper: createWrapper(),
+      initialProps: { docId: mockDocumentId },
+    });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);

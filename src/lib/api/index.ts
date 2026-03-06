@@ -1,1 +1,7 @@
-export { ApiClientError, apiClient, default, isServiceOutageError } from './client';
+export {
+  ApiClientError,
+  apiClient,
+  default,
+  isInvalidCredentialError,
+  isServiceOutageError,
+} from './client';

@@ -9,4 +9,5 @@ export const ROUTES = {
   THANK_YOU: '/thank-you',
   EXPIRED_SESSION: '/expired-session',
   ERROR_PAGE: '/error-page',
+  INVALID_CREDENTIAL: '/invalid-credential',
 } as const;

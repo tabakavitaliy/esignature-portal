@@ -24,6 +24,14 @@ export class ApiClientError extends Error {
   }
 }
 
+export function isInvalidCredentialError(error: unknown): boolean {
+  if (!(error instanceof ApiClientError)) {
+    return false;
+  }
+
+  return error.status === 401 || error.status === 403;
+}
+
 export function isServiceOutageError(error: unknown): boolean {
   if (!(error instanceof ApiClientError)) {
     return false;

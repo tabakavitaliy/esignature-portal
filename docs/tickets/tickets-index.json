@@ -1,6 +1,30 @@
 {
   "tickets": [
     {
+      "id": "WEP-7",
+      "title": "Invalid Credential Handling (Screen: 03-A.55)",
+      "description": "Dedicated page + global intercept for API 401/403 credential errors with Back/Close actions",
+      "status": "in-progress",
+      "progress": "100%",
+      "jiraUrl": "https://jdc.eleks.com/browse/WEP-7",
+      "ticketFile": "docs/tickets/WEP-7.md",
+      "relatedFeatures": ["error-handling"],
+      "relatedFiles": [
+        "src/app/invalid-credential/page.tsx",
+        "src/app/invalid-credential/page.spec.tsx",
+        "src/components/pages/invalid-credential-page.tsx",
+        "src/components/pages/invalid-credential-page.spec.tsx",
+        "src/components/pages/index.ts",
+        "src/constants/routes.ts",
+        "src/lib/api/client.ts",
+        "src/lib/api/index.ts",
+        "src/providers/query-provider.tsx",
+        "src/providers/query-provider.spec.tsx",
+        "src/i18n/en.json",
+        "docs/features/error-handling.md"
+      ]
+    },
+    {
       "id": "WEP-43",
       "title": "Error Screen: We're on it",
       "description": "Outage-focused error page with global redirect for query and catastrophic mutation failures",
@@ -130,6 +154,6 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-03-05"
+    "lastUpdated": "2026-03-06"
   }
 }

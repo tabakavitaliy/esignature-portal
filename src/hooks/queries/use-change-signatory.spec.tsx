@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { useChangeSignatory, type ChangeSignatoryBody } from './use-change-signatory';
 import * as useTokenModule from './use-token';
 import * as useMatterDetailsModule from './use-matter-details';
+import * as useRecaptchaModule from '../common/use-recaptcha';
 import type { MatterDetails } from './use-matter-details';
 
 const createWrapper = () => {
@@ -32,6 +33,7 @@ describe('useChangeSignatory', () => {
   const mockGetItem = vi.fn();
   const mockSetItem = vi.fn();
   const mockRemoveItem = vi.fn();
+  const mockGetRecaptchaToken = vi.fn().mockResolvedValue('mock-recaptcha-token');
 
   const mockMatterData: MatterDetails = {
     hasSignedMatter: false,
@@ -81,6 +83,10 @@ describe('useChangeSignatory', () => {
       error: null,
       isLoading: false,
       refetch: vi.fn(),
+    });
+
+    vi.spyOn(useRecaptchaModule, 'useRecaptcha').mockReturnValue({
+      getToken: mockGetRecaptchaToken,
     });
 
     Object.defineProperty(window, 'sessionStorage', {
@@ -335,6 +341,31 @@ describe('useChangeSignatory', () => {
       expect.any(String),
       expect.objectContaining({
         method: 'POST',
+      })
+    );
+  });
+
+  it('includes X-ReCaptcha-Token header in the request', async () => {
+    mockGetRecaptchaToken.mockResolvedValue('test-recaptcha-token');
+
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
+
+    const { result } = renderHook(() => useChangeSignatory(), {
+      wrapper: createWrapper(),
+    });
+
+    await result.current.changeSignatory(mockChangeSignatoryBody);
+
+    expect(mockGetRecaptchaToken).toHaveBeenCalledWith('changeSignatory');
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'X-ReCaptcha-Token': 'test-recaptcha-token',
+        }),
       })
     );
   });
